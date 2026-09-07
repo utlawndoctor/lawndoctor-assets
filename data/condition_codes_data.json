@@ -1,0 +1,756 @@
+{
+ "service_library": {
+  "BW1": {
+   "emoji": "🌿",
+   "heading": "Bed Weed Control #1",
+   "text": "Bed Weed Control (treatment #1 of 5)",
+   "email": "Today's visit was treatment #1 of your Bed Weed Control Program for this year."
+  },
+  "BW2": {
+   "emoji": "🌿",
+   "heading": "Bed Weed Control #2",
+   "text": "Bed Weed Control (treatment #2 of 5)",
+   "email": "Today's visit was treatment #2 of your Bed Weed Control Program for this year."
+  },
+  "BW3": {
+   "emoji": "🌿",
+   "heading": "Bed Weed Control #3",
+   "text": "Bed Weed Control (treatment #3 of 5)",
+   "email": "Today's visit was treatment #3 of your Bed Weed Control Program for this year."
+  },
+  "BW4": {
+   "emoji": "🌿",
+   "heading": "Bed Weed Control #4",
+   "text": "Bed Weed Control (treatment #4 of 5)",
+   "email": "Today's visit was treatment #4 of your Bed Weed Control Program for this year."
+  },
+  "BW5": {
+   "emoji": "🌿",
+   "heading": "Bed Weed Control #5",
+   "text": "Bed Weed Control (treatment #5 of 5)",
+   "email": "Today's visit was treatment #5 of your Bed Weed Control Program for this year."
+  },
+  "CAF": {
+   "emoji": "🕳️",
+   "heading": "Core Aeration (Fall)",
+   "text": "Core Aeration (Fall)",
+   "email": "Today's visit was your Fall Core Aeration, relieving soil compaction and helping water, air, and nutrients reach your lawn's root zone."
+  },
+  "CAO": {
+   "emoji": "🌱",
+   "heading": "Aeration & Overseed (Spring)",
+   "text": "Aeration & Overseed (Spring)",
+   "email": "Today's visit combined core aeration with overseeding, relieving compaction while introducing new seed to help thicken your lawn."
+  },
+  "CAS": {
+   "emoji": "🕳️",
+   "heading": "Core Aeration (Spring)",
+   "text": "Core Aeration (Spring)",
+   "email": "Today's visit was your Spring Core Aeration, relieving soil compaction and helping water, air, and nutrients reach your lawn's root zone."
+  },
+  "COF": {
+   "emoji": "🌱",
+   "heading": "Aeration & Overseed (Fall)",
+   "text": "Aeration & Overseed (Fall)",
+   "email": "Today's visit combined core aeration with overseeding, relieving compaction while introducing new seed to help thicken your lawn."
+  },
+  "FO": {
+   "emoji": "✅",
+   "heading": "Fertilizer Only",
+   "text": "Fertilizer Only",
+   "email": "Today's visit was a Fertilizer Only application."
+  },
+  "FS": {
+   "emoji": "✅",
+   "heading": "Fungicide Treatment",
+   "text": "Fungicide (Systemic)",
+   "email": "Today's visit included a systemic fungicide application to help protect your lawn from disease."
+  },
+  "GCC": {
+   "emoji": "🛡️",
+   "heading": "Grub Control - Curative",
+   "text": "Grub Control (Curative)",
+   "email": "Today's visit included a curative Grub Control application to address existing grub damage."
+  },
+  "GCN": {
+   "emoji": "🛡️",
+   "heading": "Grub Curative",
+   "text": "Grub Control (Curative)",
+   "email": "Today's visit included a curative Grub Control application to address existing grub damage."
+  },
+  "GCP": {
+   "emoji": "🛡️",
+   "heading": "Grub Control - Preventative (a separate service from your Lawn Maintainer program)",
+   "text": "Hi [FirstName], as a separate treatment today we also applied your Grub Control - Preventative service, protecting your lawn's root system against grub damage before it starts.",
+   "email": "In addition to today's Lawn Maintainer visit, we also performed your Grub Control - Preventative treatment. This is billed separately from your regular lawn care because it's a distinct layer of protection, timed specifically for when grubs are most vulnerable underground.\n\nGrubs feed on grass roots from below the surface, and by the time damage shows up on top, it's often already extensive and expensive to repair. Treating preventatively now protects the investment you've already made in your lawn, stopping the problem before it starts instead of paying to fix it after the damage is done."
+  },
+  "HG1": {
+   "emoji": "💧",
+   "heading": "Hydra-Guard #1",
+   "text": "Hydra-Guard (treatment #1 of 2)",
+   "email": "Today's visit was treatment #1 of your Hydraguard Program for this year."
+  },
+  "HG2": {
+   "emoji": "💧",
+   "heading": "Hydra-Guard #2",
+   "text": "Hydra-Guard (treatment #2 of 2)",
+   "email": "Today's visit was treatment #2 of your Hydraguard Program for this year."
+  },
+  "M1": {
+   "emoji": "✅",
+   "heading": "Lawn Maintainer #1",
+   "text": "Round 1 of 6: Nitrogen for spring green-up + pre-emergent weed control",
+   "email": "Today's visit was Round 1 of your 6-visit Lawn Maintainer Program (Early Spring):\n- Nitrogen, for spring green-up and gradual feeding\n- Pre-emergent weed control, targets grassy weeds like crabgrass and goosegrass before they can germinate\n- Broadleaf weed control, spot-treated or lawn-wide as needed"
+  },
+  "M2": {
+   "emoji": "✅",
+   "heading": "Lawn Maintainer #2",
+   "text": "Round 2 of 6: Nitrogen, Potassium + pre-emergent weed control",
+   "email": "Today's visit was Round 2 of your 6-visit Lawn Maintainer Program (Spring):\n- Nitrogen, for continued spring green-up and gradual feeding\n- Potassium, improves disease resistance, water efficiency, and nutrient uptake\n- Pre-emergent weed control, targets grassy weeds like crabgrass and goosegrass\n- Broadleaf weed control"
+  },
+  "M3": {
+   "emoji": "✅",
+   "heading": "Lawn Maintainer #3",
+   "text": "Round 3 of 6: Nitrogen, Potassium, Iron + broadleaf weed control",
+   "email": "Today's visit was Round 3 of your 6-visit Lawn Maintainer Program (Spring/Summer):\n- Nitrogen, for gradual feeding\n- Potassium, improves disease resistance, water efficiency, and nutrient uptake\n- Iron, for vigor and a deeper green color\n- Broadleaf weed control, if needed"
+  },
+  "M4": {
+   "emoji": "✅",
+   "heading": "Lawn Maintainer #4",
+   "text": "Round 4 of 6: Slow-release Nitrogen, Potassium, Iron",
+   "email": "Today's visit was Round 4 of your 6-visit Lawn Maintainer Program (Summer):\n- Slow-release Nitrogen, for gradual feeding through the heat of summer\n- Potassium, improves disease resistance, water efficiency, and nutrient uptake\n- Iron, for vigor and a deeper green color\n- Broadleaf weed control, if needed"
+  },
+  "M5": {
+   "emoji": "✅",
+   "heading": "Lawn Maintainer #5",
+   "text": "Round 5 of 6: Slow-release Nitrogen, Potassium, Iron + broad weed control",
+   "email": "Today's visit was Round 5 of your 6-visit Lawn Maintainer Program (Summer/Fall):\n- Slow-release Nitrogen, for gradual feeding\n- Potassium, improves disease resistance, water efficiency, and nutrient uptake\n- Iron, for vigor and a deeper green color\n- Broadleaf, crabgrass, goosegrass, and nutsedge control"
+  },
+  "M6": {
+   "emoji": "✅",
+   "heading": "Lawn Maintainer #6",
+   "text": "Round 6 of 6: Fall fertilization for stronger roots into winter",
+   "email": "Today's visit was Round 6 of your 6-visit Lawn Maintainer Program (Fall), your final scheduled visit of the season:\n- Fall fertilization, promotes stronger roots and a healthy lawn heading into winter\n- Nitrogen, for gradual feeding\n- Potassium, improves disease resistance, water efficiency, and nutrient uptake\n- Iron, for vigor and a deeper green color\n- Broadleaf, crabgrass, goosegrass, and nutsedge control"
+  },
+  "MC1": {
+   "emoji": "🦟",
+   "heading": "Mosquito Control #1",
+   "text": "Mosquito Control (treatment #1 of 5)",
+   "email": "Today's visit was treatment #1 of your Mosquito Control Program for this year."
+  },
+  "MC2": {
+   "emoji": "🦟",
+   "heading": "Mosquito Control #2",
+   "text": "Mosquito Control (treatment #2 of 5)",
+   "email": "Today's visit was treatment #2 of your Mosquito Control Program for this year."
+  },
+  "MC3": {
+   "emoji": "🦟",
+   "heading": "Mosquito Control #3",
+   "text": "Mosquito Control (treatment #3 of 5)",
+   "email": "Today's visit was treatment #3 of your Mosquito Control Program for this year."
+  },
+  "MC4": {
+   "emoji": "🦟",
+   "heading": "Mosquito Control #4",
+   "text": "Mosquito Control (treatment #4 of 5)",
+   "email": "Today's visit was treatment #4 of your Mosquito Control Program for this year."
+  },
+  "MC5": {
+   "emoji": "🦟",
+   "heading": "Mosquito Control #5",
+   "text": "Mosquito Control (treatment #5 of 5)",
+   "email": "Today's visit was treatment #5 of your Mosquito Control Program for this year."
+  },
+  "OL1": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #1",
+   "text": "Off Lawn Weed Control (treatment #1 of 5)",
+   "email": "Today's visit was treatment #1 of your Off Lawn Weed Control Program for this year."
+  },
+  "OL2": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #2",
+   "text": "Off Lawn Weed Control (treatment #2 of 5)",
+   "email": "Today's visit was treatment #2 of your Off Lawn Weed Control Program for this year."
+  },
+  "OL3": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #3",
+   "text": "Off Lawn Weed Control (treatment #3 of 5)",
+   "email": "Today's visit was treatment #3 of your Off Lawn Weed Control Program for this year."
+  },
+  "OL4": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #4",
+   "text": "Off Lawn Weed Control (treatment #4 of 5)",
+   "email": "Today's visit was treatment #4 of your Off Lawn Weed Control Program for this year."
+  },
+  "OW5": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #5",
+   "text": "Off Lawn Weed Control (treatment #5 of 5)",
+   "email": "Today's visit was treatment #5 of your Off Lawn Weed Control Program for this year."
+  },
+  "PP1": {
+   "emoji": "🐜",
+   "heading": "Perimeter Pest Control #1",
+   "text": "Hi [FirstName], we completed your Perimeter Pest Control treatment today around your home's exterior. Please keep kids and pets off treated areas until the product has dried.",
+   "email": "Today's visit was your Perimeter Pest Control treatment (visit #1 of the season), applied around the exterior of your home to create a protective barrier against common pests like ants, spiders, and other invaders.\n\nCaring for Your Home After Today's Treatment\nUnlike your lawn treatments, this doesn't need to be watered in, watering it too soon can actually wash away the barrier before it has a chance to work. Please keep children and pets off treated areas until the product has fully dried, typically within a few hours depending on weather, but the surest sign is that it's visibly dry to the touch."
+  },
+  "PP2": {
+   "emoji": "🐜",
+   "heading": "Perimeter Pest Control #2",
+   "text": "Hi [FirstName], we completed your Perimeter Pest Control treatment today around your home's exterior. Please keep kids and pets off treated areas until the product has dried.",
+   "email": "Today's visit was your Perimeter Pest Control treatment (visit #2 of the season), applied around the exterior of your home to create a protective barrier against common pests like ants, spiders, and other invaders.\n\nCaring for Your Home After Today's Treatment\nUnlike your lawn treatments, this doesn't need to be watered in, watering it too soon can actually wash away the barrier before it has a chance to work. Please keep children and pets off treated areas until the product has fully dried, typically within a few hours depending on weather, but the surest sign is that it's visibly dry to the touch."
+  },
+  "PP3": {
+   "emoji": "🐜",
+   "heading": "Perimeter Pest Control #3",
+   "text": "Hi [FirstName], we completed your Perimeter Pest Control treatment today around your home's exterior. Please keep kids and pets off treated areas until the product has dried.",
+   "email": "Today's visit was your Perimeter Pest Control treatment (visit #3 of the season), applied around the exterior of your home to create a protective barrier against common pests like ants, spiders, and other invaders.\n\nCaring for Your Home After Today's Treatment\nUnlike your lawn treatments, this doesn't need to be watered in, watering it too soon can actually wash away the barrier before it has a chance to work. Please keep children and pets off treated areas until the product has fully dried, typically within a few hours depending on weather, but the surest sign is that it's visibly dry to the touch."
+  },
+  "PP4": {
+   "emoji": "🐜",
+   "heading": "Perimeter Pest Control #4",
+   "text": "Hi [FirstName], we completed your Perimeter Pest Control treatment today around your home's exterior. Please keep kids and pets off treated areas until the product has dried.",
+   "email": "Today's visit was your Perimeter Pest Control treatment (visit #4 of the season), applied around the exterior of your home to create a protective barrier against common pests like ants, spiders, and other invaders.\n\nCaring for Your Home After Today's Treatment\nUnlike your lawn treatments, this doesn't need to be watered in, watering it too soon can actually wash away the barrier before it has a chance to work. Please keep children and pets off treated areas until the product has fully dried, typically within a few hours depending on weather, but the surest sign is that it's visibly dry to the touch."
+  },
+  "PP5": {
+   "emoji": "🐜",
+   "heading": "Perimeter Pest Control #5",
+   "text": "Hi [FirstName], we completed your Perimeter Pest Control treatment today around your home's exterior. Please keep kids and pets off treated areas until the product has dried.",
+   "email": "Today's visit was your Perimeter Pest Control treatment (visit #5 of the season), applied around the exterior of your home to create a protective barrier against common pests like ants, spiders, and other invaders.\n\nCaring for Your Home After Today's Treatment\nUnlike your lawn treatments, this doesn't need to be watered in, watering it too soon can actually wash away the barrier before it has a chance to work. Please keep children and pets off treated areas until the product has fully dried, typically within a few hours depending on weather, but the surest sign is that it's visibly dry to the touch."
+  },
+  "PSS": {
+   "emoji": "🌱",
+   "heading": "Power Seeding (Spring)",
+   "text": "Power Seeding (Spring)",
+   "email": "Today's visit was your Spring Power Seeding, using our Turf Tamer machine to get seed into direct contact with the soil for stronger germination."
+  },
+  "SCL": {
+   "emoji": "🔧",
+   "heading": "Service Call – Lawn",
+   "text": "Follow-Up Service Call (Lawn)",
+   "email": "Today's visit was a follow-up service call to check on and address a lawn concern."
+  },
+  "SCP": {
+   "emoji": "🔧",
+   "heading": "Service Call – Pest",
+   "text": "Follow-Up Service Call (Pest)",
+   "email": "Today's visit was a follow-up service call to check on and address a pest concern."
+  },
+  "SCS": {
+   "emoji": "🔧",
+   "heading": "Service Call – Check-Up",
+   "text": "Follow-Up Service Call (Check Service)",
+   "email": "Today's visit was a follow-up check to make sure a previous service is performing as expected."
+  },
+  "SCW": {
+   "emoji": "🔧",
+   "heading": "Service Call – Weed Respray",
+   "text": "Follow-Up Service Call (Weed Respray)",
+   "email": "Today's visit was a follow-up respray to knock back weeds that were still active after a previous treatment."
+  },
+  "SE1": {
+   "emoji": "🪴",
+   "heading": "Soil Enrichment #1",
+   "text": "Soil Enrichment (treatment #1 of 2)",
+   "email": "Today's visit was treatment #1 of your Soil Enrichment Program for this year."
+  },
+  "SE2": {
+   "emoji": "🪴",
+   "heading": "Soil Enrichment #2",
+   "text": "Soil Enrichment (treatment #2 of 2)",
+   "email": "Today's visit was treatment #2 of your Soil Enrichment Program for this year."
+  },
+  "TS1": {
+   "emoji": "🌳",
+   "heading": "Tree & Shrub Care #1",
+   "text": "Hi [FirstName], today's Tree & Shrub Care visit is complete (visit #1 of the season).",
+   "email": "Today's visit was your Tree & Shrub Care treatment (visit #1 of the season), covering inspection, pest and disease protection, and a customized fertilization plan for your trees and shrubs.\n\nCaring for Your Landscaping After Today's Treatment\nPlease keep children and pets away from treated trees and shrubs until the application has fully dried, typically within a few hours depending on weather."
+  },
+  "TS2": {
+   "emoji": "🌳",
+   "heading": "Tree & Shrub Care #2",
+   "text": "Hi [FirstName], today's Tree & Shrub Care visit is complete (visit #2 of the season).",
+   "email": "Today's visit was your Tree & Shrub Care treatment (visit #2 of the season), covering inspection, pest and disease protection, and a customized fertilization plan for your trees and shrubs.\n\nCaring for Your Landscaping After Today's Treatment\nPlease keep children and pets away from treated trees and shrubs until the application has fully dried, typically within a few hours depending on weather."
+  },
+  "TS3": {
+   "emoji": "🌳",
+   "heading": "Tree & Shrub Care #3",
+   "text": "Hi [FirstName], today's Tree & Shrub Care visit is complete (visit #3 of the season).",
+   "email": "Today's visit was your Tree & Shrub Care treatment (visit #3 of the season), covering inspection, pest and disease protection, and a customized fertilization plan for your trees and shrubs.\n\nCaring for Your Landscaping After Today's Treatment\nPlease keep children and pets away from treated trees and shrubs until the application has fully dried, typically within a few hours depending on weather."
+  },
+  "TS4": {
+   "emoji": "🌳",
+   "heading": "Tree & Shrub Care #4",
+   "text": "Hi [FirstName], today's Tree & Shrub Care visit is complete (visit #4 of the season).",
+   "email": "Today's visit was your Tree & Shrub Care treatment (visit #4 of the season), covering inspection, pest and disease protection, and a customized fertilization plan for your trees and shrubs.\n\nCaring for Your Landscaping After Today's Treatment\nPlease keep children and pets away from treated trees and shrubs until the application has fully dried, typically within a few hours depending on weather."
+  },
+  "TS5": {
+   "emoji": "🌳",
+   "heading": "Tree & Shrub Care #5",
+   "text": "Hi [FirstName], today's Tree & Shrub Care visit is complete (visit #5 of the season).",
+   "email": "Today's visit was your Tree & Shrub Care treatment (visit #5 of the season), covering inspection, pest and disease protection, and a customized fertilization plan for your trees and shrubs.\n\nCaring for Your Landscaping After Today's Treatment\nPlease keep children and pets away from treated trees and shrubs until the application has fully dried, typically within a few hours depending on weather."
+  },
+  "WC": {
+   "emoji": "✅",
+   "heading": "Weed Control",
+   "text": "Weed Control Only",
+   "email": "Today's visit was a Weed Control Only application."
+  },
+  "WCO": {
+   "emoji": "✅",
+   "heading": "Weed Control",
+   "text": "Weed Control Only",
+   "email": "Today's visit was a Weed Control Only application."
+  }
+ },
+ "condition_codes": {
+  "AOU": {
+   "text": "Hi [FirstName], your Lawn Doctor technician performed aeration and overseeding on your lawn today. Water lightly and consistently over the next 2-3 weeks to help new seed establish. Avoid mowing until the new grass reaches mowing height.",
+   "heading": "Your Lawn Was Aerated and Overseeded Today",
+   "body": "During today's visit, your technician aerated your lawn and applied new seed to help thicken it up. For the best results, keep the seeded areas consistently moist (light, frequent watering) for the next 2-3 weeks, and hold off on mowing until the new grass reaches normal mowing height. You may also see small soil plugs on the lawn for a few days, that's normal and will break down on its own.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌱",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "TL": {
+   "text": "Hi [FirstName], your Lawn Doctor technician performed aeration and overseeding on your lawn today. Water lightly and consistently over the next 2-3 weeks to help new seed establish. Avoid mowing until the new grass reaches mowing height.",
+   "heading": "Your Lawn Was Aerated and Overseeded Today",
+   "body": "During today's visit, your technician aerated your lawn and applied new seed to help thicken it up. For the best results, keep the seeded areas consistently moist (light, frequent watering) for the next 2-3 weeks, and hold off on mowing until the new grass reaches normal mowing height. You may also see small soil plugs on the lawn for a few days, that's normal and will break down on its own.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌱",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "PSU": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed bare or thin spots in your lawn. Our power seeding service uses a Turf Tamer machine to get seed into direct contact with the soil for stronger germination. Want details? Call or text us.",
+   "heading": "We Noticed Some Bare Spots in Your Lawn",
+   "body": "During your recent visit, our technician spotted bare or thin areas that aren't filling back in on their own. Power seeding uses our Turf Tamer machine to drive seed into direct contact with the soil, which gives it a much better shot at germinating than seed just scattered on top. We'd be happy to walk you through what that looks like for your lawn.",
+   "has_cta": true,
+   "cta_label": "Ask About Power Seeding",
+   "cta_type": "Call",
+   "icon": "🌱",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "CH": {
+   "text": "Hi [FirstName], we found signs of chinch bug activity in your lawn today, a lawn insect issue treated separately from home perimeter pest control. Call or text us to talk through options.",
+   "heading": "Chinch Bug Activity Found in Your Lawn",
+   "body": "Your technician identified signs of chinch bugs during today's visit, damaging insects that live and feed in the lawn itself. This is treated separately from our home perimeter pest control, since chinch bugs specifically target turf. Left untreated, they can cause noticeable brown, dead patches quickly, especially in hot, dry weather. We'd recommend addressing this soon to protect the rest of your lawn.",
+   "has_cta": true,
+   "cta_label": "Talk to Us About Treatment",
+   "cta_type": "Call",
+   "icon": "🐛",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "NCC": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed compacted soil in areas of your lawn today. Core aeration relieves compaction by pulling small soil plugs, letting water and nutrients reach the roots again. Reply if you'd like more info.",
+   "heading": "Compacted Soil Found in Your Lawn",
+   "body": "During today's visit, your technician noticed areas of compacted soil, which makes it harder for water, air, and nutrients to reach the root zone. Core aeration corrects this by pulling small plugs of soil out of the lawn, opening up the ground so your grass can absorb what it needs. Most lawns only need this about once a year.",
+   "has_cta": true,
+   "cta_label": "Ask About Core Aeration",
+   "cta_type": "Call",
+   "icon": "🪴",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "CA": {
+   "text": "Hi [FirstName], now's a great time for core aeration, it relieves soil compaction and lets water, oxygen, and nutrients reach your lawn's roots. Want to pair it with overseeding for the best results? Call or text us.",
+   "heading": "Is It Time for Core Aeration?",
+   "body": "Core aeration uses a machine to pull small plugs of soil from your lawn, relieving compaction and breaking up thatch buildup so water, oxygen, and nutrients can actually reach the root zone. Most lawns benefit from aeration about once a year, and pairing it with overseeding at the same time is often the most effective way to thicken up your turf.",
+   "has_cta": true,
+   "cta_label": "Schedule Core Aeration",
+   "cta_type": "Call",
+   "icon": "🌱",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "CG": {
+   "text": "Hi [FirstName], your Lawn Doctor technician spotted some crabgrass during today's visit and it's been treated. You may see it die back over the next couple weeks, that's expected.",
+   "heading": "Crabgrass Treated During Today's Visit",
+   "body": "Your technician noticed crabgrass in your lawn and treated it as part of today's application. It's normal to see the crabgrass yellow and die back over the next couple of weeks. If you're still seeing active growth after that, just let us know and we'll take another look.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌿",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "DSS": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed dry spots that look sprinkler-related rather than a lawn care issue. We offer a one-time sprinkler check, priced by lawn size, where we inspect for leaks, broken heads, and coverage gaps and adjust your system for even coverage. Want us to schedule one?",
+   "heading": "Dry Spots May Point to a Sprinkler Issue",
+   "body": "During today's visit, we noticed some dry patches that look more like an irrigation coverage gap than a lawn health issue. We offer a one-time sprinkler check, priced by the size of your lawn, where a technician inspects your system for leaks, broken heads, and coverage gaps, then adjusts it so your whole yard gets even coverage. Any repairs needed for leaks or broken heads are quoted separately.",
+   "has_cta": true,
+   "cta_label": "Schedule a Sprinkler Check",
+   "cta_type": "Call",
+   "icon": "💧",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "PPC": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed signs of pest activity around your property today. Our pest control program covers common invaders like ants, spiders, earwigs, and ticks around your home's perimeter. Call or text us to learn more.",
+   "heading": "A Pest Concern Worth a Closer Look",
+   "body": "Your technician flagged some pest activity during today's visit. Our pest control program treats the perimeter of your home against common invaders like ants, spiders, earwigs, silverfish, fleas, and ticks, helping keep them from making their way inside. We'd be glad to talk through what's going on and get you set up.",
+   "has_cta": true,
+   "cta_label": "Ask About Pest Control",
+   "cta_type": "Call",
+   "icon": "🕷️",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "GR": {
+   "text": "Hi [FirstName], your Lawn Doctor technician found grub damage in your lawn today. We offer a curative treatment to stop current damage, plus a preventative option to keep it from coming back. Call or text us to discuss.",
+   "heading": "Grub Damage Found in Your Lawn",
+   "body": "During today's visit, your technician identified grub damage. Grubs feed on grass roots below the surface, which can cause patches of turf to weaken, brown, and eventually pull up like loose carpet if left untreated. We offer a curative application to address existing damage, along with a preventative treatment to help stop grubs from becoming a recurring problem.",
+   "has_cta": true,
+   "cta_label": "Ask About Grub Control",
+   "cta_type": "Call",
+   "icon": "🪲",
+   "included_heading": "Grub Damage Found — Already Included in Your Plan",
+   "included_text": "Hi [FirstName], your Lawn Doctor technician found grub damage in your lawn today. Good news: grub control is already included in your Lawn Maintainer program, so we'll treat it at your next scheduled visit. No action needed on your end.",
+   "included_body": "During today's visit, your technician identified grub damage. Good news: grub control is already part of your Lawn Maintainer program, so this will be treated at your next scheduled round. No action needed on your end."
+  },
+  "HC": {
+   "text": "Hi [FirstName], your lawn has a heavier crabgrass presence than usual. It's been treated today, but a follow-up visit may help fully knock it back. We'll keep an eye on it.",
+   "heading": "Heavier Crabgrass Presence Treated Today",
+   "body": "Your technician noted a heavier-than-usual crabgrass presence during today's visit and treated it accordingly. Because the infestation is more established, it may take an additional visit to fully get ahead of it. We'll continue monitoring on future visits.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌿",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "HS": {
+   "text": "Hi [FirstName], we noticed heavy grass clippings left on your lawn after mowing. Clumped clippings can smother grass underneath, mulching or bagging more often can help.",
+   "heading": "Heavy Clippings Left on Your Lawn",
+   "body": "During today's visit, your technician noticed clumps of grass clippings left on the lawn from a recent mow. Heavy clumps can block sunlight and smother the grass beneath them if left too long. Mowing a bit more frequently, or bagging clippings when growth is heavy, will help keep this from becoming a recurring issue.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🍂",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "NCT": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed a heavy thatch layer or compacted soil today. Core aeration breaks up thatch and relieves compaction so water and nutrients can reach the roots again.",
+   "heading": "Thatch Buildup or Compaction Noticed",
+   "body": "Your technician observed a heavy thatch layer or compacted soil during today's visit. Core aeration addresses both by pulling small plugs of soil from the lawn, breaking up excess thatch and relieving compaction underneath. Most lawns benefit from this about once a year.",
+   "has_cta": true,
+   "cta_label": "Ask About Aeration",
+   "cta_type": "Call",
+   "icon": "🪴",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "LC": {
+   "text": "Hi [FirstName], your lawn is being mowed shorter than ideal for healthy turf. Raising your mower height can reduce stress and help your lawn stay greener and more resilient.",
+   "heading": "Your Lawn May Be Cut a Little Too Short",
+   "body": "During today's visit, your technician noticed your lawn is being mowed shorter than what's ideal for a healthy, resilient turf. Cutting too short stresses the grass, weakens its root system, and can make it more vulnerable to weeds, drought, and disease. Raising your mower deck height is a simple change that can make a noticeable difference.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🍂",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "PD": {
+   "text": "Hi [FirstName], your Lawn Doctor technician found signs of leaf blight or patch disease in your lawn today. We'd like to talk through treatment, reply here or give us a call.",
+   "heading": "Signs of Lawn Disease Found During Today's Visit",
+   "body": "Your technician identified signs of leaf blight or patch disease in your lawn during today's visit. Lawn diseases like these can spread if conditions stay favorable, so we'd recommend discussing treatment options sooner rather than later.",
+   "has_cta": true,
+   "cta_label": "Talk to Us About Treatment",
+   "cta_type": "Call",
+   "icon": "🦠",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "LE": {
+   "text": "Hi [FirstName], we noticed leaves covering parts of your lawn during today's visit. A layer of leaves can block sunlight and trap moisture, clearing them soon will help keep your lawn healthy.",
+   "heading": "Leaves Were Covering Areas of Your Lawn",
+   "body": "During today's visit, your technician noticed leaves covering portions of your lawn. A thick layer of leaves left in place can block sunlight and trap excess moisture underneath, which stresses the grass. Clearing them off in the next several days will help keep your lawn healthy through the season.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🍂",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "LG": {
+   "text": "Hi [FirstName], great news, your Lawn Doctor technician reported your lawn is looking great after today's visit! Keep up the good work.",
+   "heading": "Your Lawn Is Looking Great!",
+   "body": "Just a quick note from your technician, your lawn looked great during today's visit. Whatever you're doing (mowing, watering, or just letting our program do its work) it's paying off. Keep it up!",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌟",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "CAW": {
+   "text": "Hi [FirstName], you can view invoices, update payment info, and manage your account anytime at lawndoctorcustomer.com.",
+   "heading": "Manage Your Account Anytime, Online",
+   "body": "Did you know you can view your service history, check invoices, and update your payment information online, without needing to call in? It only takes a minute to set up and makes staying on top of your account easy.",
+   "has_cta": true,
+   "cta_label": "Manage My Account",
+   "cta_type": "Link",
+   "icon": "🔗",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "MBS": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed standing water on your property that mosquitos can breed in today. Removing it helps, and our Yard Armour treatment also targets mosquito eggs and larvae directly if you'd like extra protection.",
+   "heading": "Possible Mosquito Breeding Areas Noticed",
+   "body": "During today's visit, your technician noticed standing water that can serve as a mosquito breeding site. Removing standing water where you can is the first line of defense. Our Yard Armour treatment goes a step further, targeting eggs and larvae in these areas along with adult mosquitos, if you'd like more complete, ongoing protection.",
+   "has_cta": true,
+   "cta_label": "Ask About Mosquito Control",
+   "cta_type": "Call",
+   "icon": "🦟",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "MS": {
+   "text": "Hi [FirstName], noticing more mosquitos in your yard? Our Yard Armour treatment targets adult mosquitos, larvae, and eggs where they actually rest and breed, not just a general yard spray. Call or text us to learn more.",
+   "heading": "Take Back Your Yard From Mosquitos",
+   "body": "If mosquitos have been making it harder to enjoy your yard, our Yard Armour mosquito control treats standing water where they breed and applies a spray to the resting areas mosquitos actually use, the underside of leaves a few feet off the ground, targeting adults, larvae, and eggs together for more complete control than a general yard spray.",
+   "has_cta": true,
+   "cta_label": "Ask About Mosquito Control",
+   "cta_type": "Call",
+   "icon": "🦟",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "NW": {
+   "text": "Hi [FirstName], your lawn is showing signs it needs more water. A little extra watering over the next few days should help it bounce back. Questions? Just reply here.",
+   "heading": "Your Lawn Could Use a Little Extra Water",
+   "body": "During your recent service, our technician noticed some dry stress in your lawn. This is common during warmer stretches and usually clears up with consistent watering. If you're not sure how much or how often to water for your lawn type, just reply to this email and we're happy to help.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "💧",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "NWU": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed dry patches that may point to a sprinkler coverage issue. We offer a one-time sprinkler check, priced by lawn size, to find leaks, broken heads, and coverage gaps and get your system adjusted. Want us to take a look? Reply YES or give us a call.",
+   "heading": "Dry Patches Could Mean a Sprinkler Coverage Gap",
+   "body": "During your last visit, we noticed dry areas that often point to uneven sprinkler coverage rather than just needing more water. We offer a one-time sprinkler check, priced by the size of your lawn, where we inspect for leaks, broken heads, and coverage gaps, then adjust your system for even coverage across the yard. Any repairs needed are quoted separately.",
+   "has_cta": true,
+   "cta_label": "Schedule a Sprinkler Check",
+   "cta_type": "Call",
+   "icon": "💧",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "NC": {
+   "text": "Hi [FirstName], welcome to Lawn Doctor! [TechnicianName] performed your first service today. We're glad to have you, and we'll be in touch after every visit with updates on your lawn.",
+   "heading": "Welcome to Lawn Doctor, [FirstName]!",
+   "body": "We're excited to have you as a new customer. [TechnicianName] completed your first service today and will be your go-to technician for upcoming visits. After every service, you'll get a quick update like this one letting you know what we saw and what, if anything, needs attention. If you ever have questions about your lawn or your account, just reply to this email or give us a call.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "👋",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "OW": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed signs of overwatering in your lawn. Cutting back slightly on watering can actually help it look and grow better.",
+   "heading": "Signs of Overwatering Noticed",
+   "body": "During today's visit, your technician noticed signs that your lawn may be getting more water than it needs. Overwatering can lead to shallow roots, disease, and fungus issues, so cutting back slightly on frequency (while watering a bit deeper each time) usually helps.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "💧",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "PSF": {
+   "text": "Hi [FirstName], your Lawn Doctor technician power seeded your entire lawn today. Water lightly and consistently for the next 2-3 weeks and avoid mowing until new grass reaches mowing height.",
+   "heading": "Your Whole Lawn Was Power Seeded Today",
+   "body": "Today's visit included power seeding across your entire lawn to help thicken and fill it in. For the best results, keep the lawn consistently moist with light, frequent watering over the next 2-3 weeks, and hold off on mowing until the new grass reaches normal height.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌱",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "RA": {
+   "text": "Hi [FirstName], today's application was completed despite some rain. Products used are formulated to still be effective, no action needed on your end.",
+   "heading": "Your Service Was Completed, Even With the Rain",
+   "body": "Just a quick note that today's application was completed even though it was raining at the time. The products we use are designed to remain effective in these conditions, so there's nothing further you need to do.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌧️",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "SA": {
+   "text": "Hi [FirstName], we seeded some areas of your lawn today. Keep those spots consistently moist for the next 2-3 weeks and avoid heavy foot traffic while new grass establishes.",
+   "heading": "Some Areas of Your Lawn Were Seeded Today",
+   "body": "Your technician seeded specific areas of your lawn during today's visit. To help the new seed establish, keep those areas consistently moist (light, frequent watering works best) for the next 2-3 weeks, and try to limit foot traffic on the seeded spots during that time.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌱",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "PS": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed thin areas that would benefit from power seeding, which uses our Turf Tamer machine to get seed into direct soil contact for better results than seed alone. Call or text us for details.",
+   "heading": "Your Lawn Could Benefit From Seeding",
+   "body": "During today's visit, your technician noticed thin or sparse areas that would benefit from seeding. We use a Turf Tamer power seeder to get seed into direct contact with the soil, which germinates far better than seed just spread on top. Getting ahead of this now helps prevent bare spots from turning into bigger problem areas.",
+   "has_cta": true,
+   "cta_label": "Ask About Seeding",
+   "cta_type": "Call",
+   "icon": "🌱",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "SH": {
+   "text": "Hi [FirstName], your lawn has significant shaded areas which can affect grass growth. We can recommend shade-tolerant approaches, reply if you'd like tips.",
+   "heading": "Shaded Areas May Be Affecting Your Lawn",
+   "body": "Your technician noted that significant portions of your lawn are shaded, which naturally limits how thick and green grass can grow in those spots compared to full-sun areas. There are still things that can help, like adjusted seed blends or mowing height, happy to talk through options if you're interested.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌲",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "NCI": {
+   "text": "Hi [FirstName], good news, your Lawn Doctor technician noted your lawn is showing real improvement since our last visit. Keep it up!",
+   "heading": "Your Lawn Is Showing Real Improvement",
+   "body": "We wanted to pass along some good news, your technician noted noticeable improvement in your lawn's condition since the last visit. Whatever's been working, it's paying off, and we'll keep monitoring progress on future visits.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "📈",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "SW": {
+   "text": "Hi [FirstName], your Lawn Doctor technician found signs of sod webworm activity in your lawn today. Treated as part of today's visit, we'll keep monitoring for you.",
+   "heading": "Sod Webworm Activity Found and Treated",
+   "body": "During today's visit, your technician identified signs of sod webworm activity and treated the affected area. We'll continue to monitor your lawn on future visits to make sure it's fully under control.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🐛",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "SE": {
+   "text": "Hi [FirstName], your Lawn Doctor technician applied a soil enrichment treatment today, part of our 2-application annual program that conditions your soil for stronger roots and better nutrient uptake.",
+   "heading": "Soil Enrichment Applied to Your Lawn",
+   "body": "As part of today's visit, your technician applied a soil enrichment treatment. This conditions your soil so it holds water better, loosens compaction, and helps your lawn's roots absorb nutrients more efficiently. It's part of our 2-application annual program, timed around spring and before the heat of summer for the best results.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🪴",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "NCE": {
+   "text": "Hi [FirstName], during a recent check-up your Lawn Doctor technician recommended our soil enrichment program (2 applications a year to condition your soil and strengthen roots). Want to learn more? Call or text us.",
+   "heading": "Soil Enrichment Recommended for Your Lawn",
+   "body": "During a recent visit, your technician recommended our soil enrichment program. It's a 2-application annual treatment that conditions your soil, improving water retention and helping your lawn's roots absorb nutrients more efficiently, especially useful alongside your regular lawn care.",
+   "has_cta": true,
+   "cta_label": "Ask About Soil Enrichment",
+   "cta_type": "Call",
+   "icon": "🪴",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "CVR": {
+   "text": "Hi [FirstName], your Lawn Doctor technician sprayed weeds in your lawn today. You may see them yellow and die back over the next 1-2 weeks, that's expected.",
+   "heading": "Weeds Sprayed During Today's Visit",
+   "body": "Your technician treated weeds in your lawn as part of today's visit. It's normal to see treated weeds turn yellow or brown and die back over the next 1-2 weeks. If you're still seeing active weeds after that, let us know and we'll take another look.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌿",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "SBR": {
+   "text": "Hi [FirstName], your Lawn Doctor technician sprayed weeds in your lawn today. You may see them yellow and die back over the next 1-2 weeks, that's expected.",
+   "heading": "Weeds Sprayed During Today's Visit",
+   "body": "Your technician treated weeds in your lawn as part of today's visit. It's normal to see treated weeds turn yellow or brown and die back over the next 1-2 weeks. If you're still seeing active weeds after that, let us know and we'll take another look.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🌿",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "TS": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noted your trees and shrubs could benefit from our Tree & Shrub Care program, covering inspections, disease treatment, pest control, and customized fertilization. Call or text us to learn more.",
+   "heading": "Give Your Trees and Shrubs Some Extra Care",
+   "body": "During today's visit, your technician noted that your trees and shrubs could benefit from a dedicated care program, separate from your lawn service. Our Tree & Shrub Care program includes regular health inspections, treatment for common diseases, protection against pests like grubs, fire ants, sod webworms, and armyworms, plus a customized fertilization plan tailored to your landscaping.",
+   "has_cta": true,
+   "cta_label": "Ask About Tree & Shrub Care",
+   "cta_type": "Call",
+   "icon": "🌳",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  },
+  "WAS": {
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed wasp activity on your property today. Our pest control treatment covers wasps plus the full exterior perimeter of your home, want us to get you scheduled? Call or text us.",
+   "heading": "Wasp Activity Noticed on Your Property",
+   "body": "During today's visit, your technician noticed wasp activity around your property. Our pest control service doesn't just spot-treat the wasps, it covers the entire exterior perimeter of your home in the same visit, helping keep other common pests from moving in too. It's part of our 6-application annual Pest Control program, so you get season-long protection rather than a one-time fix.",
+   "has_cta": true,
+   "cta_label": "Ask About Pest Control",
+   "cta_type": "Call",
+   "icon": "🐝",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
+  }
+ }
+}

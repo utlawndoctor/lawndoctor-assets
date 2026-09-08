@@ -775,6 +775,18 @@
    "included_heading": null,
    "included_text": null,
    "included_body": null
+  },
+  "SBW": {
+   "text": "Hi [FirstName], your Lawn Doctor technician sprayed weeds in your lawn today. You may see them yellow and die back over the next 1-2 weeks, that's expected.",
+   "heading": "Weeds Sprayed During Today's Visit",
+   "body": "Your technician treated weeds in your lawn as part of today's visit. It's normal to see treated weeds turn yellow or brown and die back over the next 1-2 weeks. If you're still seeing active weeds after that, let us know and we'll take another look.",
+   "has_cta": false,
+   "cta_label": null,
+   "cta_type": null,
+   "icon": "🧴",
+   "included_heading": null,
+   "included_text": null,
+   "included_body": null
   }
  }
 }

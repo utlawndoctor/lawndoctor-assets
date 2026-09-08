@@ -753,21 +753,21 @@
    "included_body": null
   },
   "OLW": {
-   "text": "Hi [FirstName], your technician noticed weeds growing along your driveway, sidewalks, or curb. Our Off-Lawn Weed Control service treats these areas separately from your regular lawn service. Call or text us to learn more.",
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed weeds growing along your driveway, sidewalks, or curb. Our Off-Lawn Weed Control service treats these areas separately from your regular lawn service. Call or text us to learn more.",
    "heading": "Weeds Noticed Along Your Driveway or Walkways",
    "body": "During today's visit, your technician noticed weeds growing in cracks and edges along your driveway, sidewalks, or curb, areas not covered by your regular lawn treatment. Our Off-Lawn Weed Control service targets these spots directly, keeping the hardscape areas of your property looking as clean as your lawn.",
    "has_cta": true,
    "cta_label": "Ask About Off-Lawn Weed Control",
    "cta_type": "Call",
-   "icon": "🛤️",
+   "icon": "🌱",
    "included_heading": null,
    "included_text": null,
    "included_body": null
   },
   "BWC": {
-   "text": "Hi [FirstName], your technician noticed weeds growing in your mulch or flower beds today. Our Bed Weed Control service treats these areas directly. Call or text us to learn more.",
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed weeds growing in your mulch or flower beds today. Our Bed Weed Control service treats these areas directly. Call or text us to learn more.",
    "heading": "Weeds Noticed in Your Garden Beds",
-   "body": "During today's visit, your technician noticed weeds coming up in your mulch or flower beds, areas that aren't covered by your regular lawn treatment. Our Bed Weed Control service targets these beds directly, helping keep them clean without disturbing your plantings.",
+   "body": "During today's visit, your technician noticed weeds coming up in your mulch or flower beds, areas that aren't covered by your regular lawn treatment. Our Bed Weed Control service targets these beds directly, helping keep them clean without disturbing your plants.",
    "has_cta": true,
    "cta_label": "Ask About Bed Weed Control",
    "cta_type": "Call",

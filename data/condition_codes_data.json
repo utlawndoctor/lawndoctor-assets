@@ -425,8 +425,8 @@
    "cta_type": "Call",
    "icon": "🪲",
    "included_heading": "Grub Damage Found — Already Included in Your Plan",
-   "included_text": "Hi [FirstName], your Lawn Doctor technician found grub damage in your lawn today. Good news: grub control is already included in your Lawn Maintainer program, so we'll treat it at your next scheduled visit. No action needed on your end.",
-   "included_body": "During today's visit, your technician identified grub damage. Good news: grub control is already part of your Lawn Maintainer program, so this will be treated at your next scheduled round. No action needed on your end."
+   "included_text": "Hi [FirstName], your Lawn Doctor technician found grub damage in your lawn today. Good news: grub control is already included in your Lawn Maintainer program, so we'll take care of it. No action needed on your end.",
+   "included_body": "During today's visit, your technician identified grub damage. Good news: grub control is already part of your Lawn Maintainer program, so it's already covered. No action needed on your end."
   },
   "HC": {
    "text": "Hi [FirstName], your lawn has a heavier crabgrass presence than usual. It's been treated today, but a follow-up visit may help fully knock it back. We'll keep an eye on it.",

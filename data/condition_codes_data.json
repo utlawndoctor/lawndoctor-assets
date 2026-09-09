@@ -305,6 +305,18 @@
    "heading": "Weed Control",
    "text": "Weed Control Only",
    "email": "Today's visit was a Weed Control Only application."
+  },
+  "OL5": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #5",
+   "text": "Off Lawn Weed Control (treatment #5 of 5)",
+   "email": "Today's visit was treatment #5 of your Off Lawn Weed Control Program for this year."
+  },
+  "OVS": {
+   "emoji": "🌱",
+   "heading": "Overseed",
+   "text": "Overseed (no aeration)",
+   "email": "Today's visit included overseeding to help thicken up your lawn. No core aeration was performed as part of this treatment."
   }
  },
  "condition_codes": {

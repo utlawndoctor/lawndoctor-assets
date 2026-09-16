@@ -333,12 +333,12 @@
    "included_body": null
   },
   "TL": {
-   "text": "Hi [FirstName], your Lawn Doctor technician performed aeration and overseeding on your lawn today. Water lightly and consistently over the next 2-3 weeks to help new seed establish. Avoid mowing until the new grass reaches mowing height.",
-   "heading": "Your Lawn Was Aerated and Overseeded Today",
-   "body": "During today's visit, your technician aerated your lawn and applied new seed to help thicken it up. For the best results, keep the seeded areas consistently moist (light, frequent watering) for the next 2-3 weeks, and hold off on mowing until the new grass reaches normal mowing height. You may also see small soil plugs on the lawn for a few days, that's normal and will break down on its own.",
-   "has_cta": false,
-   "cta_label": null,
-   "cta_type": null,
+   "text": "Hi [FirstName], your Lawn Doctor technician noticed your lawn could benefit from aeration and overseeding to help thicken it up and improve root health. Call or text us to learn more.",
+   "heading": "Your Lawn Could Use Aeration & Overseeding",
+   "body": "During today's visit, your technician noticed your lawn could benefit from core aeration paired with overseeding. Aeration relieves soil compaction so water, air, and nutrients reach the roots, while overseeding fills in thin areas to help thicken up your lawn. Together, they're one of the best ways to improve your lawn's overall health.",
+   "has_cta": true,
+   "cta_label": "Ask About Aeration & Overseeding",
+   "cta_type": "Call",
    "icon": "🌱",
    "included_heading": null,
    "included_text": null,

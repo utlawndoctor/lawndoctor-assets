@@ -317,6 +317,12 @@
    "heading": "Overseed",
    "text": "Overseed (no aeration)",
    "email": "Today's visit included overseeding to help thicken up your lawn. No core aeration was performed as part of this treatment."
+  },
+  "SSF": {
+   "emoji": "🎯",
+   "heading": "Spot Seed",
+   "text": "Spot Seed",
+   "email": "Today's visit included spot seeding in areas of your lawn that needed extra coverage."
   }
  },
  "condition_codes": {

@@ -2,20 +2,39 @@
   "_note": "After Care card wording for the after-service email. Confirmed by Ty 2026-10-09. Keys are categories; service_codes lists which RealGreen service codes trigger each category.",
   "lawn": {
     "label": "Lawn Care",
-    "icon": "💧",
-    "service_codes": ["M1", "M2", "M3", "M4", "M5", "M6"],
+    "icon": "✅",
+    "service_codes": [
+      "M1",
+      "M2",
+      "M3",
+      "M4",
+      "M5",
+      "M6"
+    ],
     "body": "Today's treatment should be watered into the soil by tomorrow morning, either by rainfall or your sprinklers. Please keep children and pets off the lawn until it's dry or has been watered in."
   },
   "pest": {
     "label": "Pest Control",
-    "icon": "🏠",
-    "service_codes": ["PP1", "PP2", "PP3", "PP4", "PP5"],
+    "icon": "🐜",
+    "service_codes": [
+      "PP1",
+      "PP2",
+      "PP3",
+      "PP4",
+      "PP5"
+    ],
     "body": "Unlike your lawn treatments, this doesn't need to be watered in, watering it too soon can actually wash away the barrier before it has a chance to work. Please keep children and pets off treated areas until the product has fully dried, typically within a few hours depending on weather, but the surest sign is that it's visibly dry to the touch."
   },
   "tree": {
     "label": "Tree & Shrub",
     "icon": "🌳",
-    "service_codes": ["TS1", "TS2", "TS3", "TS4", "TS5"],
+    "service_codes": [
+      "TS1",
+      "TS2",
+      "TS3",
+      "TS4",
+      "TS5"
+    ],
     "body": "Please keep children and pets away from treated trees and shrubs until the application has fully dried, typically within a few hours depending on weather."
   }
 }

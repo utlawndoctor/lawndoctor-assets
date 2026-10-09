@@ -1,0 +1,30 @@
+{
+  "_readme": "Active ingredient text shown on the customer service details page. Keyed by RealGreen product ID. Only add an ingredient line when it matches what corporate's Service Summary Report shows or the product label. If a product is not listed here, the page leaves the Active ingredient line off. RealGreen's API has no ingredient field, so this file is the source.",
+  "products": {
+    "1071": { "name": "T-Zone", "epa": "2217-976", "ingredient": "2, 4-D", "source": "corporate Service Summary Report" },
+    "1070": { "name": "Tenacity", "epa": "100-1267", "ingredient": "Mesotrione", "source": "corporate Service Summary Report" }
+  },
+  "needs_review": [
+    { "id": 4, "name": "Trimec LAF 637", "epa": "2217-710" },
+    { "id": 40, "name": "Momentum FX2", "epa": "10155225" },
+    { "id": 60, "name": "Talstar Flowable", "epa": "15084902" },
+    { "id": 62, "name": "30-0-10 with Dimension", "epa": "10404-85" },
+    { "id": 63, "name": "Trimec LAF 1.0", "epa": "2217-710" },
+    { "id": 64, "name": "Trimec LAF", "epa": "2217-710" },
+    { "id": 1051, "name": "LESCO THREE WAY", "epa": "10446225" },
+    { "id": 1053, "name": "DEFENDOR", "epa": "62719-560" },
+    { "id": 1054, "name": "EAGLE 20EW GROUP 3", "epa": "62719-463" },
+    { "id": 1055, "name": "CONSERVE SC", "epa": "62719-291" },
+    { "id": 1056, "name": "GALLERY SC", "epa": "62719-658" },
+    { "id": 1057, "name": "DISSMISS TURF HERBICIDE", "epa": "279-3295" },
+    { "id": 1065, "name": "22-0-0 w/ Dithiopyr", "epa": "53883-207-72751" },
+    { "id": 1066, "name": "Trimec", "epa": "2217-656" },
+    { "id": 1067, "name": "Dimension", "epa": "62719-542" },
+    { "id": 1072, "name": "BIfen XTS", "epa": "53883-189" },
+    { "id": 1074, "name": "Eagle 20EW", "epa": "62719-165" },
+    { "id": 1075, "name": "Tetrino", "epa": "432-1591" },
+    { "id": 1076, "name": "Dylox", "epa": "432-1308" },
+    { "id": 1079, "name": "Crew", "epa": "62719-742" },
+    { "id": 1080, "name": "Tebuconazole 3.6", "epa": "42750-99" }
+  ]
+}

@@ -1,4 +1,4 @@
-# CAW registration email copy (approved structure; Send 2 and 3 pending Ty review)
+# CAW registration email copy (approved by Ty 2026-10-09)
 
 Send 1 (3 days after first completed service)
 - Headline: Your customer portal is ready, {{FirstName}}!

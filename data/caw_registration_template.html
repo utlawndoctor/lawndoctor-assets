@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+<style>
+.header-desktop { display:block; }
+.header-mobile { display:none; }
+@media only screen and (max-width:480px) {
+  .header-desktop { display:none !important; }
+  .header-mobile { display:block !important; }
+}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#f2f2f2;font-family:Arial,Helvetica,sans-serif;">
+<!--
+Customer portal registration email (replaces the corporate "Online Registration Reminder").
+Placeholders: {{FirstName}} {{ServiceAddress}} {{Headline}} {{Subline}} {{Intro}} {{CustomerNumber}} {{HouseNumber}} {{Zip}} {{BranchPhone}}
+Send 1 (3 days after first completed service): Headline "Your customer portal is ready, {{FirstName}}!"
+Send 2 (about day 10): Headline "A quick reminder, {{FirstName}}"
+Send 3 (about day 24, last): Headline "Last reminder, {{FirstName}}"
+Inline images (Mailgun cid): lawndoctor-thumb-badge.png, lawndoctor-logo-badge.png
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f2f2;padding:24px 0;">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:4px;overflow:hidden;">
+
+<tr><td style="background:#00623a;height:5px;line-height:5px;font-size:0;">&nbsp;</td></tr>
+
+<tr><td style="background:#008349;padding:18px 24px;">
+
+<div class="header-desktop">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td valign="top">
+<div style="color:#ffffff;font-size:23px;font-weight:bold;letter-spacing:-0.2px;">{{Headline}}</div>
+<div style="color:#d7ecdf;font-size:14px;margin-top:6px;">{{Subline}}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+<tr><td style="background:#f0f8f3;border-radius:8px;padding:8px 14px;">
+<div style="color:#00623a;font-size:10px;font-weight:bold;letter-spacing:1px;">YOUR ACCOUNT</div>
+<div style="color:#231f20;font-size:13px;font-weight:bold;margin-top:2px;">{{ServiceAddress}}</div>
+</td></tr>
+</table>
+</td>
+<td width="146" align="right" valign="top">
+<table role="presentation" cellpadding="0" cellspacing="0">
+<tr><td style="padding:0;">
+<img src="cid:lawndoctor-thumb-badge.png" width="110" alt="Lawn Doctor" style="display:block;">
+</td></tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+
+<div class="header-mobile">
+<table role="presentation" cellpadding="0" cellspacing="0">
+<tr><td style="padding:0;">
+<img src="cid:lawndoctor-thumb-badge.png" width="110" alt="Lawn Doctor" style="display:block;">
+</td></tr>
+</table>
+<div style="color:#ffffff;font-size:23px;font-weight:bold;letter-spacing:-0.2px;margin-top:14px;">{{Headline}}</div>
+<div style="color:#d7ecdf;font-size:14px;margin-top:6px;">{{Subline}}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+<tr><td style="background:#f0f8f3;border-radius:8px;padding:8px 14px;">
+<div style="color:#00623a;font-size:10px;font-weight:bold;letter-spacing:1px;">YOUR ACCOUNT</div>
+<div style="color:#231f20;font-size:13px;font-weight:bold;margin-top:2px;">{{ServiceAddress}}</div>
+</td></tr>
+</table>
+</div>
+
+</td></tr>
+
+<tr><td style="background:#00623a;height:5px;line-height:5px;font-size:0;">&nbsp;</td></tr>
+
+<tr><td style="padding:24px 24px 8px 24px;color:#231f20;font-size:14px;line-height:1.5;">
+Hi {{FirstName}}, {{Intro}}
+</td></tr>
+
+<tr><td style="padding:22px 24px 6px 24px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #008349;border-radius:14px;">
+<tr><td style="background:#008349;padding:12px 22px;border-radius:11px 11px 0 0;">
+<div style="color:#ffffff;font-size:11px;font-weight:bold;letter-spacing:1.2px;">WHAT YOU CAN DO IN THE PORTAL</div>
+</td></tr>
+<tr><td style="padding:18px 22px 20px 22px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td width="22" valign="top" style="color:#008349;font-size:15px;font-weight:bold;line-height:1.4;">&#10003;</td><td style="color:#231f20;font-size:14px;line-height:1.4;padding-bottom:10px;"><b>Update your payment information</b> any time you need to</td></tr>
+<tr><td width="22" valign="top" style="color:#008349;font-size:15px;font-weight:bold;line-height:1.4;">&#10003;</td><td style="color:#231f20;font-size:14px;line-height:1.4;padding-bottom:10px;"><b>View your account and service history</b></td></tr>
+<tr><td width="22" valign="top" style="color:#008349;font-size:15px;font-weight:bold;line-height:1.4;">&#10003;</td><td style="color:#231f20;font-size:14px;line-height:1.4;padding-bottom:10px;"><b>Request a service call</b> or add a new service</td></tr>
+<tr><td width="22" valign="top" style="color:#008349;font-size:15px;font-weight:bold;line-height:1.4;">&#10003;</td><td style="color:#231f20;font-size:14px;line-height:1.4;"><b>Get helpful lawn care tips</b></td></tr>
+</table>
+</td></tr>
+</table>
+</td></tr>
+
+<tr><td style="padding:16px 24px 6px 24px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #008349;border-radius:14px;">
+<tr><td style="background:#008349;padding:12px 22px;border-radius:11px 11px 0 0;">
+<div style="color:#ffffff;font-size:11px;font-weight:bold;letter-spacing:1.2px;">HOW TO REGISTER (TAKES ABOUT A MINUTE)</div>
+</td></tr>
+<tr><td style="padding:18px 22px 22px 22px;">
+<div style="color:#231f20;font-size:14px;line-height:1.5;margin-bottom:12px;">Tap the button below and enter these details:</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f8f3;border-radius:10px;">
+<tr><td style="padding:14px 16px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td style="color:#555555;font-size:12px;padding:3px 0;">Customer number</td><td align="right" style="color:#231f20;font-size:14px;font-weight:bold;padding:3px 0;">{{CustomerNumber}}</td></tr>
+<tr><td style="color:#555555;font-size:12px;padding:3px 0;">House number only</td><td align="right" style="color:#231f20;font-size:14px;font-weight:bold;padding:3px 0;">{{HouseNumber}}</td></tr>
+<tr><td style="color:#555555;font-size:12px;padding:3px 0;">ZIP code</td><td align="right" style="color:#231f20;font-size:14px;font-weight:bold;padding:3px 0;">{{Zip}}</td></tr>
+<tr><td style="color:#555555;font-size:12px;padding:3px 0;">Email address</td><td align="right" style="color:#231f20;font-size:14px;font-weight:bold;padding:3px 0;">The one you want to log in with</td></tr>
+</table>
+</td></tr>
+</table>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;">
+<tr><td align="center">
+<a href="https://lawndoctorcustomer.com/Account/Register" style="background:#008349;color:#ffffff;text-decoration:none;font-size:15px;font-weight:bold;padding:14px 34px;border-radius:30px;display:inline-block;">Register now</a>
+</td></tr>
+</table>
+<div style="color:#555555;font-size:12px;line-height:1.5;text-align:center;margin-top:14px;">Already registered? <a href="https://lawndoctorcustomer.com" style="color:#008349;">Log in here</a>.</div>
+</td></tr>
+</table>
+</td></tr>
+
+<tr><td style="padding:18px 24px 20px 24px;color:#231f20;font-size:14px;text-align:center;line-height:1.5;">
+Need a hand registering? Just reply to this email or call us at {{BranchPhone}}.
+</td></tr>
+
+<tr><td style="padding:0 24px 24px 24px;border-top:1px solid #eeeeee;padding-top:22px;">
+<img src="cid:lawndoctor-logo-badge.png" width="212" style="display:block;margin-bottom:10px;" alt="Lawn Doctor">
+<div style="color:#008349;font-weight:bold;font-size:13px;margin-left:18px;">Provo-Spanish Fork-Orem</div>
+<div style="color:#555;font-size:12px;margin-top:2px;margin-left:18px;">P.O. Box 543, Spanish Fork, UT 84660</div>
+<div style="color:#555;font-size:12px;margin-left:18px;">Phone: {{BranchPhone}}</div>
+<div style="color:#555;font-size:12px;margin-left:18px;">Website: <a href="https://utlawndoctor.com" style="color:#008349;">utlawndoctor.com</a></div>
+<div style="color:#888888;font-size:11px;line-height:1.5;margin-top:16px;margin-left:18px;">You are receiving this because you are a Lawn Doctor customer. We will send a couple of reminders at most. If you would rather not get these, reply "stop" and we will take care of it.</div>
+</td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>

@@ -222,6 +222,12 @@
    "text": "Hi [FirstName], we completed your Perimeter Pest Control treatment today around your home's exterior. Please keep kids and pets off treated areas until the product has dried.",
    "email": "Today's visit was your Perimeter Pest Control treatment (visit #5 of the season), applied around the exterior of your home to create a protective barrier against common pests like ants, spiders, and other invaders."
   },
+  "PP6": {
+   "emoji": "🐜",
+   "heading": "Perimeter Pest Control #6",
+   "text": "Hi [FirstName], we completed your Perimeter Pest Control treatment today around your home's exterior. Please keep kids and pets off treated areas until the product has dried.",
+   "email": "Today's visit was your Perimeter Pest Control treatment (visit #6 of the season), applied around the exterior of your home to create a protective barrier against common pests like ants, spiders, and other invaders."
+  },
   "PSS": {
    "emoji": "🌱",
    "heading": "Power Seeding (Spring)",

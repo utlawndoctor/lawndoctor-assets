@@ -2,7 +2,7 @@
 One or two sentence versions of each service, based on Ty's service breakdown doc.
 Use these to fill the "[1-2 sentence description]" placeholder in the templates.
 
-**Lawn Maintainer Program**
+**Lawn Maintainer Program** (LMP/M1)
 Our core fertilizer and weed control program: 6 visits, spaced 5 to 7 weeks apart, from
 March through November, covering 7 services in total. Each visit is tailored to the season,
 from pre-emergent and fertilizer in spring to a winterizing fertilizer in the final round.
@@ -94,18 +94,7 @@ watering rather than being worked into holes in the soil. Watering is critical t
 We'll give you written instructions on exactly how to water after service so the seed takes.
 
 **Sprinkler Blow Out**
-Sprinkler Blowout and Winterization
-This service clears every line in your irrigation system before winter to protect it from freeze
-damage. Here's what happens:
-- Shut down and drain the main water supply
-- Clear each zone individually with a professional-grade air compressor, closest to farthest
-- Run each zone in short cycles to fully purge water without overheating components or
-  over-pressurizing pipes and heads
-- Drain and protect the backflow preventer, the part most vulnerable to freeze damage
-
-We calibrate air pressure to your system's pipe material and zone layout, enough to fully clear
-the lines without the cracked pipes and blown-out heads a rushed, one-size-fits-all blowout can
-cause. Done once each fall, before winter arrives.
+This service clears every line in your irrigation system before winter to protect it from freeze damage. We shut down and drain the main water supply, clear each zone individually with a professional-grade air compressor, closest to farthest, run each zone in short cycles to fully purge water without overheating components or over-pressurizing pipes and heads, and drain the backflow preventer. We calibrate air pressure to your system's pipe material and zone layout, enough to fully clear the lines without the cracked pipes and blown-out heads a rushed, one-size-fits-all blowout can cause. Done once each fall, before winter arrives.
 
 **Weed Control Only**
 Herbicide treatment focused specifically on weeds, without the full fertilizer program.

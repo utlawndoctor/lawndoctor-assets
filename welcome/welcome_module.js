@@ -27,8 +27,9 @@ async function wCode(env, id) {
 async function wSeed(env, cutoff) {
   let off = parseInt(await wGet(env, "w_seed_off", "0"), 10) || 0, pages = 0;
   while (pages < 6) {
-    const r = await api(env, "/Program/Search?Records=200&Offset=" + off);
+    const r = await api(env, "/Program/Search?DateSoldMinValue=2000-01-01T00:00:00&DateSoldMaxValue=" + cutoff + "T00:00:00&Records=200&Offset=" + off);
     if (!r.ok || !Array.isArray(r.json)) throw new Error("seed HTTP " + r.status + " " + r.text);
+    if (!r.json.length && off === 0) throw new Error("seed returned no programs on the first page");
     if (!r.json.length) { await wSet(env, "w_seed", "done"); return "seed done"; }
     for (const p of r.json) {
       if (p.dateSold && String(p.dateSold).slice(0, 10) < cutoff) {
@@ -74,7 +75,7 @@ function wRender(kind, tpl, first, address, progs) {
     return r.replace(/\{\{ProgramName\}\}/g, function () { return esc(p.name); })
       .replace(/\{\{ProgramPricePerService\}\}/g, function () { return money(p.std) + "/service"; })
       .replace(/\{\{ProgramPriceTotal\}\}/g, function () { return money(p.price) + "/yr"; })
-      .replace(/\{\{ProgramDescription\}\}/g, function () { return esc(p.blurb); });
+      .replace(/\{\{ProgramDescription\}\}/g, function () { return wDescHtml(p.blurb); });
   }).join("\n");
   h = h.replace(/<!-- PROGRAM_ROW_REFERENCE_START[\s\S]*?PROGRAM_ROW_REFERENCE_END -->/, "");
   h = h.replace("{{PROGRAM_ROWS}}", function () { return rows; });
@@ -86,13 +87,45 @@ function wRender(kind, tpl, first, address, progs) {
   return h;
 }
 
+function wDescFor(md, code, name) {
+  if (!md) return null;
+  const parts = md.split(/\n(?=\*\*)/);
+  const blocks = [];
+  for (const b of parts) {
+    const m = b.match(/^\*\*(.+?)\*\*([^\n]*)\n([\s\S]*)$/);
+    if (!m) continue;
+    const tm = m[2].match(/\(([A-Z0-9\/]+)/);
+    blocks.push({ head: m[1].trim(), codes: tm ? tm[1].split("/") : null, body: m[3].trim() });
+  }
+  for (const b of blocks) if (b.codes && b.codes.indexOf(code) >= 0) return b.body;
+  if (!name) return null;
+  for (const b of blocks) if (!b.codes && b.head === name) return b.body;
+  for (const b of blocks) if (!b.codes && (b.head + " Program" === name || name + " Program" === b.head)) return b.body;
+  return null;
+}
+
+function wDescHtml(t) {
+  const items = []; let para = [];
+  const flush = function () { if (para.length) { items.push({ t: "p", h: esc(para.join(" ")) }); para = []; } };
+  const lines = String(t).split("\n");
+  lines.forEach(function (ln, i) {
+    if (!ln.trim()) { flush(); return; }
+    if (/^- /.test(ln)) { flush(); items.push({ t: "b", h: "&bull; " + esc(ln.slice(2).trim()) }); return; }
+    if (/^\s+\S/.test(ln) && !para.length && items.length && items[items.length - 1].t === "b") { items[items.length - 1].h += " " + esc(ln.trim()); return; }
+    para.push(ln.trim());
+    if (i === 0 && ln.trim().length < 60 && !/[.:!?]$/.test(ln.trim())) flush();
+  });
+  flush();
+  return items.map(function (it, i) { return (i === 0 ? "" : (items[i - 1].t === "b" && it.t === "b" ? "<br>" : "<br><br>")) + it.h; }).join("");
+}
+
 async function wContent(env) {
   const tpls = {
     welcome: await getText(env, "w_tpl_welcome", W_RAW + "welcome_template.html", false),
     addon: await getText(env, "w_tpl_addon", W_RAW + "new_service_template.html", false)
   };
   const names = await getText(env, "w_names", W_RAW + "service_code_map.json", true);
-  const blurbs = await getText(env, "w_blurbs", W_RAW + "program_blurbs.json", true);
+  const blurbs = await getText(env, "w_desc", W_RAW + "service_descriptions.md", false);
   if (!tpls.welcome || !tpls.addon || !names || !blurbs) throw new Error("welcome content unavailable");
   return { tpls: tpls, names: names, blurbs: blurbs };
 }
@@ -128,7 +161,7 @@ async function wTest(env) {
   const t = JSON.parse(raw);
   const ct = await wContent(env);
   const progs = t.programs.map(function (p) {
-    return { code: p.code, name: ct.names[p.code] || p.code, blurb: ct.blurbs[p.code] || "", std: p.std, price: p.price };
+    return { code: p.code, name: ct.names[p.code] || p.code, blurb: wDescFor(ct.blurbs, p.code, ct.names[p.code]) || "", std: p.std, price: p.price };
   });
   const kind = t.kind === "addon" ? "addon" : "welcome";
   const html = wRender(kind, ct.tpls[kind], t.first || "Ty", t.address || "123 Example Street, Provo", progs);
@@ -151,7 +184,8 @@ async function wEvaluate(env, ct, cutoff, custNum) {
   const pending = new Set((await env.DB.prepare("SELECT program_id FROM wprog WHERE customer_number=? AND event_id IS NULL").bind(custNum).all()).results.map(function (r) { return r.program_id; }));
   const ds = function (p) { return p.dateSold ? String(p.dateSold).slice(0, 10) : ""; };
   const known = await env.DB.prepare("SELECT 1 x FROM wcust WHERE customer_number=?").bind(custNum).first();
-  const prior = !!known || progs.some(function (p) { return ds(p) && ds(p) < cutoff; });
+  const evPrior = await env.DB.prepare("SELECT 1 x FROM wevents WHERE customer_number=? AND kind='welcome' AND state IN ('ready','sending','sent','held')").bind(custNum).first();
+  const prior = !!known || !!evPrior || progs.some(function (p) { return ds(p) && ds(p) < cutoff; });
   const kind = prior ? "addon" : "welcome";
   const active = progs.filter(function (p) { return String(p.status) === "9" && ds(p) >= cutoff && !sent.has(p.id); });
   const use = kind === "welcome" ? active : active.filter(function (p) { return pending.has(p.id); });
@@ -170,10 +204,10 @@ async function wEvaluate(env, ct, cutoff, custNum) {
   const rows = [];
   for (const p of keep) {
     const code = await wCode(env, p.programCodeId);
-    const name = code ? ct.names[code] : null, blurb = code ? ct.blurbs[code] : null;
+    const name = code ? ct.names[code] : null, blurb = code ? wDescFor(ct.blurbs, code, name) : null;
     if (!code) { flags.push("program code id " + p.programCodeId + " not found in RealGreen"); continue; }
     if (!name) flags.push("service code " + code + " missing from service_code_map.json");
-    if (!blurb) flags.push("service code " + code + " has no blurb in program_blurbs.json");
+    if (!blurb) flags.push("service code " + code + " has no description in service_descriptions.md");
     const std = Number(p.standardPrice), price = Number(p.price);
     if (!(price > 0) || !(std > 0)) { if (!(code === "GCC" && !(price > 0))) flags.push(code + " has a $0 price (" + money(price) + ")"); }
     if (code === "GCC" && price > 0) flags.push("GCC has a charge above $0 (" + money(price) + ")");

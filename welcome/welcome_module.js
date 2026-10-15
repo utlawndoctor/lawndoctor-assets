@@ -79,7 +79,7 @@ function wRender(kind, tpl, first, address, progs) {
   }).join("\n");
   h = h.replace(/<!-- PROGRAM_ROW_REFERENCE_START[\s\S]*?PROGRAM_ROW_REFERENCE_END -->/, "");
   h = h.replace("{{PROGRAM_ROWS}}", function () { return rows; });
-  const hasLmp = progs.some(function (p) { return p.code === "LMP"; });
+  const hasLmp = progs.some(function (p) { return p.code === "LMP" || p.code === "M1"; });
   if (hasLmp) h = h.replace(/<!-- LMP_SCHEDULE_BLOCK_START[\s\S]*?-->/, "").replace("<!-- LMP_SCHEDULE_BLOCK_END -->", "");
   else h = h.replace(/<!-- LMP_SCHEDULE_BLOCK_START[\s\S]*?<!-- LMP_SCHEDULE_BLOCK_END -->/, "");
   h = h.replace(/<!-- PROGRAM_SECTION_NOTE[\s\S]*?-->/, "");

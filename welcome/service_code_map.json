@@ -27,7 +27,7 @@
   "TI1": "Turf Insect Control",
   "FCP": "Fungus Control Program",
   "FC1": "Fungus Control Program",
-  "M1": "Fertilizer & Weed Control",
+  "M1": "Lawn Maintainer Program",
   "SSF": "Spot Seed",
   "FS": "Fungus Control Program",
   "_note": "Confirmed correct by Ty on 2026-08-20. If a new ProgramCode ever shows up in a future file that isn't in this map, do NOT guess -- ask Ty for it before sending any email referencing it.",

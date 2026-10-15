@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+<style>
+.header-desktop { display:block; }
+.header-mobile { display:none; }
+@media only screen and (max-width:480px) {
+  .header-desktop { display:none !important; }
+  .header-mobile { display:block !important; }
+}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#f2f2f2;font-family:Arial,Helvetica,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f2f2;padding:24px 0;">
+<tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:4px;overflow:hidden;">
+
+<tr><td style="background:#00623a;height:5px;line-height:5px;font-size:0;">&nbsp;</td></tr>
+
+<tr><td style="background:#008349;padding:18px 32px;">
+
+<!-- desktop/default layout: logo and text side by side -->
+<div class="header-desktop">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td valign="top">
+<div style="color:#ffffff;font-size:25px;font-weight:bold;letter-spacing:-0.2px;">Welcome to Lawn Doctor,<br>{{FirstName}}!</div>
+<div style="color:#d7ecdf;font-size:14px;margin-top:6px;">Thanks for signing up with us!</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+<tr><td style="background:#f0f8f3;border-radius:8px;padding:8px 14px;">
+<div style="color:#00623a;font-size:10px;font-weight:bold;letter-spacing:1px;">SERVICING</div>
+<div style="color:#231f20;font-size:13px;font-weight:bold;margin-top:2px;">{{ServiceAddress}}</div>
+</td></tr>
+</table>
+</td>
+<td width="146" align="right" valign="top">
+<table role="presentation" cellpadding="0" cellspacing="0">
+<tr><td style="padding:0;">
+<img src="cid:lawndoctor-thumb-badge.png" width="130" alt="Lawn Doctor" style="display:block;">
+</td></tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+
+<!-- narrow-screen layout: logo stacked above text so nothing overlaps when the title wraps -->
+<div class="header-mobile">
+<table role="presentation" cellpadding="0" cellspacing="0">
+<tr><td style="padding:0;">
+<img src="cid:lawndoctor-thumb-badge.png" width="130" alt="Lawn Doctor" style="display:block;">
+</td></tr>
+</table>
+<div style="color:#ffffff;font-size:25px;font-weight:bold;letter-spacing:-0.2px;margin-top:14px;">Welcome to Lawn Doctor,<br>{{FirstName}}!</div>
+<div style="color:#d7ecdf;font-size:14px;margin-top:6px;">Thanks for signing up with us!</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+<tr><td style="background:#f0f8f3;border-radius:8px;padding:8px 14px;">
+<div style="color:#00623a;font-size:10px;font-weight:bold;letter-spacing:1px;">SERVICING</div>
+<div style="color:#231f20;font-size:13px;font-weight:bold;margin-top:2px;">{{ServiceAddress}}</div>
+</td></tr>
+</table>
+</div>
+
+</td></tr>
+
+<tr><td style="background:#00623a;height:5px;line-height:5px;font-size:0;">&nbsp;</td></tr>
+
+<tr><td style="padding:24px 32px 8px 32px;color:#231f20;font-size:14px;line-height:1.5;">
+Here at Lawn Doctor, we believe building strong relationships with our clients is the key to delivering exceptional service. This is why we don't do contracts, just happy customers. We're excited to work with you this year. Below is an explanation of the service you signed up for and how often it will be completed. After each visit you'll get an email with any after-service care that may be needed.
+</td></tr>
+
+<tr><td style="padding:24px 32px 8px 32px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td width="48%" valign="top" align="center" style="background:#ffffff;border:1px solid #e3e3e3;border-radius:12px;padding:10px 10px 14px 10px;">
+<a href="https://youtu.be/x9L6Y4zMYt0" style="text-decoration:none;">
+<img src="cid:video-owner.jpg" width="100%" style="display:block;margin:0 auto;border-radius:10px;" alt="Message from the owner">
+<div style="color:#008349;font-size:10px;font-weight:bold;letter-spacing:0.5px;text-align:center;padding-top:12px;">&#9654; WATCH VIDEO</div>
+<div style="color:#231f20;font-weight:bold;font-size:13px;text-align:center;padding:4px 4px 0 4px;">A message from the owner, Terra Trenery</div>
+</a>
+</td>
+<td width="4%"></td>
+<td width="48%" valign="top" align="center" style="background:#ffffff;border:1px solid #e3e3e3;border-radius:12px;padding:10px 10px 14px 10px;">
+<a href="https://youtu.be/MU9qcV4XXmI" style="text-decoration:none;">
+<img src="cid:video-expect.jpg" width="100%" style="display:block;margin:0 auto;border-radius:10px;" alt="What to expect on your first visit">
+<div style="color:#008349;font-size:10px;font-weight:bold;letter-spacing:0.5px;text-align:center;padding-top:12px;">&#9654; WATCH VIDEO</div>
+<div style="color:#231f20;font-weight:bold;font-size:13px;text-align:center;padding:4px 4px 0 4px;">What to expect on your first visit</div>
+</a>
+</td>
+</tr>
+</table>
+</td></tr>
+
+<!-- PROGRAM_SECTION_NOTE: the standout "what you signed up for" card. The PROGRAM_ROWS placeholder below is repeated once per purchased program. Delete this whole comment line before substituting placeholders. -->
+<tr><td style="padding:26px 32px 6px 32px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #008349;border-radius:14px;">
+<tr><td style="background:#008349;padding:12px 22px;border-radius:11px 11px 0 0;">
+<div style="color:#ffffff;font-size:11px;font-weight:bold;letter-spacing:1.2px;">YOU'RE SIGNED UP FOR</div>
+</td></tr>
+<tr><td style="padding:20px 22px 22px 22px;">
+{{PROGRAM_ROWS}}
+</td></tr>
+</table>
+</td></tr>
+
+<!-- PROGRAM_ROW_REFERENCE_START: this whole comment is documentation only. Delete it entirely (both marker lines included) when filling the template for a real send -- it is not part of the email.
+Pricing comes from THIS customer's own row in the CustomerListByProgramJob CSV for this
+ProgramCode: {{ProgramPricePerService}} = StandardPrice (formatted, e.g. "$113.62/service"),
+{{ProgramPriceTotal}} = TotalPrice (formatted, e.g. "$671.63/yr"). If a program only bills
+once (no recurring visits, StandardPriceAsNumber == TotalPriceAsNumber), omit the
+ProgramPriceTotal line entirely rather than showing a duplicate number.
+IMPORTANT: label this "/service", NEVER "/visit" -- some rounds (e.g. LMP round 3, which
+combines Fertilizer & Weed Control with Grub Control) bundle two services into one visit
+and are billed as a double service on that visit. "/service" is the accurate unit; "/visit"
+would misstate what's being charged for on a double round.
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+<tr>
+<td width="32" valign="top">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr><td width="26" height="26" align="center" valign="middle" style="background:#008349;border-radius:13px;color:#ffffff;font-size:14px;font-weight:bold;">&#10003;</td></tr></table>
+</td>
+<td style="padding-left:12px;" valign="top">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td valign="top"><div style="font-weight:bold;color:#231f20;font-size:17px;">{{ProgramName}}</div></td>
+<td width="120" align="right" valign="top">
+<div style="font-weight:bold;color:#008349;font-size:15px;white-space:nowrap;">{{ProgramPricePerService}}</div>
+<div style="color:#888888;font-size:11px;white-space:nowrap;">{{ProgramPriceTotal}}</div>
+</td>
+</tr>
+</table>
+<div style="color:#555555;font-size:13px;margin-top:3px;line-height:1.45;">{{ProgramDescription}}</div>
+</td>
+</tr>
+</table>
+PROGRAM_ROW_REFERENCE_END -->
+
+
+<!-- LMP_SCHEDULE_BLOCK_START: include this Servicing Schedule graphic ONLY if Lawn Maintainer Program (LMP) is one of the purchased programs. If LMP is NOT included, delete every line from LMP_SCHEDULE_BLOCK_START to LMP_SCHEDULE_BLOCK_END (both marker lines included) as ONE contiguous deletion. Never delete a partial range here -- leaving stray closing tags behind breaks the outer 600px table and makes everything below render full-width/unboxed. -->
+<tr><td style="padding:16px 32px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #008349;border-radius:4px;">
+<tr><td style="padding:14px;">
+<img src="cid:servicing-schedule.png" width="100%" style="display:block;" alt="Your Lawn Maintainer Program Schedule: 6 visits, 7 services total, spaced 5-7 weeks apart from March through November. Round 1 Fertilizer and Weed Control with Pre-Emergent. Round 2 Fertilizer and Weed Control with Pre-Emergent. Round 3 Fertilizer and Weed Control plus Grub Control, 2 services, billed as a double visit. Round 4 Fertilizer and Weed Control. Round 5 Fertilizer and Weed Control. Round 6 Fertilizer and Weed Control, winterizer. All visits besides round 3 are a single standard service.">
+</td></tr>
+</table>
+</td></tr>
+<!-- LMP_SCHEDULE_BLOCK_END -->
+
+<tr><td style="padding:8px 32px 16px 32px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #231f20;border-radius:4px;">
+<tr><td style="padding:14px 18px;font-size:13px;color:#333;line-height:1.5;">
+<div style="font-weight:bold;color:#231f20;font-size:14px;margin-bottom:6px;">Satisfaction Guarantee</div>
+We want you to love your yard. If you're not 100% satisfied, we'll make it right, it's that simple. If you're on our Lawn Maintainer Program, we'll return at no charge or refund the cost of your last application. Please allow at least two weeks from the service date for products to take full effect. More info: lawndoctor.com/spanish-fork-ut/our-guarantee
+</td></tr>
+</table>
+</td></tr>
+
+<tr><td style="padding:0 32px 20px 32px;color:#231f20;font-size:14px;text-align:center;">
+We pride ourselves on exceptional customer service. If you ever have concerns about your lawn or the service provided, please contact us. We're always happy to resolve any issues and love to grow from feedback.
+</td></tr>
+
+<tr><td style="padding:0 32px 24px 32px;border-top:1px solid #eeeeee;padding-top:22px;">
+<img src="cid:lawndoctor-logo-badge.png" width="212" style="display:block;margin-bottom:10px;" alt="Lawn Doctor">
+<div style="color:#008349;font-weight:bold;font-size:13px;margin-left:18px;">Provo-Spanish Fork-Orem</div>
+<div style="color:#555;font-size:12px;margin-top:2px;margin-left:18px;">Phone: 385-463-2430</div>
+<div style="color:#555;font-size:12px;margin-left:18px;">Website: <a href="https://utlawndoctor.com" style="color:#008349;">utlawndoctor.com</a></div>
+</td></tr>
+
+<tr><td style="padding:0 32px 28px 32px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f9f7;border-radius:14px;">
+<tr><td align="center" style="padding:22px 20px;">
+<img src="cid:stars.png" width="118" alt="5 stars" style="display:block;margin:0 auto 12px auto;">
+<div style="color:#231f20;font-size:13px;margin-bottom:14px;">Enjoying your service so far? We'd love a review.</div>
+<a href="https://g.page/r/CVAr9pYHfX0eEBM/review" style="background:#ffffff;border:1px solid #dadce0;color:#3c4043;text-decoration:none;font-size:13px;font-weight:bold;padding:11px 22px;border-radius:24px;display:inline-block;">
+<img src="cid:google-g.png" width="16" height="16" style="vertical-align:middle;margin-right:8px;" alt="">Leave us a review on Google
+</a>
+</td></tr>
+</table>
+</td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>

@@ -111,3 +111,12 @@ We stopped by to check on your lawn and take care of anything needed, at no addi
 **Spot Seed** (SSF)
 We overseeded specific bare or thin spots in your lawn with our Kentucky Bluegrass/Rye blend
 to help them fill back in.
+
+**Turf Insect Control** (TI1)
+Turf Insect Control targets the surface-feeding insects that can thin out and damage your lawn. We apply a targeted insecticide to stop the damage and help your turf recover.
+
+**Fungus Control Program** (FCP/FC1/FS)
+Fungus Control treats lawn diseases caused by fungus, which can show up as discolored or dying patches in your lawn. We apply a fungicide to stop the spread and protect your healthy turf.
+
+**Grub Control Preventative** (GCP)
+Grub Control is a preventive insecticide application that protects your lawn's roots from root-feeding grubs before they can cause damage.

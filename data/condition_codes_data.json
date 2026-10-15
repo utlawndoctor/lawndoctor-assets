@@ -30,6 +30,12 @@
    "text": "Bed Weed Control (treatment #5 of 5)",
    "email": "Today's visit was treatment #5 of your Bed Weed Control Program for this year."
   },
+  "BW6": {
+   "emoji": "🌿",
+   "heading": "Bed Weed Control #6",
+   "text": "Bed Weed Control (treatment #6)",
+   "email": "Today's visit was treatment #6 of your Bed Weed Control Program for this year."
+  },
   "CAF": {
    "emoji": "🕳️",
    "heading": "Core Aeration (Fall)",
@@ -317,6 +323,12 @@
    "heading": "Off Lawn Weed Control #5",
    "text": "Off Lawn Weed Control (treatment #5 of 5)",
    "email": "Today's visit was treatment #5 of your Off Lawn Weed Control Program for this year."
+  },
+  "OL6": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #6",
+   "text": "Off Lawn Weed Control (treatment #6)",
+   "email": "Today's visit was treatment #6 of your Off Lawn Weed Control Program for this year."
   },
   "OVS": {
    "emoji": "🌱",

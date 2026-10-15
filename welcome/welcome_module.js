@@ -296,6 +296,14 @@ async function welcomePass(env) {
   await wSet(env, "w_last", new Date().toISOString() + " " + info.join("; "));
 }
 
+// True only 15+ minutes after the send window opens and before it closes, so overnight ready emails do not alert.
+function wInWindow15() {
+  const p = new Intl.DateTimeFormat("en-US", { timeZone: "America/Denver", hour: "numeric", minute: "numeric", hour12: false }).formatToParts(new Date());
+  const h = parseInt(p.find(function (x) { return x.type === "hour"; }).value, 10) % 24;
+  const m = parseInt(p.find(function (x) { return x.type === "minute"; }).value, 10);
+  return h * 60 + m >= SEND_START * 60 + 15 && h < SEND_END;
+}
+
 async function wIssues(env) {
   const out = {};
   const cutoff = await wGet(env, "w_cutoff", "");
@@ -312,7 +320,7 @@ async function wIssues(env) {
     if (r.state === "held") out["w-held:" + r.id] = who + ": welcome email held: " + fl.join("; ");
     else if (r.state === "error") out["w-err:" + r.id] = who + ": welcome email failed 3 times.";
     else if (r.state === "sending" && age > 20 * 60000) out["w-send:" + r.id] = who + ": stuck in sending for 20+ minutes. Check Mailgun before retrying so it is not sent twice.";
-    else if (r.state === "ready" && live && age > 60 * 60000) out["w-ready:" + r.id] = who + ": ready 60+ minutes ago but not sent" + (sentN < af && !r.approved ? " (waiting for your approval)" : "") + ".";
+    else if (r.state === "ready" && live && wInWindow15() && age > 60 * 60000) out["w-ready:" + r.id] = who + ": ready 60+ minutes ago but not sent" + (sentN < af && !r.approved ? " (waiting for your approval)" : "") + ".";
   }
   return out;
 }

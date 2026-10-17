@@ -1,5 +1,12 @@
 {
-  "_note": "Billing reminder copy (Worker lawndoctor-billing). From draft 2, direction approved by Ty 2026-10-13; final sign-off from the test emails. Tokens: {{FirstName}} {{Amount}} {{Days}} {{VisitDate}} (e.g. Sep 15) {{CardExp}} (e.g. 11/26). strip is amber or red. Texts open with \"Hi {{FirstName}}, Lawn Doctor here.\" (Ty 2026-10-16, no \"Lawn Doctor:\" prefix). Texts must stay plain ASCII; the Worker sends sms if it fits 160 characters, else sms_short, else no text. d10_invoice is the day 10 version for invoiced customers (no card). Customers already past day 17 get day 10 first and day 17 at least 7 days later (Ty 2026-10-16).",
+  "_note": "Billing reminder copy (Worker lawndoctor-billing). From draft 2, direction approved by Ty 2026-10-13; final sign-off from the test emails. Tokens: {{FirstName}} {{Amount}} {{Days}} {{VisitDate}} (e.g. Sep 15) {{CardExp}} (e.g. 11/26). strip is amber or red. Texts open with \"Hi {{FirstName}}, Lawn Doctor here.\" (Ty 2026-10-16, no \"Lawn Doctor:\" prefix). Texts must stay plain ASCII; the Worker sends sms if it fits 160 characters, else sms_short, else no text. d10_invoice is the day 10 version for invoiced customers (no card). Customers already past day 17 get day 10 first and day 17 at least 7 days later (Ty 2026-10-16). portal: the email shows registration details only to customers who are not registered for the portal (cawRegisteredUser false); registered customers get a login button (Ty 2026-10-16).",
+  "portal": {
+    "registered": "Prefer to call? We can take care of it over the phone at (385) 463-2430.",
+    "register_title": "NOT REGISTERED YET? IT TAKES ABOUT A MINUTE",
+    "register_intro": "You'll need a customer portal account to pay or update your card online. Tap the button above and enter these details:",
+    "register_email": "The one this message was sent to",
+    "register_after": "Prefer to call? We can take care of it over the phone at (385) 463-2430."
+  },
   "ach_card": {
     "title": "SWITCH TO BANK AUTOPAY, GET A $10 AMAZON GIFT CARD",
     "body1": "Paying from your checking account means no more expired cards. Switch your autopay to your bank account and we'll email you a <b>$10 Amazon gift card</b> after your first bank payment goes through.",

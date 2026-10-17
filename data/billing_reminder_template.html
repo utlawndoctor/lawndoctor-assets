@@ -17,8 +17,8 @@
 <body style="margin:0;padding:0;background:#f2f2f2;font-family:Arial,Helvetica,sans-serif;">
 <!--
 Billing reminder email (Worker lawndoctor-billing). Draft 2 design, approved in direction by Ty 2026-10-13.
-Placeholders: {{Preheader}} {{Headline}} {{Subline}} {{AccountNumber}} {{ServiceAddress}} {{ButtonText}} {{Intro}} {{Closing}}
-Blocks built by the Worker: {{STATUS_STRIP}} {{MAIN_CARD}} {{ACH_CARD}}
+Placeholders: {{Preheader}} {{Headline}} {{Subline}} {{AccountNumber}} {{ServiceAddress}} {{ButtonText}} {{ButtonUrl}} {{Intro}} {{Closing}}
+Blocks built by the Worker: {{STATUS_STRIP}} {{MAIN_CARD}} {{PORTAL_HELP}} {{ACH_CARD}}
 Copy for each message: data/billing_reminder_copy.json
 Inline images (Mailgun cid): lawndoctor-thumb-badge.png, lawndoctor-logo-badge.png
 -->
@@ -73,7 +73,7 @@ Inline images (Mailgun cid): lawndoctor-thumb-badge.png, lawndoctor-logo-badge.p
 <tr><td style="padding:18px 24px 4px 24px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 <tr><td align="center">
-<a href="https://lawndoctorcustomer.com" style="background:#008349;color:#ffffff;text-decoration:none;font-size:16px;font-weight:bold;padding:15px 38px;border-radius:30px;display:inline-block;">{{ButtonText}}</a>
+<a href="{{ButtonUrl}}" style="background:#008349;color:#ffffff;text-decoration:none;font-size:16px;font-weight:bold;padding:15px 38px;border-radius:30px;display:inline-block;">{{ButtonText}}</a>
 </td></tr>
 </table>
 <div style="color:#555555;font-size:12px;line-height:1.5;text-align:center;margin-top:10px;">Opens lawndoctorcustomer.com, our secure customer portal.</div>
@@ -83,9 +83,7 @@ Inline images (Mailgun cid): lawndoctor-thumb-badge.png, lawndoctor-logo-badge.p
 {{Intro}}
 </td></tr>
 
-<tr><td style="padding:4px 24px 4px 24px;color:#231f20;font-size:14px;line-height:1.5;">
-Prefer to call? We can take care of it over the phone at (385) 463-2430. Not registered for the portal yet? <a href="https://lawndoctorcustomer.com/Account/Register" style="color:#008349;">Register here</a> with customer number <b>{{AccountNumber}}</b>.
-</td></tr>
+{{PORTAL_HELP}}
 
 {{ACH_CARD}}
 

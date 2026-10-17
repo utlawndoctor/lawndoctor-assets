@@ -39,6 +39,7 @@ async function schema(env) {
     "CREATE TABLE IF NOT EXISTS bill_card (customer_number INTEGER, card_exp TEXT, kind TEXT, sent_at TEXT, PRIMARY KEY (customer_number, card_exp, kind))"
   ];
   for (const q of s) await env.DB.prepare(q).run();
+  for (const col of ["house", "zip"]) { try { await env.DB.prepare("ALTER TABLE bill_day ADD COLUMN " + col + " TEXT").run(); } catch (e) {} }
 }
 
 async function sGet(env, k, d) { const r = await env.DB.prepare("SELECT v FROM settings WHERE k=?").bind(k).first(); return r && r.v !== null && r.v !== "" ? r.v : d; }
@@ -118,7 +119,15 @@ function achCard(a) {
   return cardShell(a.title, '<div style="color:#231f20;font-size:14px;line-height:1.5;">' + a.body1 + '</div><div style="color:#231f20;font-size:14px;line-height:1.5;margin-top:10px;">' + a.body2 + '</div><div style="color:#888;font-size:11px;margin-top:8px;">' + a.fine + '</div>');
 }
 
-// m: {kind, first, account, address, amount, days, lines, visitDate, cardType, cardExp, showAch}
+// Registered customers get only the call line; others get the registration details (customer number, house number, ZIP).
+function portalHelp(p, m) {
+  if (m.registered) return '<tr><td style="padding:4px 24px 4px 24px;color:#231f20;font-size:14px;line-height:1.5;">' + esc(p.registered) + '</td></tr>';
+  const row = function (k, v) { return '<tr><td style="color:#555555;font-size:12px;padding:3px 0;">' + k + '</td><td align="right" style="color:#231f20;font-size:14px;font-weight:bold;padding:3px 0;">' + esc(v) + '</td></tr>'; };
+  const inner = '<div style="color:#231f20;font-size:14px;line-height:1.5;margin-bottom:12px;">' + esc(p.register_intro) + '</div><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f8f3;border-radius:10px;"><tr><td style="padding:14px 16px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">' + row("Customer number", String(m.account)) + (m.house ? row("House number only", m.house) : "") + (m.zip ? row("ZIP code", m.zip) : "") + row("Email address", p.register_email) + '</table></td></tr></table><div style="color:#555555;font-size:12px;line-height:1.5;text-align:center;margin-top:12px;">Already registered? <a href="https://lawndoctorcustomer.com" style="color:#008349;">Log in here</a>. ' + esc(p.register_after) + '</div>';
+  return cardShell(p.register_title, inner);
+}
+
+// m: {kind, first, account, address, amount, days, lines, visitDate, cardType, cardExp, showAch, registered, house, zip}
 function render(ct, m, today) {
   const cp = ct.copy[m.kind];
   if (!cp) throw new Error("no copy for " + m.kind);
@@ -130,7 +139,9 @@ function render(ct, m, today) {
     Intro: esc(tok(cp.intro, t)), Closing: esc(tok(cp.closing, t)),
     STATUS_STRIP: strip(cp.strip, tok(cp.strip_text, t)),
     MAIN_CARD: isCard ? autopayCard(m.cardType, m.cardExp) : balanceCard(m.lines, m.amount, today),
-    ACH_CARD: m.showAch ? achCard(ct.copy.ach_card) : ""
+    ACH_CARD: m.showAch ? achCard(ct.copy.ach_card) : "",
+    PORTAL_HELP: portalHelp(ct.copy.portal, m),
+    ButtonUrl: m.registered ? "https://lawndoctorcustomer.com" : "https://lawndoctorcustomer.com/Account/Register"
   };
   let h = ct.tpl.replace(/<!--[\s\S]*?-->/, "");
   h = h.replace(/\{\{(\w+)\}\}/g, function (x, k) { return Object.prototype.hasOwnProperty.call(blocks, k) ? blocks[k] : x; });
@@ -195,7 +206,7 @@ function facts(c) {
     n: Number(c.customerNumber || c.id), first: trim(c.firstName), last: trim(c.lastName), email: trim(c.preferredEmail || c.email),
     phone: ph ? ph.e164 : "", phoneType: ph ? ph.type : "", address: line1 ? line1 + (trim(a.city) ? ", " + trim(a.city) : "") : "",
     net: Number(c.netBalance || 0), billingType: trim(c.billingType), cardType: trim(c.cardType), cardExp: c.cardExpiryDate ? String(c.cardExpiryDate).slice(0, 10) : "",
-    status: trim(c.statusCharacter)
+    status: trim(c.statusCharacter), house: trim(a.houseNumber), zip: trim(a.zip).slice(0, 5)
   };
 }
 
@@ -246,8 +257,8 @@ async function runStep(env, mode) {
     for (const c of arr) {
       const f = facts(c);
       if (!f.n) continue;
-      stmts.push(env.DB.prepare("INSERT OR REPLACE INTO bill_day (run_date, customer_number, first, last, email, phone, phone_type, address, net, billing_type, card_type, card_exp, status, evaluated, decision, sent) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,NULL,NULL)")
-        .bind(today, f.n, f.first, f.last, f.email, f.phone, f.phoneType, f.address, f.net, f.billingType, f.cardType, f.cardExp, f.status));
+      stmts.push(env.DB.prepare("INSERT OR REPLACE INTO bill_day (run_date, customer_number, first, last, email, phone, phone_type, address, net, billing_type, card_type, card_exp, status, evaluated, decision, sent, house, zip) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,NULL,NULL,?,?)")
+        .bind(today, f.n, f.first, f.last, f.email, f.phone, f.phoneType, f.address, f.net, f.billingType, f.cardType, f.cardExp, f.status, f.house, f.zip));
       if (!(f.n in known)) stmts.push(env.DB.prepare("INSERT INTO bill_cust (customer_number, billing_type, card_type, first_seen) VALUES (?,?,?,?)").bind(f.n, f.billingType, f.cardType, today));
       else if (known[f.n] !== f.billingType) stmts.push(env.DB.prepare("UPDATE bill_cust SET prev_billing_type=?, billing_type=?, card_type=?, type_changed_at=? WHERE customer_number=?").bind(known[f.n], f.billingType, f.cardType, today, f.n));
     }
@@ -359,7 +370,7 @@ async function sendOne(env, ct, mode, r, d, today) {
   const prefs = await prefsOf(env, n);
   const nok = await env.DB.prepare("SELECT 1 x FROM name_ok WHERE customer_number=?").bind(n).first();
   if (!nok && (!r.first || /[\s&\d\/,+]/.test(r.first) || /\band\b/i.test(r.first))) return "held: name needs review";
-  const m = { kind: d.kind, first: r.first, account: n, address: r.address, amount: r.net, days: d.age, lines: d.lines || [], visitDate: d.oldest, cardType: r.card_type, cardExp: r.card_exp, showAch: r.billing_type === "A" && d.kind !== "d17" };
+  const m = { kind: d.kind, first: r.first, account: n, address: r.address, amount: r.net, days: d.age, lines: d.lines || [], visitDate: d.oldest, cardType: r.card_type, cardExp: r.card_exp, showAch: r.billing_type === "A" && d.kind !== "d17", registered: prefs.cawRegisteredUser === true, house: r.house || "", zip: r.zip || "" };
   const out = render(ct, m, today);
   const parts = [];
   if (mode === "live") {
@@ -438,15 +449,18 @@ async function processTest(env) {
     let lines = [];
     try { lines = await openLines(env, t.customer); } catch (e) { out.push("lines: " + String(e).slice(0, 80)); }
     const amount = f.net >= 10 ? f.net : 74;
+    const prefs = await prefsOf(env, t.customer);
+    const reg = prefs.cawRegisteredUser === true;
     if (!lines.length) lines = [{ done: new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10), open: amount, name: "Lawn Maintainer #5", code: "M5" }];
     const oldest = lines[0].done;
-    const kinds = [["d3_auto", 3], ["d3_invoice", 3], ["d10", 10], ["d10_invoice", 10], ["d17", 17], ["expiry", 0], ["expired", 0]];
+    const kinds = t.kinds === "all" ? [["d3_auto", reg], ["d3_invoice", reg], ["d10", reg], ["d10_invoice", reg], ["d17", reg], ["expiry", reg], ["expired", reg]] : [["d3_auto", true], ["d3_auto", false]];
     for (const k of kinds) {
       const cardExp = k[0] === "expiry" ? new Date(Date.now() + 20 * 86400000).toISOString().slice(0, 8) + "01" : (k[0] === "expired" ? "2026-08-01" : f.cardExp);
-      const m = { kind: k[0], first: f.first, account: t.customer, address: f.address, amount: amount, days: daysBetween(oldest, today), lines: lines, visitDate: oldest, cardType: f.cardType || "VI", cardExp: cardExp, showAch: k[0] !== "d17" };
+      const m = { kind: k[0], first: f.first, account: t.customer, address: f.address, amount: amount, days: daysBetween(oldest, today), lines: lines, visitDate: oldest, cardType: f.cardType || "VI", cardExp: cardExp, showAch: k[0] !== "d17", registered: k[1], house: f.house, zip: f.zip };
       const r = render(ct, m, today);
-      const pid = await mail(env, t.to, "[TEST " + k[0] + "] " + r.subject, r.html, r.text, "billing-test");
-      await archive(env, "test", "email", t.customer, t.to, "[TEST " + k[0] + "] " + r.subject, r.html, pid);
+      const label = "[TEST " + k[0] + (k[1] ? " registered" : " not registered") + "] ";
+      const pid = await mail(env, t.to, label + r.subject, r.html, r.text, "billing-test");
+      await archive(env, "test", "email", t.customer, t.to, label + r.subject, r.html, pid);
       if (t.phone && r.sms) { const sid = await sms(env, t.phone, r.sms); await archive(env, "test", "sms", t.customer, t.phone, null, r.sms, sid); }
       out.push(k[0] + " ok (" + r.sms.length + " chars)");
     }

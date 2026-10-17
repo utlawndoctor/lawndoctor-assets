@@ -2,7 +2,8 @@
 // Replaces corporate's AMA "Payment Reminder Email". Design: claude/billing-reminders-plan.md (draft 2).
 // Runs once a day in steps (one step per 5 minute tick): snapshot (from 8:00 Denver) > cases > cards > gift > send (from 9:00) > office list.
 // Sunday is skipped (Monday covers it). Settings in the shared settings table, all prefixed bill_:
-//   bill_mode off|dry-run|live, bill_office_to, bill_test {"to","phone","customer"}, bill_run_now 1 (force today's run now; dry-run safe).
+//   bill_mode off|dry-run|live, bill_office_to, bill_test {"to","phone","customer"}, bill_run_now 1 (force today's run now; dry-run safe),
+//   bill_exclude [customer numbers] = never message these customers (they still show on the office list as excluded).
 // Content: data/billing_reminder_template.html and data/billing_reminder_copy.json in GitHub (cached 30 min in D1 content).
 // Never reads or stores passwords, card numbers or tokens. Card type and expiry month are display facts only.
 
@@ -367,6 +368,8 @@ async function runStep(env, mode) {
 
 async function sendOne(env, ct, mode, r, d, today) {
   const n = r.customer_number;
+  let excluded = []; try { excluded = JSON.parse(await sGet(env, "bill_exclude", "[]")).map(Number); } catch (e) {}
+  if (excluded.indexOf(Number(n)) >= 0) return "excluded by Ty (no message)";
   const prefs = await prefsOf(env, n);
   const nok = await env.DB.prepare("SELECT 1 x FROM name_ok WHERE customer_number=?").bind(n).first();
   if (!nok && (!r.first || /[\s&\d\/,+]/.test(r.first) || /\band\b/i.test(r.first))) return "held: name needs review";

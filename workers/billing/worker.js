@@ -269,8 +269,8 @@ async function runStep(env, mode) {
           d.oldest = oldest; d.age = age; d.lines = lines;
           let kind = null;
           if (age > 90) d.list.push("over90");
-          else if (age >= 17) { if (!cs.d17_at) kind = "d17"; d.list.push("hold"); }
-          else if (age >= 10) { if (!cs.d10_at) kind = "d10"; }
+          else if (age >= 17) { if (!cs.d10_at) kind = (r.billing_type === "A" || r.billing_type === "D") ? "d10" : "d10_invoice"; else if (!cs.d17_at && Date.parse(cs.d10_at) <= Date.now() - 7 * 86400000) kind = "d17"; d.list.push("hold"); }
+          else if (age >= 10) { if (!cs.d10_at) kind = (r.billing_type === "A" || r.billing_type === "D") ? "d10" : "d10_invoice"; }
           else if (age >= 3) { if (!cs.d3_at) kind = (r.billing_type === "A" || r.billing_type === "D") ? "d3_auto" : "d3_invoice"; }
           if (age >= 4 && age < 17 && age <= 90) d.list.push("call");
           if (kind) d.kind = kind;
@@ -374,7 +374,7 @@ async function sendOne(env, ct, mode, r, d, today) {
     else parts.push("text would send");
   } else parts.push("text skipped: " + (!r.phone ? "no phone" : nt ? "no_text list" : prefs.dontText ? "dontText" : "too long"));
   if (mode === "live") {
-    const col = { d3_auto: "d3_at", d3_invoice: "d3_at", d10: "d10_at", d17: "d17_at" }[d.kind];
+    const col = { d3_auto: "d3_at", d3_invoice: "d3_at", d10: "d10_at", d10_invoice: "d10_at", d17: "d17_at" }[d.kind];
     if (col) await env.DB.prepare("UPDATE bill_cases SET " + col + "=? WHERE customer_number=? AND oldest_done=?").bind(nowIso(), n, d.oldest).run();
     else await env.DB.prepare("INSERT OR IGNORE INTO bill_card (customer_number, card_exp, kind, sent_at) VALUES (?,?,?,?)").bind(n, d.cardExp, d.kind, nowIso()).run();
   }
@@ -438,7 +438,7 @@ async function processTest(env) {
     const amount = f.net >= 10 ? f.net : 74;
     if (!lines.length) lines = [{ done: new Date(Date.now() - 3 * 86400000).toISOString().slice(0, 10), open: amount, name: "Lawn Maintainer #5", code: "M5" }];
     const oldest = lines[0].done;
-    const kinds = [["d3_auto", 3], ["d3_invoice", 3], ["d10", 10], ["d17", 17], ["expiry", 0], ["expired", 0]];
+    const kinds = [["d3_auto", 3], ["d3_invoice", 3], ["d10", 10], ["d10_invoice", 10], ["d17", 17], ["expiry", 0], ["expired", 0]];
     for (const k of kinds) {
       const cardExp = k[0] === "expiry" ? new Date(Date.now() + 20 * 86400000).toISOString().slice(0, 8) + "01" : (k[0] === "expired" ? "2026-08-01" : f.cardExp);
       const m = { kind: k[0], first: f.first, account: t.customer, address: f.address, amount: amount, days: k[1] || daysBetween(oldest, today), lines: lines, visitDate: oldest, cardType: f.cardType || "VI", cardExp: cardExp, showAch: k[0] !== "d17" };

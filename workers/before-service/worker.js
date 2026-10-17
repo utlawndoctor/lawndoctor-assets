@@ -95,7 +95,7 @@ function rowHtml(emoji, text, bold) {
 
 function render(ct, v) {
   const cp = ct.copy;
-  const t = { FirstName: v.first, VisitDay: dayLong(v.date), VisitShort: dayShort(v.date) };
+  const t = { FirstName: v.first, VisitDay: dayLong(v.date), VisitShort: dayShort(v.date), HomeLine: v.codes.indexOf("SBO") >= 0 ? "" : (cp.home_line || "") };
   const svcRows = v.codes.map(function (c) { const s = ct.lib[c] || {}; return rowHtml(s.emoji || "&#9989;", s.heading || c, true); }).join("");
   const cats = ["general"];
   v.codes.forEach(function (c) { const k = category(c); if (k && cats.indexOf(k) < 0) cats.push(k); });

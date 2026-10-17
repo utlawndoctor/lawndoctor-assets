@@ -2,7 +2,7 @@
 // Replaces corporate's AMA "Before Service Email" and "Before Service SMS".
 // Trigger: a current-year service at status "$" (invoice printed) with a start date of today or later. RealGreen sets startDate to the
 // service day when the invoice prints. One message per customer per visit date. Email to everyone with an address (not dontEmail),
-// text to everyone with a phone (not dontText, not on the no_text list). No arrival times (routes shift).
+// text to everyone with a phone (not dontText, not on the no_text list). No arrival times (routes shift). Text format = Ty's day-before texts.
 // Send window 8:00 to 20:00 Denver; a visit dated today is only announced before 10:00. Settings (shared table, prefix bs_):
 //   bs_mode off|dry-run|live, bs_test {"to","phone","customer"}.
 // Dry-run marks visits state 'dry'. When switching to live, run: UPDATE bs_visits SET state='new' WHERE state='dry' AND visit_date >= today.
@@ -93,24 +93,32 @@ function rowHtml(emoji, text, bold) {
   return '<tr><td width="30" valign="top" style="font-size:18px;line-height:1.4;padding-bottom:10px;">' + emoji + '</td><td style="color:#231f20;font-size:14px;line-height:1.4;padding-bottom:10px;">' + (bold ? "<b>" + esc(text) + "</b>" : esc(text)) + "</td></tr>";
 }
 
+function baseName(lib, code) { return String((lib[code] || {}).heading || code).replace(/\s*#\d+$/, "").replace(/\s*\(a separate[^)]*\)/i, "").trim(); }
+function ascii(s) { return String(s).replace(/[\u2013\u2014]/g, "-").replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/[^\x0A\x20-\x7E]/g, ""); }
+
 function render(ct, v) {
   const cp = ct.copy;
-  const t = { FirstName: v.first, VisitDay: dayLong(v.date), VisitShort: dayShort(v.date), HomeLine: v.codes.indexOf("SBO") >= 0 ? "" : (cp.home_line || "") };
-  const svcRows = v.codes.map(function (c) { const s = ct.lib[c] || {}; return rowHtml(s.emoji || "&#9989;", s.heading || c, true); }).join("");
+  const blowout = v.codes.indexOf("SBO") >= 0;
+  const today = denverDate(Date.now()), tomorrow = denverDate(Date.now() + 86400000);
+  const dayPhrase = (v.date === today ? "today, " : v.date === tomorrow ? "tomorrow, " : "") + dayLong(v.date);
+  const names = [];
+  v.codes.forEach(function (c) { const b = baseName(ct.lib, c); const n = (cp.text_names || {})[b] || b; if (names.indexOf(n) < 0) names.push(n); });
+  const t = { FirstName: v.first, VisitDay: dayLong(v.date), VisitShort: dayShort(v.date), DayPhrase: dayPhrase, FullAddress: v.address, ServiceList: names.join(" | "), PrepList: blowout ? cp.sms_prep_blowout : cp.sms_prep, HomeLine: blowout ? "" : (cp.home_line || "") };
+  const svcRows = v.codes.map(function (c) { const s = ct.lib[c] || {}; const desc = /^M\d$/.test(c) && s.text ? '<div style="color:#555555;font-size:13px;font-weight:normal;margin-top:2px;">' + esc(s.text) + "</div>" : ""; return '<tr><td width="30" valign="top" style="font-size:18px;line-height:1.4;padding-bottom:12px;">' + (s.emoji || "&#9989;") + '</td><td style="color:#231f20;font-size:14px;line-height:1.4;padding-bottom:12px;"><b>' + esc(s.heading || c) + "</b>" + desc + "</td></tr>"; }).join("");
   const cats = ["general"];
   v.codes.forEach(function (c) { const k = category(c); if (k && cats.indexOf(k) < 0) cats.push(k); });
   const tips = [];
   cats.forEach(function (k) { (cp.prep[k] || []).forEach(function (x) { if (tips.indexOf(x) < 0) tips.push(x); }); });
+  if (!blowout && cp.prep_sprinklers) tips.splice(2, 0, cp.prep_sprinklers);
+  const resched = '<tr><td style="padding:16px 24px 4px 24px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f8f3;border-left:4px solid #008349;border-radius:8px;"><tr><td style="padding:14px 18px;"><div style="color:#00623a;font-size:11px;font-weight:bold;letter-spacing:1.2px;">' + esc(cp.reschedule_title || "") + '</div><div style="color:#231f20;font-size:14px;line-height:1.5;margin-top:4px;">' + esc(tok(cp.reschedule || "", t)) + "</div></td></tr></table></td></tr>";
   const prepRows = tips.map(function (x) { return '<tr><td width="22" valign="top" style="color:#008349;font-size:15px;font-weight:bold;line-height:1.4;">&#10003;</td><td style="color:#231f20;font-size:14px;line-height:1.4;padding-bottom:10px;">' + esc(x) + "</td></tr>"; }).join("");
-  const map = { Preheader: esc(tok(cp.pre, t)), Headline: esc(tok(cp.headline, t)), Subline: esc(tok(cp.subline, t)), ServiceAddress: esc(v.address), Intro: esc(tok(cp.intro, t)), After: esc(tok(cp.after, t)), Closing: esc(tok(cp.closing, t)), BranchPhone: esc(BRANCH_PHONE), SERVICE_ROWS: svcRows, PREP_ROWS: prepRows };
+  const map = { Preheader: esc(tok(cp.pre, t)), Headline: esc(tok(cp.headline, t)), Subline: esc(tok(cp.subline, t)), ServiceAddress: esc(v.address), Intro: esc(tok(cp.intro, t)), After: esc(tok(cp.after, t)), Closing: esc(tok(cp.closing, t)), BranchPhone: esc(BRANCH_PHONE), SERVICE_ROWS: svcRows, PREP_ROWS: prepRows, RESCHEDULE: resched };
   let h = ct.tpl.replace(/<!--[\s\S]*?-->/, "");
   h = h.replace(/\{\{(\w+)\}\}/g, function (m, k) { return Object.prototype.hasOwnProperty.call(map, k) ? map[k] : m; });
   const left = h.match(/\{\{[^}]*\}\}/g);
   if (left) throw new Error("unreplaced placeholders " + left.join(","));
-  let sms = tok(cp.sms, t);
-  if (sms.length > 160 || !isAscii(sms)) sms = tok(cp.sms_short, t);
-  if (sms.length > 160 || !isAscii(sms)) sms = "";
-  const text = tok(cp.intro, t) + "\n\n" + v.codes.map(function (c) { return "- " + ((ct.lib[c] || {}).heading || c); }).join("\n") + "\n\nHelpful prep:\n" + tips.map(function (x) { return "- " + x; }).join("\n") + "\n\n" + tok(cp.closing, t) + "\n\nLawn Doctor of Provo-Spanish Fork-Orem";
+  const sms = ascii(tok(cp.sms, t));
+  const text = tok(cp.intro, t) + "\n\n" + v.codes.map(function (c) { return "- " + ((ct.lib[c] || {}).heading || c); }).join("\n") + "\n\nHelpful prep:\n" + tips.map(function (x) { return "- " + x; }).join("\n") + "\n\n" + tok(cp.reschedule || "", t) + "\n" + tok(cp.closing, t) + "\n\nLawn Doctor of Provo-Spanish Fork-Orem";
   return { subject: tok(cp.subject, t), html: h, sms: sms, text: text };
 }
 
@@ -158,7 +166,8 @@ async function customerFacts(env, n) {
   const a = c.address || {};
   const line1 = trim(a.addressLine1) || trim([trim(a.houseNumber), trim(a.streetName)].join(" "));
   const ph = pickPhone(c);
-  return { first: trim(c.firstName), email: trim(c.preferredEmail || c.email), phone: ph ? ph.e164 : "", address: line1 ? line1 + (trim(a.city) ? ", " + trim(a.city) : "") : "" };
+  const full = line1 ? [line1, trim(a.city), [trim(a.state), trim(a.zip).slice(0, 5)].filter(Boolean).join(" ")].filter(Boolean).join(", ") : "";
+  return { first: trim(c.firstName), email: trim(c.preferredEmail || c.email), phone: ph ? ph.e164 : "", address: full };
 }
 
 // Finds printed visits dated today or later and records one row per customer per visit date.
@@ -217,7 +226,7 @@ async function sendPass(env, mode) {
       if (f.phone && !nt && !prefs.dontText && out.sms) {
         if (mode === "live") { const pid = await sms(env, f.phone, out.sms); await archive(env, "live", "sms", v.customer_number, v.visit_date, f.phone, null, out.sms, pid); parts.push("text sent"); }
         else parts.push("text would send");
-      } else parts.push("text skipped: " + (!f.phone ? "no phone" : nt ? "no_text list" : prefs.dontText ? "dontText" : "too long"));
+      } else parts.push("text skipped: " + (!f.phone ? "no phone" : nt ? "no_text list" : prefs.dontText ? "dontText" : "empty"));
       await set(mode === "live" ? "sent" : "dry", null, parts.join(", "));
       n++;
     } catch (e) {

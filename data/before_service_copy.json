@@ -1,22 +1,30 @@
 {
-  "_note": "Before-service (visit heads-up) copy for Worker lawndoctor-before-service. Draft for Ty's approval from the test email. Tokens: {{FirstName}} {{VisitDay}} (e.g. Monday, October 19) {{VisitShort}} (e.g. Mon Oct 19). Texts must stay plain ASCII and under 160 characters; the Worker uses sms_short if sms is too long. {{HomeLine}} is left out for sprinkler blowouts (Ty 2026-10-16).",
-  "subject": "{{FirstName}}, your Lawn Doctor visit is {{VisitDay}}",
-  "pre": "A quick heads-up and a few things that help the visit go smoothly.",
+  "_note": "Before-service (visit heads-up) copy for Worker lawndoctor-before-service. Text format matches the day-before texts Ty already sends (2026-10-16). Email expanded from corporate's Upcoming Visit Notification, without the text-alert promo. Tokens: {{FirstName}} {{VisitDay}} {{DayPhrase}} (e.g. tomorrow, Monday, October 19) {{FullAddress}} {{ServiceList}} {{PrepList}} {{HomeLine}} (left out for sprinkler blowouts). Service names come from the service library heading without the round number; text_names renames them for texts.",
+  "subject": "{{FirstName}}, your Lawn Doctor visit is {{DayPhrase}}",
+  "pre": "What we'll be doing, how to get your yard ready, and what to do if the day doesn't work.",
   "headline": "Your visit is scheduled, {{FirstName}}",
   "subline": "{{VisitDay}}",
-  "intro": "Hi {{FirstName}}, this is a quick heads-up that your Lawn Doctor visit is on the schedule for {{VisitDay}}.{{HomeLine}} Here's what we'll be doing and a few things that help.",
-  "after": "After the visit, you'll get an email with what we did and any care instructions.",
-  "closing": "Need to reschedule or have a question? Just reply to this email or call us at 385-463-2430.",
-  "sms": "Lawn Doctor: Hi {{FirstName}}, your visit is scheduled for {{VisitShort}}. Please unlock gates and keep pets inside. Questions? Reply here.",
-  "sms_short": "Lawn Doctor: Your visit is scheduled for {{VisitShort}}. Please unlock gates and keep pets inside. Questions? Reply here.",
+  "intro": "Hi {{FirstName}}, your Lawn Doctor visit is scheduled for {{VisitDay}} at the address above.{{HomeLine}} Here's what we'll be doing and how to get your yard ready.",
+  "home_line": " You don't need to be home.",
+  "reschedule_title": "DOES THIS DAY WORK FOR YOU?",
+  "reschedule": "If this day doesn't work, just reply to this email or call us at 385-463-2430 and we'll find a better day.",
+  "after": "After the visit, you'll get an email with what we did, any care instructions, and a link to your full service details. You can also view your account any time at lawndoctorcustomer.com.",
+  "closing": "Questions? Just reply to this email or call us at 385-463-2430.",
+  "sms": "Hi {{FirstName}}, Lawn Doctor here. Your services at {{FullAddress}} are scheduled for {{DayPhrase}}.\n\nHere's what we'll be doing:\n{{ServiceList}}\n\nPlease make sure that {{PrepList}}.\nQuestions? Just reply to this message!\nLawn Doctor\nLicense #4000-18448",
+  "sms_prep": "gates are unlocked, sprinklers are off, and all pets are put away",
+  "sms_prep_blowout": "gates are unlocked and all pets are put away",
+  "text_names": {
+    "Lawn Maintainer": "Fertilizer & Weed Control"
+  },
+  "prep_sprinklers": "Turn your sprinklers off for the day of the visit",
   "prep": {
     "general": [
       "Unlock gates so we can reach every part of the yard",
-      "Keep pets inside while we're there"
+      "Put pets inside or secure them while we're there",
+      "Pick up toys, hoses and anything in the lawn that could get in the way of the treatment"
     ],
     "lawn": [
-      "Mow 1 to 2 days before if you can",
-      "Skip watering the morning of the visit"
+      "Mow 1 to 2 days before if you can"
     ],
     "aeration": [
       "Flag sprinkler heads, invisible dog fences and any buried lines so we can avoid them",
@@ -38,6 +46,5 @@
     "tree": [
       "Bring in pet bowls and toys near trees and shrubs"
     ]
-  },
-  "home_line": " You don't need to be home."
+  }
 }

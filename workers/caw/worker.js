@@ -161,7 +161,7 @@ async function processTest(env) {
 // New customers come from the welcome job (wevents kind welcome) on or after caw_cutoff.
 async function discoverNew(env) {
   const cutoff = await sGet(env, "caw_cutoff", "2026-10-14");
-  await env.DB.prepare("INSERT OR IGNORE INTO caw_invites (customer_number, cohort, state, sends, created_at, updated_at) SELECT DISTINCT customer_number, 'new', 'waiting', 0, ?, ? FROM wevents WHERE kind='welcome' AND created_at >= ?").bind(nowIso(), nowIso(), cutoff).run();
+  await env.DB.prepare("INSERT OR IGNORE INTO caw_invites (customer_number, cohort, state, sends, created_at, updated_at) SELECT DISTINCT customer_number, 'new', 'waiting', 0, ?, ? FROM wevents WHERE kind='welcome' AND state <> 'skipped' AND created_at >= ?").bind(nowIso(), nowIso(), cutoff).run();
 }
 
 // Waiting: look for the first completed service. Gives up after 150 days.

@@ -10,7 +10,7 @@
 .header-mobile { display:none; }
 @media only screen and (max-width:480px) {
   .header-desktop { display:none !important; }
-  .header-mobile { display:block !important; }
+  .header-mobile { display:block !important; max-height:none !important; overflow:visible !important; }
 }
 </style>
 </head>
@@ -51,7 +51,7 @@ Inline images (Mailgun cid): lawndoctor-thumb-badge.png, lawndoctor-logo-badge.p
 </table>
 </div>
 
-<div class="header-mobile">
+<div class="header-mobile" style="display:none;max-height:0;overflow:hidden;mso-hide:all;">
 <img src="cid:lawndoctor-thumb-badge.png" width="110" alt="Lawn Doctor" style="display:block;">
 <div style="color:#ffffff;font-size:23px;font-weight:bold;letter-spacing:-0.2px;margin-top:14px;">{{Headline}}</div>
 <div style="color:#d7ecdf;font-size:14px;margin-top:6px;">{{Subline}}</div>

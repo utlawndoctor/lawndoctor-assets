@@ -443,7 +443,7 @@ async function processTest(env) {
     const kinds = [["d3_auto", 3], ["d3_invoice", 3], ["d10", 10], ["d10_invoice", 10], ["d17", 17], ["expiry", 0], ["expired", 0]];
     for (const k of kinds) {
       const cardExp = k[0] === "expiry" ? new Date(Date.now() + 20 * 86400000).toISOString().slice(0, 8) + "01" : (k[0] === "expired" ? "2026-08-01" : f.cardExp);
-      const m = { kind: k[0], first: f.first, account: t.customer, address: f.address, amount: amount, days: k[1] || daysBetween(oldest, today), lines: lines, visitDate: oldest, cardType: f.cardType || "VI", cardExp: cardExp, showAch: k[0] !== "d17" };
+      const m = { kind: k[0], first: f.first, account: t.customer, address: f.address, amount: amount, days: daysBetween(oldest, today), lines: lines, visitDate: oldest, cardType: f.cardType || "VI", cardExp: cardExp, showAch: k[0] !== "d17" };
       const r = render(ct, m, today);
       const pid = await mail(env, t.to, "[TEST " + k[0] + "] " + r.subject, r.html, r.text, "billing-test");
       await archive(env, "test", "email", t.customer, t.to, "[TEST " + k[0] + "] " + r.subject, r.html, pid);

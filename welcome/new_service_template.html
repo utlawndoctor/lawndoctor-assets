@@ -9,7 +9,7 @@
 .header-mobile { display:none; }
 @media only screen and (max-width:480px) {
   .header-desktop { display:none !important; }
-  .header-mobile { display:block !important; }
+  .header-mobile { display:block !important; max-height:none !important; overflow:visible !important; }
 }
 </style>
 </head>
@@ -48,7 +48,7 @@
 </div>
 
 <!-- narrow-screen layout: logo stacked above text so nothing overlaps when the title wraps -->
-<div class="header-mobile">
+<div class="header-mobile" style="display:none;max-height:0;overflow:hidden;mso-hide:all;">
 <table role="presentation" cellpadding="0" cellspacing="0">
 <tr><td style="padding:0;">
 <img src="cid:lawndoctor-thumb-badge.png" width="90" alt="Lawn Doctor" style="display:block;">

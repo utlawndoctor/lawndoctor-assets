@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+<style>
+.header-desktop { display:block; }
+.header-mobile { display:none; }
+@media only screen and (max-width:480px) {
+  .header-desktop { display:none !important; }
+  .header-mobile { display:block !important; }
+}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#f2f2f2;font-family:Arial,Helvetica,sans-serif;">
+<!--
+Before-service visit heads-up (Worker lawndoctor-before-service).
+Placeholders: {{Preheader}} {{Headline}} {{Subline}} {{ServiceAddress}} {{Intro}} {{After}} {{Closing}} {{BranchPhone}}
+Blocks built by the Worker: {{SERVICE_ROWS}} {{PREP_ROWS}}
+Copy: data/before_service_copy.json. Inline images (Mailgun cid): lawndoctor-thumb-badge.png, lawndoctor-logo-badge.png
+-->
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#f2f2f2;">{{Preheader}}&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f2f2;padding:24px 0;">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:4px;overflow:hidden;">
+
+<tr><td style="background:#00623a;height:5px;line-height:5px;font-size:0;">&nbsp;</td></tr>
+
+<tr><td style="background:#008349;padding:18px 24px;">
+
+<div class="header-desktop">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td valign="top">
+<div style="color:#ffffff;font-size:23px;font-weight:bold;letter-spacing:-0.2px;">{{Headline}}</div>
+<div style="color:#d7ecdf;font-size:14px;margin-top:6px;">{{Subline}}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+<tr><td style="background:#f0f8f3;border-radius:8px;padding:8px 14px;">
+<div style="color:#00623a;font-size:10px;font-weight:bold;letter-spacing:1px;">SERVICE ADDRESS</div>
+<div style="color:#231f20;font-size:13px;font-weight:bold;margin-top:2px;">{{ServiceAddress}}</div>
+</td></tr>
+</table>
+</td>
+<td width="146" align="right" valign="top">
+<table role="presentation" cellpadding="0" cellspacing="0">
+<tr><td style="padding:0;">
+<img src="cid:lawndoctor-thumb-badge.png" width="110" alt="Lawn Doctor" style="display:block;">
+</td></tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+
+<div class="header-mobile">
+<table role="presentation" cellpadding="0" cellspacing="0">
+<tr><td style="padding:0;">
+<img src="cid:lawndoctor-thumb-badge.png" width="110" alt="Lawn Doctor" style="display:block;">
+</td></tr>
+</table>
+<div style="color:#ffffff;font-size:23px;font-weight:bold;letter-spacing:-0.2px;margin-top:14px;">{{Headline}}</div>
+<div style="color:#d7ecdf;font-size:14px;margin-top:6px;">{{Subline}}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+<tr><td style="background:#f0f8f3;border-radius:8px;padding:8px 14px;">
+<div style="color:#00623a;font-size:10px;font-weight:bold;letter-spacing:1px;">SERVICE ADDRESS</div>
+<div style="color:#231f20;font-size:13px;font-weight:bold;margin-top:2px;">{{ServiceAddress}}</div>
+</td></tr>
+</table>
+</div>
+
+</td></tr>
+
+<tr><td style="background:#00623a;height:5px;line-height:5px;font-size:0;">&nbsp;</td></tr>
+
+<tr><td style="padding:24px 24px 8px 24px;color:#231f20;font-size:14px;line-height:1.5;">
+{{Intro}}
+</td></tr>
+
+<tr><td style="padding:22px 24px 6px 24px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #008349;border-radius:14px;">
+<tr><td style="background:#008349;padding:12px 22px;border-radius:11px 11px 0 0;">
+<div style="color:#ffffff;font-size:11px;font-weight:bold;letter-spacing:1.2px;">WHAT WE'LL DO</div>
+</td></tr>
+<tr><td style="padding:18px 22px 20px 22px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+{{SERVICE_ROWS}}
+</table>
+</td></tr>
+</table>
+</td></tr>
+
+<tr><td style="padding:16px 24px 6px 24px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px solid #008349;border-radius:14px;">
+<tr><td style="background:#008349;padding:12px 22px;border-radius:11px 11px 0 0;">
+<div style="color:#ffffff;font-size:11px;font-weight:bold;letter-spacing:1.2px;">HELPFUL PREP</div>
+</td></tr>
+<tr><td style="padding:18px 22px 20px 22px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+{{PREP_ROWS}}
+</table>
+</td></tr>
+</table>
+</td></tr>
+
+<tr><td style="padding:16px 24px 0 24px;color:#555555;font-size:13px;line-height:1.5;text-align:center;">
+{{After}}
+</td></tr>
+
+<tr><td style="padding:18px 24px 20px 24px;color:#231f20;font-size:14px;text-align:center;line-height:1.5;">
+{{Closing}}
+</td></tr>
+
+<tr><td style="padding:0 24px 24px 24px;border-top:1px solid #eeeeee;padding-top:22px;">
+<img src="cid:lawndoctor-logo-badge.png" width="212" style="display:block;margin-bottom:10px;" alt="Lawn Doctor">
+<div style="color:#008349;font-weight:bold;font-size:13px;margin-left:18px;">Provo-Spanish Fork-Orem</div>
+<div style="color:#555;font-size:12px;margin-top:2px;margin-left:18px;">118 W 500 S, Spanish Fork, UT 84660</div>
+<div style="color:#555;font-size:12px;margin-left:18px;">Phone: {{BranchPhone}}</div>
+<div style="color:#555;font-size:12px;margin-left:18px;">Website: <a href="https://utlawndoctor.com" style="color:#008349;">utlawndoctor.com</a></div>
+<div style="color:#888888;font-size:11px;line-height:1.5;margin-top:16px;margin-left:18px;">You are receiving this visit notice because you are a Lawn Doctor customer with a scheduled service.</div>
+</td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>

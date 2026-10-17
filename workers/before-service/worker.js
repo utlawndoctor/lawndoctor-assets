@@ -26,8 +26,8 @@ async function tick(env) {
     await env.DB.prepare("CREATE TABLE IF NOT EXISTS bs_visits (customer_number INTEGER, visit_date TEXT, service_ids TEXT, codes TEXT, first_seen_at TEXT, state TEXT, flags TEXT, result TEXT, sent_at TEXT, PRIMARY KEY (customer_number, visit_date))").run();
     const mode = await sGet(env, "bs_mode", "off");
     if (mode === "off") return;
-    try { await processTest(env); } catch (e) { err += "test: " + String(e).slice(0, 200) + " | "; }
     try { note += "found " + (await discover(env)) + " "; } catch (e) { err += "discover: " + String(e).slice(0, 200) + " | "; }
+    try { await processTest(env); } catch (e) { err += "test: " + String(e).slice(0, 200) + " | "; }
     try { note += "sent " + (await sendPass(env, mode)); } catch (e) { err += "send: " + String(e).slice(0, 200) + " | "; }
     try { await alerts(env); } catch (e) { err += "alerts: " + String(e).slice(0, 200) + " | "; }
   } catch (e) { err += String(e).slice(0, 300); }

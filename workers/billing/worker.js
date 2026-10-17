@@ -350,7 +350,9 @@ async function runStep(env, mode) {
     const rows = (await env.DB.prepare("SELECT * FROM bill_day WHERE run_date=? AND decision LIKE '%\"kind\"%' AND sent IS NULL ORDER BY customer_number LIMIT 4").bind(today).all()).results;
     for (const r of rows) {
       const d = JSON.parse(r.decision);
-      const res = await sendOne(env, ct, run.mode, r, d, today);
+      let res;
+      try { res = await sendOne(env, ct, run.mode, r, d, today); }
+      catch (e) { res = "error: " + String(e).slice(0, 180); }
       await env.DB.prepare("UPDATE bill_day SET sent=? WHERE run_date=? AND customer_number=?").bind(res, today, r.customer_number).run();
     }
     if (rows.length < 4) run.step = "office";
@@ -381,12 +383,23 @@ async function sendOne(env, ct, mode, r, d, today) {
     if (rows.some(function (x) { return denverDate(x.sent_at) === today; })) return "postponed: already emailed today";
   }
   if (r.email && !prefs.dontEmail) {
-    if (mode === "live") { const pid = await mail(env, r.email, out.subject, out.html, out.text, "billing"); await archive(env, "live", "email", n, r.email, out.subject, out.html, pid); parts.push("email sent"); }
+    if (mode === "live") {
+      try { const pid = await mail(env, r.email, out.subject, out.html, out.text, "billing"); await archive(env, "live", "email", n, r.email, out.subject, out.html, pid); parts.push("email sent"); }
+      catch (e) { parts.push("email failed: " + String(e).slice(0, 100)); }
+    }
     else parts.push("email would send");
   } else parts.push(r.email ? "email skipped: dontEmail" : "email skipped: no address");
   const nt = r.phone ? await env.DB.prepare("SELECT 1 x FROM no_text WHERE phone=?").bind(r.phone).first() : null;
   if (r.phone && !nt && !prefs.dontText && out.sms) {
-    if (mode === "live") { const pid = await sms(env, r.phone, out.sms); await archive(env, "live", "sms", n, r.phone, null, out.sms, pid); parts.push("text sent"); }
+    if (mode === "live") {
+      try { const pid = await sms(env, r.phone, out.sms); await archive(env, "live", "sms", n, r.phone, null, out.sms, pid); parts.push("text sent"); }
+      catch (e) {
+        if (/opted out/i.test(String(e))) {
+          await env.DB.prepare("INSERT OR IGNORE INTO no_text (phone, note, added_at) VALUES (?,?,?)").bind(r.phone, "auto: opted out in Quo, customer " + n, nowIso()).run();
+          parts.push("text skipped: opted out in Quo (added to no-text list)");
+        } else parts.push("text failed: " + String(e).slice(0, 100));
+      }
+    }
     else parts.push("text would send");
   } else parts.push("text skipped: " + (!r.phone ? "no phone" : nt ? "no_text list" : prefs.dontText ? "dontText" : "too long"));
   if (mode === "live") {

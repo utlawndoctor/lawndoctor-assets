@@ -181,7 +181,9 @@ async function archive(env, mode, kind, n, to, subject, body, pid) {
 // ---------- RealGreen reads ----------
 function pickPhone(c) {
   const cands = (Array.isArray(c.phones) ? c.phones : []).map(function (p) { return { e164: toE164(p && p.number), pref: !!(p && p.isPreferred), type: trim(p && (p.type || p.typeDescription)).toLowerCase() }; }).filter(function (p) { return p.e164; });
-  return cands.find(function (p) { return p.pref; }) || cands.find(function (p) { return p.type === "cell"; }) || null;
+  const pref = cands.find(function (p) { return p.pref; }), cell = cands.find(function (p) { return p.type === "cell"; });
+  if (pref && pref.type && pref.type !== "cell" && cell) return cell;
+  return pref || cell || null;
 }
 
 // Only the fields this job needs are kept.

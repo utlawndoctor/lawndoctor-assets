@@ -1,0 +1,27 @@
+{
+  "_note": "Copy for the customer portal registration emails (Worker lawndoctor-caw). Sends 1 to 3 approved by Ty 2026-10-09. Subjects for sends 2 and 3 and the one-time 'existing' version are pending Ty's approval from the test emails. {{FirstName}} is filled by the Worker.",
+  "send1": {
+    "subject": "{{FirstName}}, your Lawn Doctor customer portal is ready",
+    "headline": "Your customer portal is ready, {{FirstName}}!",
+    "subline": "Register in about a minute",
+    "intro": "Thanks for choosing Lawn Doctor. Your online customer portal is ready for you. It's where you can update your payment information, see your service history, and request a service call any time."
+  },
+  "send2": {
+    "subject": "Quick reminder about your Lawn Doctor portal",
+    "headline": "A quick reminder, {{FirstName}}",
+    "subline": "Your customer portal is still waiting",
+    "intro": "Just a quick note in case the first email got buried. Registering takes about a minute, and it gives you one place to manage your account and update payment info whenever you need to."
+  },
+  "send3": {
+    "subject": "Last reminder: your Lawn Doctor portal",
+    "headline": "Last reminder, {{FirstName}}",
+    "subline": "We won't email you about this again",
+    "intro": "This is the last time we'll mention it. Whenever you're ready, your portal is available using the details below. If you'd rather skip it, no action is needed and your service continues as normal."
+  },
+  "existing": {
+    "subject": "{{FirstName}}, have you set up your Lawn Doctor portal?",
+    "headline": "Your customer portal is ready, {{FirstName}}!",
+    "subline": "Register in about a minute",
+    "intro": "Thanks for being a Lawn Doctor customer. Your online customer portal is ready whenever you want it. It's where you can update your payment information, see your service history, and request a service call any time. We'll only send this once."
+  }
+}

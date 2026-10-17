@@ -1,5 +1,5 @@
 {
-  "_note": "Billing reminder copy (Worker lawndoctor-billing). From draft 2, direction approved by Ty 2026-10-13; final sign-off from the test emails. Tokens: {{FirstName}} {{Amount}} {{Days}} {{VisitDate}} (e.g. Sep 15) {{CardExp}} (e.g. 11/26). strip is amber or red. Texts must stay plain ASCII; the Worker sends sms if it fits 160 characters, else sms_short, else no text. d10_invoice is the day 10 version for invoiced customers (no card). Customers already past day 17 get day 10 first and day 17 at least 7 days later (Ty 2026-10-16).",
+  "_note": "Billing reminder copy (Worker lawndoctor-billing). From draft 2, direction approved by Ty 2026-10-13; final sign-off from the test emails. Tokens: {{FirstName}} {{Amount}} {{Days}} {{VisitDate}} (e.g. Sep 15) {{CardExp}} (e.g. 11/26). strip is amber or red. Texts open with \"Hi {{FirstName}}, Lawn Doctor here.\" (Ty 2026-10-16, no \"Lawn Doctor:\" prefix). Texts must stay plain ASCII; the Worker sends sms if it fits 160 characters, else sms_short, else no text. d10_invoice is the day 10 version for invoiced customers (no card). Customers already past day 17 get day 10 first and day 17 at least 7 days later (Ty 2026-10-16).",
   "ach_card": {
     "title": "SWITCH TO BANK AUTOPAY, GET A $10 AMAZON GIFT CARD",
     "body1": "Paying from your checking account means no more expired cards. Switch your autopay to your bank account and we'll email you a <b>$10 Amazon gift card</b> after your first bank payment goes through.",
@@ -16,8 +16,8 @@
     "button": "Pay or update my card",
     "intro": "Hi {{FirstName}}, the autopay charge for the visit above didn't go through. This usually means the card on file expired or was replaced. Paying or updating your card in the customer portal takes about a minute.",
     "closing": "Questions about this bill? Just reply to this email. Thanks for being a Lawn Doctor customer!",
-    "sms": "Lawn Doctor: Hi {{FirstName}}, your {{Amount}} payment for {{VisitDate}} didn't go through. Pay or update your card at lawndoctorcustomer.com or reply here.",
-    "sms_short": "Lawn Doctor: Your {{Amount}} payment didn't go through. Pay or update your card at lawndoctorcustomer.com or reply here."
+    "sms": "Hi {{FirstName}}, Lawn Doctor here. Your {{Amount}} payment for {{VisitDate}} didn't go through. Pay or update your card at lawndoctorcustomer.com or reply here.",
+    "sms_short": "Hi, Lawn Doctor here. Your {{Amount}} payment didn't go through. Pay or update your card at lawndoctorcustomer.com or reply here."
   },
   "d3_invoice": {
     "subject": "Payment due: {{Amount}} for your Lawn Doctor visit",
@@ -29,8 +29,8 @@
     "button": "Pay my balance",
     "intro": "Hi {{FirstName}}, this is a friendly reminder that the balance for the visit above is now due. You can pay in the customer portal in about a minute.",
     "closing": "Questions about this bill? Just reply to this email. Thanks for being a Lawn Doctor customer!",
-    "sms": "Lawn Doctor: Hi {{FirstName}}, {{Amount}} is due for your {{VisitDate}} visit. Pay at lawndoctorcustomer.com or reply here with any questions. Thank you!",
-    "sms_short": "Lawn Doctor: {{Amount}} is due for your {{VisitDate}} visit. Pay at lawndoctorcustomer.com or reply here. Thank you!"
+    "sms": "Hi {{FirstName}}, Lawn Doctor here. {{Amount}} is due for your {{VisitDate}} visit. Pay at lawndoctorcustomer.com or reply here with any questions. Thanks!",
+    "sms_short": "Hi, Lawn Doctor here. {{Amount}} is due for your {{VisitDate}} visit. Pay at lawndoctorcustomer.com or reply here. Thanks!"
   },
   "d10": {
     "subject": "Action needed: your account is {{Days}} days past due",
@@ -42,8 +42,8 @@
     "button": "Pay or update my card",
     "intro": "Hi {{FirstName}}, we still haven't been able to collect payment for the visit above. If your card changed, updating it in the portal takes about a minute. If something about the bill looks wrong, reply to this email and we'll sort it out.",
     "closing": "We're happy to help. Just reply to this email.",
-    "sms": "Lawn Doctor: Hi {{FirstName}}, your account is {{Days}} days past due ({{Amount}}). Pay or update your card at lawndoctorcustomer.com or reply here.",
-    "sms_short": "Lawn Doctor: Your account is {{Days}} days past due ({{Amount}}). Pay at lawndoctorcustomer.com or reply here."
+    "sms": "Hi {{FirstName}}, Lawn Doctor here. Your account is {{Days}} days past due ({{Amount}}). Pay or update your card at lawndoctorcustomer.com or reply here.",
+    "sms_short": "Hi, Lawn Doctor here. Your account is {{Days}} days past due ({{Amount}}). Pay at lawndoctorcustomer.com or reply here."
   },
   "d10_invoice": {
     "subject": "Action needed: your account is {{Days}} days past due",
@@ -55,8 +55,8 @@
     "button": "Pay my balance",
     "intro": "Hi {{FirstName}}, we still haven't received payment for the visit above. You can pay in the customer portal in about a minute. If something about the bill looks wrong, reply to this email and we'll sort it out.",
     "closing": "We're happy to help. Just reply to this email.",
-    "sms": "Lawn Doctor: Hi {{FirstName}}, your account is {{Days}} days past due ({{Amount}}). Please pay at lawndoctorcustomer.com or reply here.",
-    "sms_short": "Lawn Doctor: Your account is {{Days}} days past due ({{Amount}}). Please pay at lawndoctorcustomer.com or reply here."
+    "sms": "Hi {{FirstName}}, Lawn Doctor here. Your account is {{Days}} days past due ({{Amount}}). Please pay at lawndoctorcustomer.com or reply here.",
+    "sms_short": "Hi, Lawn Doctor here. Your account is {{Days}} days past due ({{Amount}}). Please pay at lawndoctorcustomer.com or reply here."
   },
   "d17": {
     "subject": "Your account is {{Days}} days past due. Next visit on hold",
@@ -68,8 +68,8 @@
     "button": "Pay my balance",
     "intro": "Hi {{FirstName}}, your account is now {{Days}} days past due, and your next visit is on hold until the balance above is paid. As soon as it's paid, you're back on the schedule with nothing else to do.",
     "closing": "If something about this bill isn't right, reply to this email and we'll make it right.",
-    "sms": "Lawn Doctor: Hi {{FirstName}}, your account is {{Days}} days past due ({{Amount}}) and your next visit is on hold. Pay at lawndoctorcustomer.com or reply here.",
-    "sms_short": "Lawn Doctor: Your account is {{Days}} days past due ({{Amount}}). Next visit on hold. Pay at lawndoctorcustomer.com"
+    "sms": "Hi {{FirstName}}, Lawn Doctor here. Your account is {{Days}} days past due ({{Amount}}) and your next visit is on hold. Pay at lawndoctorcustomer.com or reply here.",
+    "sms_short": "Hi, Lawn Doctor here. Your account is {{Days}} days past due ({{Amount}}) and your next visit is on hold. Pay at lawndoctorcustomer.com"
   },
   "expiry": {
     "subject": "Action needed: your autopay card expires {{CardExp}}",
@@ -81,8 +81,8 @@
     "button": "Update my card",
     "intro": "Hi {{FirstName}}, your next Lawn Doctor visit is coming up, and the card we use for your autopay expires soon. Updating it now keeps your service running without a hitch.",
     "closing": "Rather do it by phone? Just reply to this email and we'll call you.",
-    "sms": "Lawn Doctor: Hi {{FirstName}}, your autopay card expires {{CardExp}}. Update it at lawndoctorcustomer.com, or switch to bank autopay and get a $10 Amazon gift card!",
-    "sms_short": "Lawn Doctor: Your autopay card expires {{CardExp}}. Update it at lawndoctorcustomer.com or switch to bank autopay for a $10 Amazon gift card!"
+    "sms": "Hi {{FirstName}}, Lawn Doctor here. Your autopay card expires {{CardExp}}. Update it at lawndoctorcustomer.com, or switch to bank autopay for a $10 Amazon gift card!",
+    "sms_short": "Hi, Lawn Doctor here. Your autopay card expires {{CardExp}}. Update it at lawndoctorcustomer.com or switch to bank autopay for a $10 Amazon gift card!"
   },
   "expired": {
     "subject": "Action needed: your autopay card has expired",
@@ -94,7 +94,7 @@
     "button": "Update my card",
     "intro": "Hi {{FirstName}}, your next Lawn Doctor visit is coming up, and the card we use for your autopay has expired. Updating it now keeps your service running without a hitch.",
     "closing": "Rather do it by phone? Just reply to this email and we'll call you.",
-    "sms": "Lawn Doctor: Hi {{FirstName}}, your autopay card has expired. Please update it at lawndoctorcustomer.com before your next visit, or reply here.",
-    "sms_short": "Lawn Doctor: Your autopay card has expired. Please update it at lawndoctorcustomer.com before your next visit."
+    "sms": "Hi {{FirstName}}, Lawn Doctor here. Your autopay card has expired. Please update it at lawndoctorcustomer.com before your next visit, or reply here.",
+    "sms_short": "Hi, Lawn Doctor here. Your autopay card has expired. Please update it at lawndoctorcustomer.com before your next visit, or reply here."
   }
 }

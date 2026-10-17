@@ -1,0 +1,81 @@
+{
+  "_note": "Billing reminder copy (Worker lawndoctor-billing). From draft 2, direction approved by Ty 2026-10-13; final sign-off from the test emails. Tokens: {{FirstName}} {{Amount}} {{Days}} {{VisitDate}} (e.g. Sep 15) {{CardExp}} (e.g. 11/26). strip is amber or red. Texts must stay plain ASCII; the Worker sends sms if it fits 160 characters, else sms_short, else no text.",
+  "ach_card": {
+    "title": "SWITCH TO BANK AUTOPAY, GET A $10 AMAZON GIFT CARD",
+    "body1": "Paying from your checking account means no more expired cards. Switch your autopay to your bank account and we'll email you a <b>$10 Amazon gift card</b> after your first bank payment goes through.",
+    "body2": "Switch in the customer portal under your payment settings, or reply to this email and we'll help you set it up.",
+    "fine": "One gift card per account. For customers who switch from a card to bank autopay."
+  },
+  "d3_auto": {
+    "subject": "Action needed: your {{Amount}} payment didn't go through",
+    "pre": "Pay or update your card in about a minute.",
+    "headline": "Your payment didn't go through",
+    "subline": "Usually an expired or replaced card",
+    "strip": "amber", "strip_text": "ACTION NEEDED · {{Amount}} due · {{Days}} days past due",
+    "button": "Pay or update my card",
+    "intro": "Hi {{FirstName}}, the autopay charge for the visit above didn't go through. This usually means the card on file expired or was replaced. Paying or updating your card in the customer portal takes about a minute.",
+    "closing": "Questions about this bill? Just reply to this email. Thanks for being a Lawn Doctor customer!",
+    "sms": "Lawn Doctor: Hi {{FirstName}}, your {{Amount}} payment for {{VisitDate}} didn't go through. Pay or update your card at lawndoctorcustomer.com or reply here.",
+    "sms_short": "Lawn Doctor: Your {{Amount}} payment didn't go through. Pay or update your card at lawndoctorcustomer.com or reply here."
+  },
+  "d3_invoice": {
+    "subject": "Payment due: {{Amount}} for your Lawn Doctor visit",
+    "pre": "Pay online in about a minute.",
+    "headline": "Your payment is due",
+    "subline": "Pay online in about a minute",
+    "strip": "amber", "strip_text": "PAYMENT DUE · {{Amount}} · {{Days}} days past due",
+    "button": "Pay my balance",
+    "intro": "Hi {{FirstName}}, this is a friendly reminder that the balance for the visit above is now due. You can pay in the customer portal in about a minute.",
+    "closing": "Questions about this bill? Just reply to this email. Thanks for being a Lawn Doctor customer!",
+    "sms": "Lawn Doctor: Hi {{FirstName}}, {{Amount}} is due for your {{VisitDate}} visit. Pay at lawndoctorcustomer.com or reply here with any questions. Thank you!",
+    "sms_short": "Lawn Doctor: {{Amount}} is due for your {{VisitDate}} visit. Pay at lawndoctorcustomer.com or reply here. Thank you!"
+  },
+  "d10": {
+    "subject": "Action needed: your account is {{Days}} days past due",
+    "pre": "{{Amount}} is still open. Pay or update your card in about a minute.",
+    "headline": "Your account is {{Days}} days past due",
+    "subline": "Please pay or update your card",
+    "strip": "amber", "strip_text": "ACTION NEEDED · {{Amount}} · {{Days}} days past due",
+    "button": "Pay or update my card",
+    "intro": "Hi {{FirstName}}, we still haven't been able to collect payment for the visit above. If your card changed, updating it in the portal takes about a minute. If something about the bill looks wrong, reply to this email and we'll sort it out.",
+    "closing": "We're happy to help. Just reply to this email.",
+    "sms": "Lawn Doctor: Hi {{FirstName}}, your account is {{Days}} days past due ({{Amount}}). Pay or update your card at lawndoctorcustomer.com or reply here.",
+    "sms_short": "Lawn Doctor: Your account is {{Days}} days past due ({{Amount}}). Pay at lawndoctorcustomer.com or reply here."
+  },
+  "d17": {
+    "subject": "Your account is {{Days}} days past due. Next visit on hold",
+    "pre": "Pay {{Amount}} to get back on the schedule.",
+    "headline": "Your account is {{Days}} days past due",
+    "subline": "Your next visit is on hold until it's paid",
+    "strip": "red", "strip_text": "VISIT ON HOLD · {{Amount}} · {{Days}} days past due",
+    "button": "Pay my balance",
+    "intro": "Hi {{FirstName}}, your account is now {{Days}} days past due, and your next visit is on hold until the balance above is paid. As soon as it's paid, you're back on the schedule with nothing else to do.",
+    "closing": "If something about this bill isn't right, reply to this email and we'll make it right.",
+    "sms": "Lawn Doctor: Hi {{FirstName}}, your account is {{Days}} days past due ({{Amount}}) and your next visit is on hold. Pay at lawndoctorcustomer.com or reply here.",
+    "sms_short": "Lawn Doctor: Your account is {{Days}} days past due ({{Amount}}). Next visit on hold. Pay at lawndoctorcustomer.com"
+  },
+  "expiry": {
+    "subject": "Action needed: your autopay card expires {{CardExp}}",
+    "pre": "Update it before your next visit, or switch to bank autopay.",
+    "headline": "Your autopay card expires soon",
+    "subline": "Update it before your next visit",
+    "strip": "amber", "strip_text": "ACTION NEEDED · Card expires {{CardExp}}",
+    "button": "Update my card",
+    "intro": "Hi {{FirstName}}, your next Lawn Doctor visit is coming up, and the card we use for your autopay expires soon. Updating it now keeps your service running without a hitch.",
+    "closing": "Rather do it by phone? Just reply to this email and we'll call you.",
+    "sms": "Lawn Doctor: Hi {{FirstName}}, your autopay card expires {{CardExp}}. Update it at lawndoctorcustomer.com, or switch to bank autopay and get a $10 Amazon gift card!",
+    "sms_short": "Lawn Doctor: Your autopay card expires {{CardExp}}. Update it at lawndoctorcustomer.com or switch to bank autopay for a $10 Amazon gift card!"
+  },
+  "expired": {
+    "subject": "Action needed: your autopay card has expired",
+    "pre": "Update it before your next visit, or switch to bank autopay.",
+    "headline": "Your autopay card has expired",
+    "subline": "Update it before your next visit",
+    "strip": "amber", "strip_text": "ACTION NEEDED · Card on file has expired",
+    "button": "Update my card",
+    "intro": "Hi {{FirstName}}, your next Lawn Doctor visit is coming up, and the card we use for your autopay has expired. Updating it now keeps your service running without a hitch.",
+    "closing": "Rather do it by phone? Just reply to this email and we'll call you.",
+    "sms": "Lawn Doctor: Hi {{FirstName}}, your autopay card has expired. Please update it at lawndoctorcustomer.com before your next visit, or reply here.",
+    "sms_short": "Lawn Doctor: Your autopay card has expired. Please update it at lawndoctorcustomer.com before your next visit."
+  }
+}

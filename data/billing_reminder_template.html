@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+<style>
+.header-desktop { display:block; }
+.header-mobile { display:none; }
+@media only screen and (max-width:480px) {
+  .header-desktop { display:none !important; }
+  .header-mobile { display:block !important; }
+}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#f2f2f2;font-family:Arial,Helvetica,sans-serif;">
+<!--
+Billing reminder email (Worker lawndoctor-billing). Draft 2 design, approved in direction by Ty 2026-10-13.
+Placeholders: {{Preheader}} {{Headline}} {{Subline}} {{AccountNumber}} {{ServiceAddress}} {{ButtonText}} {{Intro}} {{Closing}}
+Blocks built by the Worker: {{STATUS_STRIP}} {{MAIN_CARD}} {{ACH_CARD}}
+Copy for each message: data/billing_reminder_copy.json
+Inline images (Mailgun cid): lawndoctor-thumb-badge.png, lawndoctor-logo-badge.png
+-->
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#f2f2f2;">{{Preheader}}&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f2f2;padding:24px 0;">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:4px;overflow:hidden;">
+
+<tr><td style="background:#00623a;height:5px;line-height:5px;font-size:0;">&nbsp;</td></tr>
+
+<tr><td style="background:#008349;padding:18px 24px;">
+
+<div class="header-desktop">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr>
+<td valign="top">
+<div style="color:#ffffff;font-size:23px;font-weight:bold;letter-spacing:-0.2px;">{{Headline}}</div>
+<div style="color:#d7ecdf;font-size:14px;margin-top:6px;">{{Subline}}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+<tr><td style="background:#f0f8f3;border-radius:8px;padding:8px 14px;">
+<div style="color:#00623a;font-size:10px;font-weight:bold;letter-spacing:1px;">YOUR ACCOUNT #{{AccountNumber}}</div>
+<div style="color:#231f20;font-size:13px;font-weight:bold;margin-top:2px;">{{ServiceAddress}}</div>
+</td></tr>
+</table>
+</td>
+<td width="146" align="right" valign="top">
+<img src="cid:lawndoctor-thumb-badge.png" width="110" alt="Lawn Doctor" style="display:block;">
+</td>
+</tr>
+</table>
+</div>
+
+<div class="header-mobile">
+<img src="cid:lawndoctor-thumb-badge.png" width="110" alt="Lawn Doctor" style="display:block;">
+<div style="color:#ffffff;font-size:23px;font-weight:bold;letter-spacing:-0.2px;margin-top:14px;">{{Headline}}</div>
+<div style="color:#d7ecdf;font-size:14px;margin-top:6px;">{{Subline}}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+<tr><td style="background:#f0f8f3;border-radius:8px;padding:8px 14px;">
+<div style="color:#00623a;font-size:10px;font-weight:bold;letter-spacing:1px;">YOUR ACCOUNT #{{AccountNumber}}</div>
+<div style="color:#231f20;font-size:13px;font-weight:bold;margin-top:2px;">{{ServiceAddress}}</div>
+</td></tr>
+</table>
+</div>
+
+</td></tr>
+
+{{STATUS_STRIP}}
+
+{{MAIN_CARD}}
+
+
+<tr><td style="padding:18px 24px 4px 24px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+<tr><td align="center">
+<a href="https://lawndoctorcustomer.com" style="background:#008349;color:#ffffff;text-decoration:none;font-size:16px;font-weight:bold;padding:15px 38px;border-radius:30px;display:inline-block;">{{ButtonText}}</a>
+</td></tr>
+</table>
+<div style="color:#555555;font-size:12px;line-height:1.5;text-align:center;margin-top:10px;">Opens lawndoctorcustomer.com, our secure customer portal.</div>
+</td></tr>
+
+<tr><td style="padding:16px 24px 8px 24px;color:#231f20;font-size:14px;line-height:1.5;">
+{{Intro}}
+</td></tr>
+
+<tr><td style="padding:4px 24px 4px 24px;color:#231f20;font-size:14px;line-height:1.5;">
+Prefer to call? We can take care of it over the phone at (385) 463-2430. Not registered for the portal yet? <a href="https://lawndoctorcustomer.com/Account/Register" style="color:#008349;">Register here</a> with customer number <b>{{AccountNumber}}</b>.
+</td></tr>
+
+{{ACH_CARD}}
+
+<tr><td style="padding:18px 24px 20px 24px;color:#231f20;font-size:14px;text-align:center;line-height:1.5;">
+{{Closing}}
+</td></tr>
+
+<tr><td style="padding:0 24px 24px 24px;border-top:1px solid #eeeeee;padding-top:22px;">
+<img src="cid:lawndoctor-logo-badge.png" width="212" style="display:block;margin-bottom:10px;" alt="Lawn Doctor">
+<div style="color:#008349;font-weight:bold;font-size:13px;margin-left:18px;">Provo-Spanish Fork-Orem</div>
+<div style="color:#555;font-size:12px;margin-top:2px;margin-left:18px;">118 W 500 S, Spanish Fork, UT 84660</div>
+<div style="color:#555;font-size:12px;margin-left:18px;">Phone: (385) 463-2430</div>
+<div style="color:#555;font-size:12px;margin-left:18px;">Website: <a href="https://utlawndoctor.com" style="color:#008349;">utlawndoctor.com</a></div>
+<div style="color:#888888;font-size:11px;line-height:1.5;margin-top:16px;margin-left:18px;">For your security, we will never ask for your card or bank account number by email or text. Payment details are only entered in the customer portal or over the phone with our office.</div>
+<div style="color:#888888;font-size:11px;line-height:1.5;margin-top:8px;margin-left:18px;">You are receiving this account notice because you are a Lawn Doctor customer. If you have already taken care of this, thank you, and please disregard this message.</div>
+</td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>

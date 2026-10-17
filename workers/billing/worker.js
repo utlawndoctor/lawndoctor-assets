@@ -238,17 +238,18 @@ async function runStep(env, mode) {
   if (run.step === "snapshot") {
     const page = await api(env, "/Customer/Search?CustomerStatusMinValue=9&CustomerStatusMaxValue=9&Records=500&Offset=" + run.offset);
     const arr = Array.isArray(page) ? page : [];
-    const baseline = !(await env.DB.prepare("SELECT 1 x FROM bill_cust LIMIT 1").first()) || run.baseline;
-    if (baseline) run.baseline = true;
+    const known = {};
+    for (const k of (await env.DB.prepare("SELECT customer_number, billing_type FROM bill_cust").all()).results) known[k.customer_number] = k.billing_type;
+    const stmts = [];
     for (const c of arr) {
       const f = facts(c);
       if (!f.n) continue;
-      await env.DB.prepare("INSERT OR REPLACE INTO bill_day (run_date, customer_number, first, last, email, phone, phone_type, address, net, billing_type, card_type, card_exp, status, evaluated, decision, sent) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,NULL,NULL)")
-        .bind(today, f.n, f.first, f.last, f.email, f.phone, f.phoneType, f.address, f.net, f.billingType, f.cardType, f.cardExp, f.status).run();
-      const prev = await env.DB.prepare("SELECT billing_type FROM bill_cust WHERE customer_number=?").bind(f.n).first();
-      if (!prev) await env.DB.prepare("INSERT INTO bill_cust (customer_number, billing_type, card_type, first_seen) VALUES (?,?,?,?)").bind(f.n, f.billingType, f.cardType, today).run();
-      else if (prev.billing_type !== f.billingType) await env.DB.prepare("UPDATE bill_cust SET prev_billing_type=?, billing_type=?, card_type=?, type_changed_at=? WHERE customer_number=?").bind(prev.billing_type, f.billingType, f.cardType, today, f.n).run();
+      stmts.push(env.DB.prepare("INSERT OR REPLACE INTO bill_day (run_date, customer_number, first, last, email, phone, phone_type, address, net, billing_type, card_type, card_exp, status, evaluated, decision, sent) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,NULL,NULL)")
+        .bind(today, f.n, f.first, f.last, f.email, f.phone, f.phoneType, f.address, f.net, f.billingType, f.cardType, f.cardExp, f.status));
+      if (!(f.n in known)) stmts.push(env.DB.prepare("INSERT INTO bill_cust (customer_number, billing_type, card_type, first_seen) VALUES (?,?,?,?)").bind(f.n, f.billingType, f.cardType, today));
+      else if (known[f.n] !== f.billingType) stmts.push(env.DB.prepare("UPDATE bill_cust SET prev_billing_type=?, billing_type=?, card_type=?, type_changed_at=? WHERE customer_number=?").bind(known[f.n], f.billingType, f.cardType, today, f.n));
     }
+    for (let i = 0; i < stmts.length; i += 100) await env.DB.batch(stmts.slice(i, i + 100));
     if (arr.length < 500) { run.step = "cases"; run.offset = 0; } else run.offset += 500;
     await save(); return "snapshot " + arr.length;
   }

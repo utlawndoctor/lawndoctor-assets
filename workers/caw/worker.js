@@ -187,23 +187,27 @@ async function buildBacklog(env) {
   const off = parseInt(await sGet(env, "caw_backlog_offset", "0"), 10) || 0;
   const page = await api(env, "/Customer/Search?CustomerStatusMinValue=9&CustomerStatusMaxValue=9&Records=500&Offset=" + off);
   const arr = Array.isArray(page) ? page : [];
+  const stmts = [];
   for (const c of arr) {
     const n = Number(c.customerNumber || c.id);
     if (!n) continue;
-    await env.DB.prepare("INSERT OR IGNORE INTO caw_invites (customer_number, cohort, state, sends, next_due, created_at, updated_at) VALUES (?, 'backlog', 'check', 0, ?, ?, ?)").bind(n, nowIso(), nowIso(), nowIso()).run();
+    stmts.push(env.DB.prepare("INSERT OR IGNORE INTO caw_invites (customer_number, cohort, state, sends, next_due, created_at, updated_at) VALUES (?, 'backlog', 'check', 0, ?, ?, ?)").bind(n, nowIso(), nowIso(), nowIso()));
   }
+  for (let i = 0; i < stmts.length; i += 100) await env.DB.batch(stmts.slice(i, i + 100));
   if (arr.length < 500) await sSet(env, "caw_backlog_built", "done");
   else await sSet(env, "caw_backlog_offset", String(off + 500));
 }
 
 // Screens queued existing customers any time of day: registered or dontEmail are stopped, the rest become due.
 async function checkBacklog(env) {
-  const rows = (await env.DB.prepare("SELECT customer_number FROM caw_invites WHERE state='check' ORDER BY customer_number LIMIT 20").all()).results;
+  const rows = (await env.DB.prepare("SELECT customer_number FROM caw_invites WHERE state='check' ORDER BY customer_number LIMIT 15").all()).results;
+  const ups = [];
   for (const r of rows) {
     const p = await api(env, "/Customer/" + r.customer_number + "/ContactPreferences");
     const stop = p.cawRegisteredUser === true ? "registered" : (p.dontEmail === true ? "dontEmail" : "");
-    await env.DB.prepare("UPDATE caw_invites SET state=?, flags=?, updated_at=? WHERE customer_number=?").bind(stop ? "stopped" : "due", stop ? JSON.stringify([stop]) : null, nowIso(), r.customer_number).run();
+    ups.push(env.DB.prepare("UPDATE caw_invites SET state=?, flags=?, updated_at=? WHERE customer_number=?").bind(stop ? "stopped" : "due", stop ? JSON.stringify([stop]) : null, nowIso(), r.customer_number));
   }
+  if (ups.length) await env.DB.batch(ups);
 }
 
 async function emailedToday(env, n) {

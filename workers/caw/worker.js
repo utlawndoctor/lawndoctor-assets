@@ -2,6 +2,7 @@
 // Replaces corporate's AMA "Online Registration Reminder".
 // New customers: send 1 at first completed service +3 days, send 2 at +10, send 3 at +24. Stops when registered or dontEmail.
 // Existing unregistered active customers: one-time send ("existing" copy), capped per day.
+// Runs every 5 minutes and sends at most 3 emails per run, to stay well under Cloudflare's per-run call limit (2026-10-18).
 // Settings (shared settings table): caw_mode off|dry-run|live, caw_cutoff, caw_backlog_on, caw_backlog_daily, caw_test, caw_bcc_first.
 // Content: data/caw_registration_template.html and data/caw_registration_copy.json in GitHub, cached 30 minutes in D1 content.
 // Never reads or stores passwords, card fields or tokens.
@@ -113,6 +114,9 @@ function render(ct, variant, f, n) {
 
 function images(html) { const out = []; let m; const re = /cid:([\w.\-]+)/g; while ((m = re.exec(html))) if (out.indexOf(m[1]) < 0) out.push(m[1]); return out; }
 
+// Logo images are fetched once and reused for every email (saves 2 outside calls per email).
+const IMG = {};
+
 async function mail(env, to, subject, html, text, bcc, tag) {
   const key = await env.MAILGUN_KEY.get();
   const fd = new FormData();
@@ -124,9 +128,12 @@ async function mail(env, to, subject, html, text, bcc, tag) {
   if (text) fd.append("text", text);
   if (tag) fd.append("o:tag", tag);
   for (const n of images(html)) {
-    const ir = await fetch(RAW + "images/email/" + n);
-    if (!ir.ok) throw new Error("image " + n + " HTTP " + ir.status);
-    fd.append("inline", new Blob([await ir.arrayBuffer()], { type: /\.jpe?g$/.test(n) ? "image/jpeg" : "image/png" }), n);
+    if (!IMG[n]) {
+      const ir = await fetch(RAW + "images/email/" + n);
+      if (!ir.ok) throw new Error("image " + n + " HTTP " + ir.status);
+      IMG[n] = await ir.arrayBuffer();
+    }
+    fd.append("inline", new Blob([IMG[n]], { type: /\.jpe?g$/.test(n) ? "image/jpeg" : "image/png" }), n);
   }
   const r = await fetch("https://api.mailgun.net/v3/utlawndoctor.com/messages", { method: "POST", headers: { Authorization: "Basic " + btoa("api:" + key) }, body: fd, signal: AbortSignal.timeout(30000) });
   const t = await r.text();
@@ -226,12 +233,12 @@ async function sendDue(env, mode) {
     ? (await env.DB.prepare("SELECT last_sent_at FROM caw_invites WHERE cohort='backlog' AND last_sent_at >= ?").bind(new Date(Date.now() - 30 * 3600000).toISOString()).all()).results.filter(function (r) { return denverDate(r.last_sent_at) === today; }).length
     : (await env.DB.prepare("SELECT at FROM caw_dry WHERE variant='existing' AND at >= ?").bind(new Date(Date.now() - 30 * 3600000).toISOString()).all()).results.filter(function (r) { return denverDate(r.at) === today; }).length;
   let backlogLeft = Math.max(0, daily - backlogSentToday);
-  const rows = (await env.DB.prepare("SELECT * FROM caw_invites WHERE state='due' AND next_due <= ? ORDER BY CASE cohort WHEN 'new' THEN 0 ELSE 1 END, next_due, customer_number LIMIT 12").bind(nowIso()).all()).results;
+  const rows = (await env.DB.prepare("SELECT * FROM caw_invites WHERE state='due' AND next_due <= ? ORDER BY CASE cohort WHEN 'new' THEN 0 ELSE 1 END, next_due, customer_number LIMIT 6").bind(nowIso()).all()).results;
   let done = 0;
   const ct = await content(env);
   const bccFirst = parseInt(await sGet(env, "caw_bcc_first", "3"), 10) || 0;
   for (const r of rows) {
-    if (done >= 5) break;
+    if (done >= 3) break;
     if (r.cohort === "backlog" && backlogLeft <= 0) continue;
     const n = r.customer_number;
     if (mode === "dry-run") {

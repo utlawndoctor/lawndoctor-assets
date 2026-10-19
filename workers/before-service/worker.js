@@ -226,7 +226,15 @@ async function sendPass(env, mode) {
       } else parts.push(f.email ? "email skipped: dontEmail" : "email skipped: no address");
       const nt = f.phone ? await env.DB.prepare("SELECT 1 x FROM no_text WHERE phone=?").bind(f.phone).first() : null;
       if (f.phone && !nt && !prefs.dontText && out.sms) {
-        if (mode === "live") { const pid = await sms(env, f.phone, out.sms); await archive(env, "live", "sms", v.customer_number, v.visit_date, f.phone, null, out.sms, pid); parts.push("text sent"); }
+        if (mode === "live") {
+          try { const pid = await sms(env, f.phone, out.sms); await archive(env, "live", "sms", v.customer_number, v.visit_date, f.phone, null, out.sms, pid); parts.push("text sent"); }
+          catch (e) {
+            if (/opted out/i.test(String(e))) {
+              await env.DB.prepare("INSERT OR IGNORE INTO no_text (phone, note, added_at) VALUES (?,?,?)").bind(f.phone, "auto: opted out in Quo, customer " + v.customer_number, nowIso()).run();
+              parts.push("text skipped: opted out in Quo (added to no-text list)");
+            } else parts.push("text failed: " + String(e).slice(0, 100));
+          }
+        }
         else parts.push("text would send");
       } else parts.push("text skipped: " + (!f.phone ? "no phone" : nt ? "no_text list" : prefs.dontText ? "dontText" : "empty"));
       await set(mode === "live" ? "sent" : "dry", null, parts.join(", "));

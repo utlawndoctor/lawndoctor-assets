@@ -1,6 +1,7 @@
 // lawndoctor-caw: customer portal (CAW) registration emails.
 // Replaces corporate's AMA "Online Registration Reminder".
 // New customers: send 1 at first completed service +3 days, send 2 at +10, send 3 at +24. Stops when registered or dontEmail.
+// Only customers with a recurring program get these emails (see hasRecurring).
 // Existing unregistered active customers: one-time send ("existing" copy), capped per day.
 // Runs every 5 minutes and sends at most 3 emails per run, to stay well under Cloudflare's per-run call limit (2026-10-18).
 // Settings (shared settings table): caw_mode off|dry-run|live, caw_cutoff, caw_backlog_on, caw_backlog_daily, caw_test, caw_bcc_first.
@@ -257,6 +258,7 @@ async function sendDue(env, mode) {
       const prefs = await api(env, "/Customer/" + n + "/ContactPreferences");
       if (prefs.cawRegisteredUser === true) { await setState("stopped", ["registered"]); continue; }
       if (prefs.dontEmail === true) { await setState("stopped", ["dontEmail"]); continue; }
+      if (!(await hasRecurring(env, n))) { await setState("stopped", ["one-time services only"]); continue; }
       const f = await customerFacts(env, n);
       if (f.status && f.status !== "9") { await setState("stopped", ["customer status " + f.status]); continue; }
       const flags = [];
@@ -294,6 +296,17 @@ async function sendDue(env, mode) {
       if (mode === "live") await setState("due", ["error: " + String(e).slice(0, 150)], { sql: "next_due=?", args: [new Date(Date.now() + 3600000).toISOString()] });
     }
   }
+}
+
+// Portal emails only go to customers with a recurring program (Ty 2026-10-21). One-time services do not count:
+// aeration, overseed, spot seed, power seeding, sprinkler blowout, grub curative, service calls and other single visits.
+// Recurring = Lawn Maintainer (M1-M6), Mosquito (MC), Perimeter Pest (PP), Tree & Shrub (TS), Hydra-Guard (HG),
+// Soil Enrichment (SE), Bed Weed (BW), Off-Lawn Weed (OL/OW), Fungus Control (FS), on a current-year or later service.
+const RECURRING = /^(M[1-9]|MC[1-9]|PP[1-9]|TS[1-9]|HG[1-9]|SE[1-9]|BW[1-9]|OL[1-9]|OW[1-9]|FS)$/;
+async function hasRecurring(env, n) {
+  const list = await api(env, "/Service/Search?CustomerNumber=" + n + "&Records=200");
+  const yr = new Date().getUTCFullYear();
+  return (Array.isArray(list) ? list : []).some(function (s) { return !s.isReversed && Number(s.serviceYear) >= yr && RECURRING.test(trim(s.serviceCode).toUpperCase()); });
 }
 
 function variantFor(r) { return r.cohort === "backlog" ? "existing" : ["send1", "send2", "send3"][Math.min(r.sends || 0, 2)]; }

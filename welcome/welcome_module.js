@@ -185,7 +185,10 @@ async function wEvaluate(env, ct, cutoff, custNum) {
   const ds = function (p) { return p.dateSold ? String(p.dateSold).slice(0, 10) : ""; };
   const known = await env.DB.prepare("SELECT 1 x FROM wcust WHERE customer_number=?").bind(custNum).first();
   const evPrior = await env.DB.prepare("SELECT 1 x FROM wevents WHERE customer_number=? AND kind='welcome' AND state IN ('ready','sending','sent','held')").bind(custNum).first();
-  const prior = !!known || !!evPrior || progs.some(function (p) { return ds(p) && ds(p) < cutoff; });
+  // Same email on another account (a second property) = existing customer, so they get the new-service email, not a welcome (Ty 2026-10-22).
+  const em = String(c.preferredEmail || c.email || "").trim().toLowerCase();
+  const sameEmail = em ? await env.DB.prepare("SELECT 1 x FROM bill_day WHERE lower(email)=? AND customer_number<>? UNION SELECT 1 FROM sent_messages WHERE lower(recipient)=? AND customer_number<>? AND mode='live' LIMIT 1").bind(em, custNum, em, custNum).first() : null;
+  const prior = !!known || !!evPrior || !!sameEmail || progs.some(function (p) { return ds(p) && ds(p) < cutoff; });
   const kind = prior ? "addon" : "welcome";
   const active = progs.filter(function (p) { return String(p.status) === "9" && ds(p) >= cutoff && !sent.has(p.id); });
   const use = kind === "welcome" ? active : active.filter(function (p) { return pending.has(p.id); });

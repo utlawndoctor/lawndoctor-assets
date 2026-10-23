@@ -1,6 +1,8 @@
 // lawndoctor-leads: first text to a new RealGreen lead (replaces the Outlook > Zapier > Quo zap, Ty 2026-10-22).
 // Every minute: Customer/Search by create date, keep status "0" (lead). One text per lead, from the Quo number.
 // Send window 8:00 to 21:00 Denver, every day. Leads after 21:00 get the text at 8:00. A text sent on a Sunday says we'll be in touch Monday.
+// Only leads whose RealGreen source is in ld_text_sources (comma list of source IDs) get a text, so leads Ty enters himself
+// (other sources) are skipped (Ty 2026-10-22). ld_sources=1 writes the source list to ld_sources_result.
 // Skips: no usable phone, no_text list, dontText, or the Quo number already texted that phone in the last 24 hours.
 // A first name that looks wrong (two names, digits, all caps etc. that can't be fixed) gets the version without a name instead of waiting.
 // The first run records every lead already in RealGreen as 'baseline' (never texted), so only leads created after go-live get a text.
@@ -33,6 +35,7 @@ async function tick(env) {
     if (mode === "off") return;
     try { await processTest(env); } catch (e) { err += "test: " + String(e).slice(0, 200) + " | "; }
     try { await processCheck(env); } catch (e) { err += "check: " + String(e).slice(0, 200) + " | "; }
+    try { await processSources(env); } catch (e) { err += "sources: " + String(e).slice(0, 200) + " | "; }
     try { note += "found " + (await discover(env)) + " "; } catch (e) { err += "discover: " + String(e).slice(0, 200) + " | "; }
     try { note += "sent " + (await sendPass(env, mode)); } catch (e) { err += "send: " + String(e).slice(0, 200) + " | "; }
     try { await alerts(env); } catch (e) { err += "alerts: " + String(e).slice(0, 200) + " | "; }
@@ -147,6 +150,9 @@ async function sendPass(env, mode) {
     try {
       const c = await api(env, "/Customer/" + L.customer_number);
       if (trim(c.statusCharacter) !== "0") { await set("skipped", "no longer a lead (status " + trim(c.statusCharacter) + ")"); continue; }
+      const src = String(c.sourceCD == null ? "" : c.sourceCD);
+      const allow = (await sGet(env, "ld_text_sources", "")).split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+      if (!allow.length || allow.indexOf(src) < 0) { await set("skipped", "source " + src + " is not an automatic lead source"); continue; }
       const ph = pickPhone(c);
       if (!ph) { await set("skipped", "no phone"); continue; }
       const nt = await env.DB.prepare("SELECT 1 x FROM no_text WHERE phone=?").bind(ph.e164).first();
@@ -227,4 +233,12 @@ async function processCheck(env) {
   let out = "";
   try { out = String(await recentOutgoing(env, phone)); } catch (e) { out = "ERR " + String(e).slice(0, 300); }
   await sSet(env, "ld_check_result", nowIso() + " " + phone + ": " + out);
+}
+
+// ld_sources = "1": saves RealGreen's lead source list (id:name) to ld_sources_result.
+async function processSources(env) {
+  if (!(await sGet(env, "ld_sources", ""))) return;
+  await sSet(env, "ld_sources", "");
+  const list = await api(env, "/SourceCode");
+  await sSet(env, "ld_sources_result", (Array.isArray(list) ? list : []).map(function (x) { return x.id + ":" + trim(x.sourceDescription) + (x.available ? "" : " (off)"); }).join(" | "));
 }

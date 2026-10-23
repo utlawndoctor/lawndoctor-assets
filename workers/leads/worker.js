@@ -87,7 +87,7 @@ function message(first) {
 async function discover(env) {
   const since = denverDate(Date.now() - 2 * 86400000);
   const list = await api(env, "/Customer/Search?CreatedMinValue=" + since + "&CustomerStatusMinValue=0&CustomerStatusMaxValue=0&Records=500");
-  const ids = (Array.isArray(list) ? list : []).filter(function (c) { return trim(c.statusCharacter) === "0" && c.customerNumber; }).map(function (c) { return Number(c.customerNumber); });
+  const ids = (Array.isArray(list) ? list : []).filter(function (c) { return trim(c.statusCharacter) === "0" && (c.customerNumber || c.id); }).map(function (c) { return Number(c.customerNumber || c.id); });
   const first = (await sGet(env, "ld_baseline_done", "")) === "";
   const stmts = ids.map(function (n) { return env.DB.prepare("INSERT OR IGNORE INTO leads (customer_number, first_seen_at, state) VALUES (?,?,?)").bind(n, nowIso(), first ? "baseline" : "new"); });
   for (let i = 0; i < stmts.length; i += 100) await env.DB.batch(stmts.slice(i, i + 100));

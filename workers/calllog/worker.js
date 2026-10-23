@@ -8,7 +8,7 @@
 const BASE = "https://saapi.realgreen.com";
 const ALERT_TO = "ty@utlawndoctor.com";
 const TZ = "America/Denver";
-const LABEL = { "billing": "Billing reminder", "before-service": "Visit heads-up", "caw": "Customer portal invite" };
+const LABEL = { "billing": "Billing reminder", "before-service": "Visit heads-up", "caw": "Customer portal invite", "leads": "New lead text" };
 
 export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(tick(env)); },

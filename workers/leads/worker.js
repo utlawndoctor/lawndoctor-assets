@@ -4,7 +4,8 @@
 // Skips: no usable phone, no_text list, dontText, or the Quo number already texted that phone in the last 24 hours.
 // A first name that looks wrong (two names, digits, all caps etc. that can't be fixed) gets the version without a name instead of waiting.
 // The first run records every lead already in RealGreen as 'baseline' (never texted), so only leads created after go-live get a text.
-// Settings (prefix ld_): ld_mode off|dry-run|live, ld_test {"phone","customer"} sends one test text, ld_last_tick.
+// Settings (prefix ld_): ld_mode off|dry-run|live, ld_test {"phone","customer"} sends one test text,
+//   ld_check "+1..." counts Quo texts to that phone in the last 24h (no send, result in ld_check_result), ld_last_tick.
 // Logged to the RealGreen call log by lawndoctor-calllog (job 'leads'). Errors alert Ty at most every 6 hours.
 
 const BASE = "https://saapi.realgreen.com";
@@ -31,6 +32,7 @@ async function tick(env) {
     const mode = await sGet(env, "ld_mode", "off");
     if (mode === "off") return;
     try { await processTest(env); } catch (e) { err += "test: " + String(e).slice(0, 200) + " | "; }
+    try { await processCheck(env); } catch (e) { err += "check: " + String(e).slice(0, 200) + " | "; }
     try { note += "found " + (await discover(env)) + " "; } catch (e) { err += "discover: " + String(e).slice(0, 200) + " | "; }
     try { note += "sent " + (await sendPass(env, mode)); } catch (e) { err += "send: " + String(e).slice(0, 200) + " | "; }
     try { await alerts(env); } catch (e) { err += "alerts: " + String(e).slice(0, 200) + " | "; }
@@ -80,10 +82,11 @@ function message(first) {
   return sun ? COPY.plain_sun : COPY.plain;
 }
 
-// Finds leads created yesterday or today. On the very first run, everything found is baseline (never texted).
+// Finds leads created in the last 2 days. Search leaves out leads unless the status range is 0 to 0.
+// On the very first run, everything found is baseline (never texted).
 async function discover(env) {
-  const since = denverDate(Date.now() - 86400000);
-  const list = await api(env, "/Customer/Search?CreatedMinValue=" + since + "&Records=500");
+  const since = denverDate(Date.now() - 2 * 86400000);
+  const list = await api(env, "/Customer/Search?CreatedMinValue=" + since + "&CustomerStatusMinValue=0&CustomerStatusMaxValue=0&Records=500");
   const ids = (Array.isArray(list) ? list : []).filter(function (c) { return trim(c.statusCharacter) === "0" && c.customerNumber; }).map(function (c) { return Number(c.customerNumber); });
   const first = (await sGet(env, "ld_baseline_done", "")) === "";
   const stmts = ids.map(function (n) { return env.DB.prepare("INSERT OR IGNORE INTO leads (customer_number, first_seen_at, state) VALUES (?,?,?)").bind(n, nowIso(), first ? "baseline" : "new"); });
@@ -214,4 +217,14 @@ async function processTest(env) {
     out = "sent " + pid + " | lead status " + trim(c.statusCharacter) + " | lead phone " + (ph ? ph.e164 + " " + ph.type : "none") + " | name '" + first + "' | Quo texts to test phone in 24h: " + recent + " | body: " + body;
   } catch (e) { out = "ERR " + String(e).slice(0, 300); }
   await sSet(env, "ld_test_result", nowIso() + " " + out);
+}
+
+// ld_check = "+18019139317": reports how many texts the Quo number sent that phone in the last 24 hours. Sends nothing.
+async function processCheck(env) {
+  const phone = await sGet(env, "ld_check", "");
+  if (!phone) return;
+  await sSet(env, "ld_check", "");
+  let out = "";
+  try { out = String(await recentOutgoing(env, phone)); } catch (e) { out = "ERR " + String(e).slice(0, 300); }
+  await sSet(env, "ld_check_result", nowIso() + " " + phone + ": " + out);
 }

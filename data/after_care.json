@@ -1,17 +1,24 @@
 {
-  "_note": "After Care card wording for the after-service email. Confirmed by Ty 2026-10-09. Keys are categories; service_codes lists which RealGreen service codes trigger each category.",
+  "_note": "After Care card wording for the after-service email. Confirmed by Ty 2026-10-09. Keys are categories; service_codes lists which RealGreen service codes trigger each category. Rounds 1 and 6 (M1, M6) use lawn_optional: watering in is optional, not required (Ty 2026-10-26).",
   "lawn": {
     "label": "Lawn Care",
     "icon": "✅",
     "service_codes": [
-      "M1",
       "M2",
       "M3",
       "M4",
-      "M5",
-      "M6"
+      "M5"
     ],
     "body": "Today's treatment should be watered into the soil by tomorrow morning, either by rainfall or your sprinklers. Please keep children and pets off the lawn until it's dry or has been watered in."
+  },
+  "lawn_optional": {
+    "label": "Lawn Care",
+    "icon": "✅",
+    "service_codes": [
+      "M1",
+      "M6"
+    ],
+    "body": "Watering in today's treatment is optional, not required. Rain or your sprinklers can help it along, but you don't need to water just for this visit. Please keep children and pets off the lawn until it's dry."
   },
   "pest": {
     "label": "Pest Control",

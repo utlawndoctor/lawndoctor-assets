@@ -1,0 +1,30 @@
+{
+  "_note": "Copy for the status-3 quote email (lawndoctor-estimate Worker). Approved by Ty 2026-10-26. {{FirstName}} is filled by the Worker. Never use em dashes. Prices, totals and the expiry date are built by the Worker from RealGreen, never written here.",
+  "send1": {
+    "subject": "{{FirstName}}, your Lawn Doctor quote for {{Street}}",
+    "preheader": "Your measured price, good through {{ExpiryShort}}.",
+    "headline": "Your quote is ready,<br>{{FirstName}}!",
+    "subline": "Here is the price for your lawn",
+    "intro": "Hi {{FirstName}}, thanks for letting us take a look. {{SizeClause}}No contract, and you can pause or cancel any time.",
+    "prepay_note": "Pay for the full season up front instead of per visit.",
+    "prepay_note_multi": "Pay for the full season up front instead of per visit. The 5% comes off your total above."
+  },
+  "followup": {
+    "subject": "{{FirstName}}, your quote expires {{ExpiryShort}}",
+    "preheader": "Same price, nothing has changed. Good through {{ExpiryShort}}.",
+    "headline": "Still thinking it over,<br>{{FirstName}}?",
+    "subline": "Your price holds through {{ExpiryShort}}",
+    "intro": "Hi {{FirstName}}, just a quick note before your quote expires. Nothing has changed, and there is no pressure either way. If the timing is not right, tell us and we will leave you alone.",
+    "prepay_note": "Pay for the full season up front instead of per visit.",
+    "prepay_note_multi": "Pay for the full season up front instead of per visit. The 5% comes off your total above."
+  },
+  "size_clause": "We measured your lawn at {{LawnSize}}, so the price below is your exact price, not a rough estimate. ",
+  "size_clause_multi": "We measured your lawn at {{LawnSize}}, so the prices below are your exact prices, not rough estimates. ",
+  "cta_send1_single": "Reply to this email with a yes and we will get you on the schedule.",
+  "cta_send1_multi": "Reply to this email with a yes and we will get you on the schedule. Tell us if you want both programs or just one.",
+  "cta_phone": "Or call or text {{BranchPhone}} and we can set up your account and payment on the spot.",
+  "cta_followup": "Reply to this email with a yes, or call or text {{BranchPhone}}, and we will set up your account and payment.",
+  "expiry_line": "This price is good through {{ExpiryLong}}.",
+  "expiry_box_title": "This price expires {{ExpiryShort}}",
+  "expiry_box_body": "After that we are happy to requote, it may just come back at a different number."
+}

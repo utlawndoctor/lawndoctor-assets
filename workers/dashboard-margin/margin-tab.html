@@ -1,0 +1,158 @@
+  <div id="tab-margin" class="hidden">
+    <section class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-emerald-500">
+        <div class="text-xs uppercase tracking-wide text-slate-500">Revenue</div>
+        <div class="text-3xl font-semibold mt-1 text-emerald-700" id="mg-kpi-rev">&ndash;</div>
+        <div class="text-xs text-slate-500 mt-1" id="mg-kpi-rev-sub">Completed visits</div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-amber-500">
+        <div class="text-xs uppercase tracking-wide text-slate-500">Materials</div>
+        <div class="text-3xl font-semibold mt-1 text-amber-700" id="mg-kpi-mat">&ndash;</div>
+        <div class="text-xs text-slate-500 mt-1" id="mg-kpi-mat-sub"></div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-sky-500">
+        <div class="text-xs uppercase tracking-wide text-slate-500">Tech labor</div>
+        <div class="text-3xl font-semibold mt-1 text-sky-700" id="mg-kpi-lab">&ndash;</div>
+        <div class="text-xs text-slate-500 mt-1" id="mg-kpi-lab-sub"></div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-slate-400">
+        <div class="text-xs uppercase tracking-wide text-slate-500">Royalty and card fees</div>
+        <div class="text-3xl font-semibold mt-1 text-slate-700" id="mg-kpi-fee">&ndash;</div>
+        <div class="text-xs text-slate-500 mt-1" id="mg-kpi-fee-sub"></div>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-indigo-500">
+        <div class="text-xs uppercase tracking-wide text-slate-500">Contribution margin</div>
+        <div class="text-3xl font-semibold mt-1 text-indigo-700" id="mg-kpi-mg">&ndash;</div>
+        <div class="text-xs text-slate-500 mt-1" id="mg-kpi-mg-sub"></div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-lg shadow-sm p-5 mb-6 border-l-4 border-l-slate-400">
+      <h2 class="text-lg font-semibold">What is included</h2>
+      <ul class="text-sm text-slate-600 mt-2 space-y-1 list-disc pl-5" id="mg-notes">
+        <li>Loading&hellip;</li>
+      </ul>
+    </section>
+
+    <section class="bg-white rounded-lg shadow-sm p-5 mb-6">
+      <h2 class="text-lg font-semibold">Margin by service</h2>
+      <p class="text-xs text-slate-500 mb-3">One row per service type. Lawn Maintainer rounds are shown separately. A star means some products on those visits came from last season's stock and are not costed yet, so the margin is overstated.</p>
+      <div id="mg-service" class="overflow-x-auto text-sm text-slate-500">Loading&hellip;</div>
+    </section>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <section class="bg-white rounded-lg shadow-sm p-5">
+        <h2 class="text-lg font-semibold">Lawn Maintainer margin by lawn size</h2>
+        <p class="text-xs text-slate-500 mb-3">Customers grouped by lawn size, Lawn Maintainer visits only. A falling margin as lawns get bigger points at the price chart for large lawns.</p>
+        <div id="mg-size" class="overflow-x-auto text-sm text-slate-500">Loading&hellip;</div>
+      </section>
+      <section class="bg-white rounded-lg shadow-sm p-5">
+        <h2 class="text-lg font-semibold">Margin by month</h2>
+        <p class="text-xs text-slate-500 mb-3">By the month the visit was done.</p>
+        <div id="mg-month" class="overflow-x-auto text-sm text-slate-500">Loading&hellip;</div>
+      </section>
+    </div>
+
+    <section class="bg-white rounded-lg shadow-sm p-5 mb-6">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <h2 class="text-lg font-semibold">Customers by margin</h2>
+        <div class="flex items-center gap-2 text-sm">
+          <label for="mg-sort" class="text-slate-600">Sort</label>
+          <select id="mg-sort" class="border rounded px-2 py-1 text-sm bg-white">
+            <option value="pct">Lowest margin % first</option>
+            <option value="margin">Lowest margin $ first</option>
+            <option value="rev">Highest revenue first</option>
+          </select>
+          <label class="text-slate-600 ml-2"><input type="checkbox" id="mg-minrev" checked> Only customers over $200</label>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500 mb-3 mt-1">All services for the season so far. Shows 60 rows; download the CSV for every customer.</p>
+      <div id="mg-cust" class="overflow-x-auto text-sm text-slate-500">Loading&hellip;</div>
+      <div class="mt-3"><button id="mg-csv" class="border border-slate-400 text-slate-700 px-3 py-1 rounded text-sm hover:bg-slate-50">Download CSV</button> <span id="mg-stamp" class="text-xs text-slate-400 ml-2"></span></div>
+    </section>
+
+    <script>
+    (function(){
+      var MG = null, mgBusy = false;
+      function money(n){ if (n === null || n === undefined || isNaN(n)) return '&ndash;'; var neg = n < 0; var s = Math.round(Math.abs(n)).toLocaleString('en-US'); return (neg ? '-$' : '$') + s; }
+      function pct(n){ return (n === null || n === undefined || isNaN(n)) ? '&ndash;' : (Math.round(n * 1000) / 10).toFixed(1) + '%'; }
+      function pcls(n){ if (n === null || n === undefined) return 'text-slate-400'; return n < 0.3 ? 'text-red-600 font-semibold' : (n < 0.45 ? 'text-amber-700' : 'text-emerald-700'); }
+      function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function table(rows, label, opts){
+        opts = opts || {};
+        var h = '<table class="w-full text-sm"><thead class="bg-slate-50 text-slate-600"><tr>'
+          + '<th class="text-left px-3 py-2">' + label + '</th><th class="text-right px-3 py-2">Visits</th><th class="text-right px-3 py-2">Revenue</th><th class="text-right px-3 py-2">Materials</th><th class="text-right px-3 py-2">Labor</th><th class="text-right px-3 py-2">Royalty + fees</th><th class="text-right px-3 py-2">Margin</th><th class="text-right px-3 py-2">Margin %</th></tr></thead><tbody>';
+        rows.forEach(function(r){
+          var name = opts.name ? opts.name(r) : esc(r.g);
+          h += '<tr class="border-t border-slate-100"><td class="px-3 py-2 text-slate-800">' + name + (r.unp > 0 && !opts.noStar ? ' <span class="text-amber-600" title="Some products not costed yet">*</span>' : '') + '</td>'
+            + '<td class="px-3 py-2 text-right text-slate-700">' + (r.n || 0).toLocaleString('en-US') + '</td>'
+            + '<td class="px-3 py-2 text-right text-slate-700">' + money(r.rev) + '</td>'
+            + '<td class="px-3 py-2 text-right text-slate-700">' + money(r.mat) + '</td>'
+            + '<td class="px-3 py-2 text-right text-slate-700">' + money(r.lab) + '</td>'
+            + '<td class="px-3 py-2 text-right text-slate-700">' + money(r.fees) + '</td>'
+            + '<td class="px-3 py-2 text-right text-slate-800 font-medium">' + money(r.margin) + '</td>'
+            + '<td class="px-3 py-2 text-right ' + pcls(r.pct) + '">' + pct(r.pct) + '</td></tr>';
+        });
+        return h + '</tbody></table>';
+      }
+      function renderCust(){
+        if (!MG) return;
+        var sort = document.getElementById('mg-sort').value;
+        var min = document.getElementById('mg-minrev').checked;
+        var rows = MG.customers.filter(function(r){ return !min || r.rev >= 200; });
+        rows.sort(function(a, b){ if (sort === 'rev') return b.rev - a.rev; if (sort === 'margin') return a.margin - b.margin; return (a.pct === null ? 9 : a.pct) - (b.pct === null ? 9 : b.pct); });
+        var shown = rows.slice(0, 60);
+        document.getElementById('mg-cust').innerHTML = table(shown, 'Customer', { name: function(r){ return esc(r.name) + ' <span class="text-slate-400">#' + r.c + (r.k ? ' &middot; ' + (Math.round(r.k * 10) / 10) + 'k sq ft' : '') + '</span>'; } }) + '<div class="text-xs text-slate-500 mt-2">' + rows.length + ' customers match. Showing ' + shown.length + '.</div>';
+      }
+      function render(d){
+        MG = d;
+        var t = d.total;
+        document.getElementById('mg-kpi-rev').innerHTML = money(t.rev);
+        document.getElementById('mg-kpi-rev-sub').innerHTML = (t.n || 0).toLocaleString('en-US') + ' completed visits through ' + d.thru;
+        document.getElementById('mg-kpi-mat').innerHTML = money(t.mat);
+        document.getElementById('mg-kpi-mat-sub').innerHTML = pct(t.mat / t.rev) + ' of revenue';
+        document.getElementById('mg-kpi-lab').innerHTML = money(t.lab);
+        document.getElementById('mg-kpi-lab-sub').innerHTML = pct(t.lab / t.rev) + ' of revenue';
+        document.getElementById('mg-kpi-fee').innerHTML = money(t.fees);
+        document.getElementById('mg-kpi-fee-sub').innerHTML = d.rates.royalty_pct + '% royalty + ' + d.rates.card_pct + '% card fees';
+        document.getElementById('mg-kpi-mg').innerHTML = pct(t.pct);
+        document.getElementById('mg-kpi-mg-sub').innerHTML = money(t.margin) + ' after the costs listed below';
+        var notes = [
+          '<b>Revenue:</b> what RealGreen billed for completed visits, after discounts, dated to the day of the visit. Visits through ' + esc(d.thru) + ' (the last payroll period loaded). Later visits are added after the next payroll.',
+          '<b>Materials:</b> actual product invoices from Target Specialty, Steve Regan and SiteOne for this season, spread across visits in proportion to how much of each product RealGreen recorded on each visit. Matches QuickBooks Material Cost within about $1,000.' + (d.unpricedUses > 0 ? ' <span class="text-amber-700">' + d.unpricedUses.toLocaleString('en-US') + ' product uses came from last season&rsquo;s stock (for example Tetrino, 22-0-0 with Dithiopyr, 21-0-7) and have no cost yet, so those services are marked with a star.</span>' : ''),
+          '<b>Tech labor:</b> Gusto pay for the lawn techs (Hunter, Kasin, Dawson) plus employer payroll taxes plus workers&rsquo; comp at 2.90% of wages. All paid hours are counted, including shop, prep and drive time. Each day&rsquo;s labor is split across that day&rsquo;s stops: half evenly per stop, half by lawn size; services at the same stop share it by price. Hours on days with no completed visit are spread across the season by revenue.',
+          '<b>Royalty and card fees:</b> ' + d.rates.royalty_pct + '% royalty and service fees plus ' + d.rates.card_pct + '% merchant fees, taken off every dollar of revenue. These are the January to September QuickBooks ratios.',
+          '<b>Not included:</b> fuel, vehicles, equipment lease and repairs, general insurance, marketing and advertising, office payroll, rent, software and owners&rsquo; pay. Those are overhead; this view is contribution margin, what each visit leaves to cover them.'
+        ];
+        document.getElementById('mg-notes').innerHTML = notes.map(function(x){ return '<li>' + x + '</li>'; }).join('');
+        document.getElementById('mg-service').innerHTML = table(d.byService, 'Service');
+        document.getElementById('mg-size').innerHTML = table(d.bySize, 'Lawn size', { name: function(r){ return esc(String(r.g).split('|')[1] || r.g); }, noStar: true });
+        document.getElementById('mg-month').innerHTML = table(d.byMonth, 'Month', { name: function(r){ var p = String(r.g).split('-'); return new Date(Number(p[0]), Number(p[1]) - 1, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); } });
+        renderCust();
+        document.getElementById('mg-stamp').textContent = 'Updated ' + new Date().toLocaleTimeString();
+      }
+      function loadMargin(){
+        if (mgBusy) return; mgBusy = true;
+        fetch('/api/margin?t=' + Date.now(), { credentials: 'include', cache: 'no-store' })
+          .then(function(r){ return r.json(); })
+          .then(function(d){ mgBusy = false; if (d.error) throw new Error(d.error); render(d); })
+          .catch(function(e){ mgBusy = false; document.getElementById('mg-service').innerHTML = 'Could not load: ' + esc(e.message || e); });
+      }
+      window.ldLoadMargin = loadMargin;
+      document.addEventListener('DOMContentLoaded', function(){
+        document.getElementById('mg-sort').addEventListener('change', renderCust);
+        document.getElementById('mg-minrev').addEventListener('change', renderCust);
+        document.getElementById('mg-csv').addEventListener('click', function(){
+          if (!MG) return;
+          var lines = ['customer_number,name,lawn_size_k,visits,revenue,materials,labor,royalty_fees,margin,margin_pct'];
+          MG.customers.forEach(function(r){ lines.push([r.c, '"' + String(r.name).replace(/"/g, '""') + '"', r.k || '', r.n, (r.rev||0).toFixed(2), (r.mat||0).toFixed(2), (r.lab||0).toFixed(2), (r.fees||0).toFixed(2), (r.margin||0).toFixed(2), r.pct === null ? '' : (r.pct * 100).toFixed(1)].join(',')); });
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
+          a.download = 'customer-margin-' + MG.thru + '.csv';
+          document.body.appendChild(a); a.click(); a.remove();
+        });
+      });
+    })();
+    </script>
+  </div>
+

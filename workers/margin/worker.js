@@ -4,7 +4,12 @@
 //         mg_products (RealGreen product list), mg_units (unit codes).
 // Backfill: pages /Service/Search?ServiceStatus=S&StartDateMinValue=<mg_from> 500 at a time until done (settings mg_backfill).
 // Daily refresh: the last 10 days of completed services are re-read and upserted.
-// Settings (prefix mg_): mg_mode off|on, mg_from (default 2026-01-01), mg_backfill JSON {offset, done}, mg_last_tick.
+// Settings (prefix mg_): mg_mode off|on, mg_from (default 2026-01-01), mg_backfill JSON {offset, done}, mg_last_tick,
+//   mg_recompute=1 forces the allocation step on the next tick.
+// Each night after the pull it also refreshes customer names (mg_customers) and re-runs the cost allocation:
+//   material: each product's season invoice spend (mg_product_cost) spread over that product's recorded uses;
+//   labor: each day's Gusto cost incl. workers comp (mg_labor_day, loaded by Claude after each payroll) split
+//   by stop (customer+day) half evenly, half by lawn size, within a stop by price; non-visit days pooled by revenue.
 
 const BASE = "https://saapi.realgreen.com";
 const TZ = "America/Denver";
@@ -21,6 +26,7 @@ async function tick(env) {
     await env.DB.prepare("CREATE TABLE IF NOT EXISTS mg_services (id INTEGER PRIMARY KEY, customer_number INTEGER, service_code TEXT, program_id INTEGER, round INTEGER, service_year INTEGER, done_date TEXT, size REAL, price REAL, total_amount REAL, production_value REAL, discount REAL, man_hours REAL, est_man_hours REAL, employees TEXT, products TEXT, is_reversed INTEGER, updated_at TEXT)").run();
     await env.DB.prepare("CREATE TABLE IF NOT EXISTS mg_products (id INTEGER PRIMARY KEY, code TEXT, name TEXT, epa TEXT, size TEXT, unit INTEGER, updated_at TEXT)").run();
     await env.DB.prepare("CREATE TABLE IF NOT EXISTS mg_units (id INTEGER PRIMARY KEY, name TEXT)").run();
+    await env.DB.prepare("CREATE TABLE IF NOT EXISTS mg_customers (id INTEGER PRIMARY KEY, name TEXT, status TEXT, updated_at TEXT)").run();
     if ((await sGet(env, "mg_mode", "off")) !== "on") return;
     const key = await env.SAAPI_KEY.get();
     const from = await sGet(env, "mg_from", "2026-01-01");
@@ -39,8 +45,15 @@ async function tick(env) {
         let off = 0, n = 0, tot = 0;
         do { n = await pull(env, key, denverDate(Date.now() - 10 * 86400000), off); off += n; tot += n; } while (n === PAGE && off < 5000);
         await refreshLists(env, key);
+        await refreshCustomers(env, key);
+        await recompute(env);
         await sSet(env, "mg_daily_at", today);
         note += "daily " + tot + " ";
+      } else if ((await sGet(env, "mg_recompute", "")) === "1") {
+        await sSet(env, "mg_recompute", "");
+        await refreshCustomers(env, key);
+        await recompute(env);
+        note += "recomputed ";
       } else note += "idle ";
     }
   } catch (e) { err = String(e).slice(0, 300); }
@@ -99,4 +112,45 @@ async function refreshLists(env, key) {
     });
     for (let i = 0; i < st.length; i += 50) await env.DB.batch(st.slice(i, i + 50));
   } catch (e) {}
+}
+
+// Customer names for the margin report (first and last name only).
+async function refreshCustomers(env, key) {
+  const now = new Date().toISOString();
+  let off = 0, n = 0;
+  do {
+    const list = await api(key, "/Customer/Search?CustomerStatusMinValue=0&CustomerStatusMaxValue=9&Records=" + PAGE + "&Offset=" + off);
+    const rows = Array.isArray(list) ? list : [];
+    n = rows.length; off += n;
+    const st = rows.filter(function (c) { return c && (c.customerNumber || c.id); }).map(function (c) {
+      const nm = (String(c.firstName || "").trim() + " " + String(c.lastName || "").trim()).trim() || String(c.companyName || "").trim();
+      return env.DB.prepare("INSERT INTO mg_customers (id, name, status, updated_at) VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET name=excluded.name, status=excluded.status, updated_at=excluded.updated_at").bind(Number(c.customerNumber || c.id), nm, String(c.statusCharacter || "").trim(), now);
+    });
+    for (let i = 0; i < st.length; i += 50) await env.DB.batch(st.slice(i, i + 50));
+  } while (n === PAGE && off < 20000);
+}
+
+// Re-runs the material and labor allocation over every collected service.
+async function recompute(env) {
+  const db = env.DB;
+  await db.prepare("CREATE TABLE IF NOT EXISTS mg_labor_alloc (service_id INTEGER PRIMARY KEY, labor_day REAL, labor_pool REAL)").run();
+  await db.prepare("CREATE TABLE IF NOT EXISTS mg_material_alloc (service_id INTEGER PRIMARY KEY, material REAL, material_unpriced_uses INTEGER)").run();
+  await db.prepare("CREATE TABLE IF NOT EXISTS mg_labor_day (day TEXT PRIMARY KEY, cost REAL, minutes REAL, source TEXT, wc REAL)").run();
+  await db.prepare("CREATE TABLE IF NOT EXISTS mg_product_cost (product_id INTEGER PRIMARY KEY, pool_id INTEGER, spend_2026 REAL, unit_cost REAL, note TEXT)").run();
+  await db.batch([
+    db.prepare("DELETE FROM mg_material_alloc"),
+    db.prepare("WITH u AS (SELECT s.id sid, COALESCE(c.pool_id, -1) pool, CAST(json_extract(j.value,'$.amt') AS REAL) amt, CAST(json_extract(j.value,'$.area') AS REAL) area FROM mg_services s, json_each(s.products) j LEFT JOIN mg_product_cost c ON c.product_id = json_extract(j.value,'$.id') WHERE s.is_reversed=0), " +
+      "r AS (SELECT pool, SUM(CASE WHEN amt>0 THEN amt ELSE 0 END) / NULLIF(SUM(CASE WHEN amt>0 THEN area ELSE 0 END),0) rate FROM u GROUP BY pool), " +
+      "w AS (SELECT u.sid, u.pool, CASE WHEN u.amt>0 THEN u.amt WHEN r.rate IS NOT NULL THEN COALESCE(u.area,0)*r.rate ELSE COALESCE(u.area,0) END wt FROM u JOIN r ON r.pool=u.pool), " +
+      "t AS (SELECT pool, SUM(wt) tw FROM w GROUP BY pool) " +
+      "INSERT INTO mg_material_alloc (service_id, material, material_unpriced_uses) SELECT s.id, COALESCE((SELECT SUM(w.wt / NULLIF(t.tw,0) * pc.spend_2026) FROM w JOIN t ON t.pool=w.pool JOIN mg_product_cost pc ON pc.product_id=w.pool WHERE w.sid=s.id AND w.pool<>-1),0), (SELECT COUNT(*) FROM w WHERE w.sid=s.id AND w.pool=-1) FROM mg_services s WHERE s.is_reversed=0"),
+    db.prepare("DELETE FROM mg_labor_alloc"),
+    db.prepare("INSERT INTO mg_labor_alloc (service_id, labor_day, labor_pool) " +
+      "WITH st AS (SELECT done_date, customer_number, MAX(COALESCE(size,0)) sz, SUM(COALESCE(total_amount,0)) amt, COUNT(*) cnt FROM mg_services WHERE is_reversed=0 GROUP BY done_date, customer_number), " +
+      "dy AS (SELECT done_date, COUNT(*) ns, SUM(sz) k FROM st GROUP BY done_date) " +
+      "SELECT s.id, (l.cost + COALESCE(l.wc,0)) * (0.5 / dy.ns + 0.5 * st.sz / NULLIF(dy.k,0)) * (CASE WHEN st.amt > 0 THEN COALESCE(s.total_amount,0) / st.amt ELSE 1.0 / st.cnt END), 0 " +
+      "FROM mg_services s JOIN st ON st.done_date=s.done_date AND st.customer_number=s.customer_number JOIN dy ON dy.done_date=s.done_date LEFT JOIN mg_labor_day l ON l.day=s.done_date WHERE s.is_reversed=0"),
+    db.prepare("UPDATE mg_labor_alloc SET labor_pool = (SELECT COALESCE(SUM(cost + COALESCE(wc,0)),0) FROM mg_labor_day WHERE day NOT IN (SELECT DISTINCT done_date FROM mg_services WHERE is_reversed=0)) * (SELECT COALESCE(total_amount,0) FROM mg_services WHERE id=service_id) / (SELECT SUM(COALESCE(total_amount,0)) FROM mg_services WHERE is_reversed=0 AND done_date <= (SELECT MAX(day) FROM mg_labor_day)) WHERE service_id IN (SELECT id FROM mg_services WHERE done_date <= (SELECT MAX(day) FROM mg_labor_day))")
+  ]);
+  await sSet(env, "mg_recomputed_at", new Date().toISOString());
 }

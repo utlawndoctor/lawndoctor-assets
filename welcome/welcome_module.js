@@ -63,7 +63,7 @@ async function wPoll(env, cutoff) {
 const money = (n) => "$" + (Math.round(Number(n) * 100) / 100).toFixed(2);
 
 // pure renderer: progs = [{name, blurb, std, price, n, code}]
-function wMoneyC(c) { return "$" + (Math.round(Number(c) || 0) / 100).toFixed(2); }
+function wMoneyC(c) { var s = (Math.round(Number(c) || 0) / 100).toFixed(2).split("."); return "$" + s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + s[1]; }
 function wPer(p) { return (p.perService != null ? wMoneyC(p.perService) : money(p.std)) + "/service"; }
 function wYr(p) { return (p.net != null ? wMoneyC(p.net) : money(p.price)) + "/yr"; }
 function wDiscChip(p) {

@@ -36,7 +36,7 @@
 
     <section class="bg-white rounded-lg shadow-sm p-5 mb-6">
       <h2 class="text-lg font-semibold">Margin by service</h2>
-      <p class="text-xs text-slate-500 mb-3">One row per service type. Lawn Maintainer rounds are shown separately. A star means some products on those visits came from last season's stock and are not costed yet, so the margin is overstated.</p>
+      <p class="text-xs text-slate-500 mb-3">Lawn Maintainer rounds 1 to 6 are listed first, then other services by revenue. Click any column heading to sort. A star means some products on those visits came from last season's stock and are not costed yet, so the margin is overstated.</p>
       <div id="mg-service" class="overflow-x-auto text-sm text-slate-500">Loading&hellip;</div>
     </section>
 
@@ -66,22 +66,26 @@
           <label class="text-slate-600 ml-2"><input type="checkbox" id="mg-minrev" checked> Only customers over $200</label>
         </div>
       </div>
-      <p class="text-xs text-slate-500 mb-3 mt-1">All services for the season so far. Shows 60 rows; download the CSV for every customer.</p>
+      <p class="text-xs text-slate-500 mb-3 mt-1">All services for the season so far. Click a column heading to sort. Shows 60 rows; download the CSV for every customer.</p>
       <div id="mg-cust" class="overflow-x-auto text-sm text-slate-500">Loading&hellip;</div>
       <div class="mt-3"><button id="mg-csv" class="border border-slate-400 text-slate-700 px-3 py-1 rounded text-sm hover:bg-slate-50">Download CSV</button> <span id="mg-stamp" class="text-xs text-slate-400 ml-2"></span></div>
     </section>
 
     <script>
     (function(){
-      var MG = null, mgBusy = false;
+      var MG = null, mgBusy = false, SORT = {};
+      function svcDefault(rows){ return rows.slice().sort(function(a, b){ var la = /^Lawn Maintainer/.test(a.g), lb = /^Lawn Maintainer/.test(b.g); if (la && lb) return String(a.g).localeCompare(String(b.g), undefined, { numeric: true }); if (la) return -1; if (lb) return 1; return (b.rev || 0) - (a.rev || 0); }); }
+      function sortRows(key, rows){ var s = SORT[key]; if (!s) return rows; var r = rows.slice(); r.sort(function(a, b){ var x = a[s.col], y = b[s.col]; if (s.col === 'g' || s.col === 'name') return s.dir * String(x).localeCompare(String(y), undefined, { numeric: true }); x = (x === null || x === undefined) ? -1e15 : x; y = (y === null || y === undefined) ? -1e15 : y; return s.dir * (x - y); }); return r; }
+      function th(key, col, text, left){ var s = SORT[key], arrow = s && s.col === col ? (s.dir > 0 ? ' &#9650;' : ' &#9660;') : ''; return '<th data-key="' + key + '" data-col="' + col + '" class="' + (left ? 'text-left' : 'text-right') + ' px-3 py-2 cursor-pointer select-none hover:text-slate-900" title="Click to sort">' + text + arrow + '</th>'; }
       function money(n){ if (n === null || n === undefined || isNaN(n)) return '&ndash;'; var neg = n < 0; var s = Math.round(Math.abs(n)).toLocaleString('en-US'); return (neg ? '-$' : '$') + s; }
       function pct(n){ return (n === null || n === undefined || isNaN(n)) ? '&ndash;' : (Math.round(n * 1000) / 10).toFixed(1) + '%'; }
       function pcls(n){ if (n === null || n === undefined) return 'text-slate-400'; return n < 0.3 ? 'text-red-600 font-semibold' : (n < 0.45 ? 'text-amber-700' : 'text-emerald-700'); }
       function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
       function table(rows, label, opts){
         opts = opts || {};
+        var k = opts.key || 'x';
         var h = '<table class="w-full text-sm"><thead class="bg-slate-50 text-slate-600"><tr>'
-          + '<th class="text-left px-3 py-2">' + label + '</th><th class="text-right px-3 py-2">Visits</th><th class="text-right px-3 py-2">Revenue</th><th class="text-right px-3 py-2">Materials</th><th class="text-right px-3 py-2">Labor</th><th class="text-right px-3 py-2">Royalty + fees</th><th class="text-right px-3 py-2">Margin</th><th class="text-right px-3 py-2">Margin %</th></tr></thead><tbody>';
+          + th(k, opts.nameCol || 'g', label, true) + th(k, 'n', 'Visits') + th(k, 'rev', 'Revenue') + th(k, 'mat', 'Materials') + th(k, 'lab', 'Labor') + th(k, 'fees', 'Royalty + fees') + th(k, 'margin', 'Margin') + th(k, 'pct', 'Margin %') + '</tr></thead><tbody>';
         rows.forEach(function(r){
           var name = opts.name ? opts.name(r) : esc(r.g);
           h += '<tr class="border-t border-slate-100"><td class="px-3 py-2 text-slate-800">' + name + (r.unp > 0 && !opts.noStar ? ' <span class="text-amber-600" title="Some products not costed yet">*</span>' : '') + '</td>'
@@ -101,8 +105,9 @@
         var min = document.getElementById('mg-minrev').checked;
         var rows = MG.customers.filter(function(r){ return !min || r.rev >= 200; });
         rows.sort(function(a, b){ if (sort === 'rev') return b.rev - a.rev; if (sort === 'margin') return a.margin - b.margin; return (a.pct === null ? 9 : a.pct) - (b.pct === null ? 9 : b.pct); });
+        rows = sortRows('cust', rows);
         var shown = rows.slice(0, 60);
-        document.getElementById('mg-cust').innerHTML = table(shown, 'Customer', { name: function(r){ return esc(r.name) + ' <span class="text-slate-400">#' + r.c + (r.k ? ' &middot; ' + (Math.round(r.k * 10) / 10) + 'k sq ft' : '') + '</span>'; } }) + '<div class="text-xs text-slate-500 mt-2">' + rows.length + ' customers match. Showing ' + shown.length + '.</div>';
+        document.getElementById('mg-cust').innerHTML = table(shown, 'Customer', { key: 'cust', nameCol: 'name', name: function(r){ return esc(r.name) + ' <span class="text-slate-400">#' + r.c + (r.k ? ' &middot; ' + (Math.round(r.k * 10) / 10) + 'k sq ft' : '') + '</span>'; } }) + '<div class="text-xs text-slate-500 mt-2">' + rows.length + ' customers match. Showing ' + shown.length + '.</div>';
       }
       function render(d){
         MG = d;
@@ -125,11 +130,15 @@
           '<b>Not included:</b> fuel, vehicles, equipment lease and repairs, general insurance, marketing and advertising, office payroll, rent, software and owners&rsquo; pay. Those are overhead; this view is contribution margin, what each visit leaves to cover them.'
         ];
         document.getElementById('mg-notes').innerHTML = notes.map(function(x){ return '<li>' + x + '</li>'; }).join('');
-        document.getElementById('mg-service').innerHTML = table(d.byService, 'Service');
-        document.getElementById('mg-size').innerHTML = table(d.bySize, 'Lawn size', { name: function(r){ return esc(String(r.g).split('|')[1] || r.g); }, noStar: true });
-        document.getElementById('mg-month').innerHTML = table(d.byMonth, 'Month', { name: function(r){ var p = String(r.g).split('-'); return new Date(Number(p[0]), Number(p[1]) - 1, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); } });
+        renderTables();
         renderCust();
         document.getElementById('mg-stamp').textContent = 'Updated ' + new Date().toLocaleTimeString();
+      }
+      function renderTables(){
+        if (!MG) return;
+        document.getElementById('mg-service').innerHTML = table(sortRows('svc', svcDefault(MG.byService)), 'Service', { key: 'svc' });
+        document.getElementById('mg-size').innerHTML = table(sortRows('size', MG.bySize), 'Lawn size', { key: 'size', name: function(r){ return esc(String(r.g).split('|')[1] || r.g); }, noStar: true });
+        document.getElementById('mg-month').innerHTML = table(sortRows('month', MG.byMonth), 'Month', { key: 'month', name: function(r){ var p = String(r.g).split('-'); return new Date(Number(p[0]), Number(p[1]) - 1, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); } });
       }
       function loadMargin(){
         if (mgBusy) return; mgBusy = true;
@@ -140,7 +149,14 @@
       }
       window.ldLoadMargin = loadMargin;
       document.addEventListener('DOMContentLoaded', function(){
-        document.getElementById('mg-sort').addEventListener('change', renderCust);
+        document.getElementById('mg-sort').addEventListener('change', function(){ delete SORT.cust; renderCust(); });
+        document.getElementById('tab-margin').addEventListener('click', function(e){
+          var t = e.target && e.target.closest ? e.target.closest('th[data-col]') : null;
+          if (!t) return;
+          var k = t.getAttribute('data-key'), c = t.getAttribute('data-col'), s = SORT[k];
+          SORT[k] = (s && s.col === c) ? { col: c, dir: -s.dir } : { col: c, dir: (c === 'g' || c === 'name') ? 1 : -1 };
+          if (k === 'cust') renderCust(); else renderTables();
+        });
         document.getElementById('mg-minrev').addEventListener('change', renderCust);
         document.getElementById('mg-csv').addEventListener('click', function(){
           if (!MG) return;

@@ -63,18 +63,42 @@ async function wPoll(env, cutoff) {
 const money = (n) => "$" + (Math.round(Number(n) * 100) / 100).toFixed(2);
 
 // pure renderer: progs = [{name, blurb, std, price, n, code}]
-function wRender(kind, tpl, first, address, progs) {
+function wMoneyC(c) { return "$" + (Math.round(Number(c) || 0) / 100).toFixed(2); }
+function wPer(p) { return (p.perService != null ? wMoneyC(p.perService) : money(p.std)) + "/service"; }
+function wYr(p) { return (p.net != null ? wMoneyC(p.net) : money(p.price)) + "/yr"; }
+function wDiscChip(p) {
+  if (!p || !(Number(p.discount) > 0)) return "";
+  return '<table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:8px;"><tr><td style="background:#f0f8f3;border-radius:6px;padding:5px 10px;color:#00623a;font-size:12px;font-weight:bold;">Discount applied: &#8722;' + wMoneyC(p.discount) + '</td></tr></table>';
+}
+// Prepay offer: 5% off the season total, calculated here because RealGreen does not store it.
+// Hidden when the customer has already prepaid, and when no program has priced service rows.
+function wPrepayBlock(progs, opts) {
+  if (opts && opts.prepaid) return "";
+  var net = 0, have = false;
+  for (var i = 0; i < progs.length; i++) { if (progs[i].net != null) { net += Number(progs[i].net); have = true; } }
+  if (!have || !(net > 0)) return "";
+  var pre = Math.round(net * 95 / 100);
+  return '<tr><td style="padding:16px 32px 6px 32px;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f8f3;border:2px solid #008349;border-radius:14px;"><tr><td style="padding:18px 22px;">' +
+    '<div style="color:#231f20;font-size:15px;font-weight:bold;margin-bottom:4px;">&#128176; Prefer to prepay? Save 5%</div>' +
+    '<div style="color:#555555;font-size:13px;line-height:1.45;margin-bottom:10px;">Pay for the season up front and it is <strong>' + wMoneyC(pre) + '</strong> instead of ' + wMoneyC(net) + ', a saving of ' + wMoneyC(net - pre) + '.</div>' +
+    '<div style="color:#555555;font-size:13px;line-height:1.45;">Call or text 385-463-2430 and we will switch you over. Nothing changes otherwise.</div>' +
+    '</td></tr></table></td></tr>';
+}
+
+function wRender(kind, tpl, first, address, progs, opts) {
   let h = tpl;
   const rowM = h.match(/PROGRAM_ROW_REFERENCE_START[\s\S]*?(<table[\s\S]*<\/table>)\s*PROGRAM_ROW_REFERENCE_END/);
   if (!rowM) throw new Error("row template not found");
   const rowT = rowM[1];
   const rows = progs.map(function (p) {
     let r = rowT;
-    const single = Math.abs(Number(p.std) - Number(p.price)) < 0.005;
+    const single = p.n != null ? Number(p.n) === 1 : Math.abs(Number(p.std) - Number(p.price)) < 0.005;
     if (single) r = r.replace(/<div style="color:#888888[^>]*>\{\{ProgramPriceTotal\}\}<\/div>/, "");
     return r.replace(/\{\{ProgramName\}\}/g, function () { return esc(p.name); })
-      .replace(/\{\{ProgramPricePerService\}\}/g, function () { return money(p.std) + "/service"; })
-      .replace(/\{\{ProgramPriceTotal\}\}/g, function () { return money(p.price) + "/yr"; })
+      .replace(/\{\{ProgramPricePerService\}\}/g, function () { return wPer(p); })
+      .replace(/\{\{ProgramPriceTotal\}\}/g, function () { return wYr(p); })
+      .replace(/\{\{ProgramDiscount\}\}/g, function () { return wDiscChip(p); })
       .replace(/\{\{ProgramDescription\}\}/g, function () { return wDescHtml(p.blurb); });
   }).join("\n");
   h = h.replace(/<!-- PROGRAM_ROW_REFERENCE_START[\s\S]*?PROGRAM_ROW_REFERENCE_END -->/, "");
@@ -83,6 +107,7 @@ function wRender(kind, tpl, first, address, progs) {
   if (hasLmp) h = h.replace(/<!-- LMP_SCHEDULE_BLOCK_START[\s\S]*?-->/, "").replace("<!-- LMP_SCHEDULE_BLOCK_END -->", "");
   else h = h.replace(/<!-- LMP_SCHEDULE_BLOCK_START[\s\S]*?<!-- LMP_SCHEDULE_BLOCK_END -->/, "");
   h = h.replace(/<!-- PROGRAM_SECTION_NOTE[\s\S]*?-->/, "");
+  h = h.replace("{{PREPAY_BLOCK}}", function () { return wPrepayBlock(progs, opts); });
   h = h.replace(/\{\{FirstName\}\}/g, function () { return esc(first); }).replace(/\{\{ServiceAddress\}\}/g, function () { return esc(address); });
   return h;
 }
@@ -204,6 +229,9 @@ async function wEvaluate(env, ct, cutoff, custNum) {
   if (gone.length) await done(gone, -1);
   if (renewals.length) await done(renewals.map(function (p) { return p.id; }), -2);
   if (!keep.length) return "nothing to send";
+  const svR = await api(env, "/Service/Search?CustomerNumber=" + custNum + "&Records=300");
+  const svAll = (svR.ok && Array.isArray(svR.json)) ? svR.json : [];
+  const prepaid = Number(c.prepayBalance) > 0 || svAll.some(function (s) { return Number(s.prepayAmount) > 0 || s.prepayId; });
   const rows = [];
   for (const p of keep) {
     const code = await wCode(env, p.programCodeId);
@@ -211,10 +239,13 @@ async function wEvaluate(env, ct, cutoff, custNum) {
     if (!code) { flags.push("program code id " + p.programCodeId + " not found in RealGreen"); continue; }
     if (!name) flags.push("service code " + code + " missing from service_code_map.json");
     if (!blurb) flags.push("service code " + code + " has no description in service_descriptions.md");
+    const sRows = svAll.filter(function (s) { return Number(s.programID) === Number(p.id) && !s.isReversed; });
+    let gC = 0, nC = 0;
+    for (const s of sRows) { gC += Math.round((Number(s.price) || 0) * 100); nC += Math.round((Number(s.totalAmount) || 0) * 100); }
     const std = Number(p.standardPrice), price = Number(p.price);
     if (!(price > 0) || !(std > 0)) { if (!(code === "GCC" && !(price > 0))) flags.push(code + " has a $0 price (" + money(price) + ")"); }
     if (code === "GCC" && price > 0) flags.push("GCC has a charge above $0 (" + money(price) + ")");
-    rows.push({ code: code, name: name || code, blurb: blurb || "", std: std, price: price });
+    rows.push({ code: code, name: name || code, blurb: blurb || "", std: std, price: price, n: sRows.length || null, net: (sRows.length && nC > 0) ? nC : null, gross: sRows.length ? gC : null, discount: (sRows.length && gC > nC) ? (gC - nC) : 0, perService: (sRows.length && nC > 0) ? Math.round(nC / sRows.length) : null });
   }
   const fn = String(c.firstName || "").trim();
   const nok = await env.DB.prepare("SELECT 1 x FROM name_ok WHERE customer_number=?").bind(custNum).first();
@@ -226,7 +257,7 @@ async function wEvaluate(env, ct, cutoff, custNum) {
   let html = null, subject = null;
   if (!flags.length || flags.every(function (f) { return /^name needs review|^service address/.test(f); })) {
     try {
-      html = wRender(kind, ct.tpls[kind], fn, address, rows);
+      html = wRender(kind, ct.tpls[kind], fn, address, rows, { prepaid: prepaid });
       const left = html.match(/\{\{[^}]*\}\}/g);
       if (left) { flags.push("unreplaced placeholders: " + left.join(",")); html = null; }
     } catch (e) { flags.push("compose failed: " + String(e).slice(0, 100)); }

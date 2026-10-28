@@ -147,8 +147,11 @@ async function recompute(env) {
     // Visits with no product recorded get estimated uses (Ty 2026-10-27): the typical amount per 1,000 sq ft of each product
     // on that same service code (products seen on 5+ visits), times the lawn size; service calls get T-Zone at 1.2 oz per 1,000.
     // Estimated uses join the same spend pools, so season material totals do not change; they only move to the right visits.
-    db.prepare("WITH ru AS (SELECT s.id sid, s.service_code code, CAST(json_extract(j.value,'$.id') AS INT) pid, CAST(json_extract(j.value,'$.amt') AS REAL) amt, CAST(json_extract(j.value,'$.area') AS REAL) area FROM mg_services s, json_each(s.products) j WHERE s.is_reversed=0), " +
-      "ref AS (SELECT code, pid, SUM(amt) / NULLIF(SUM(area),0) rt FROM ru WHERE amt > 0 GROUP BY code, pid HAVING COUNT(DISTINCT sid) >= 5), " +
+    // Grass seed (Ty 2026-10-28): RealGreen records a default 7 lb per 1,000 on some seed jobs and nothing on others, so recorded
+    // seed (product 58) is ignored and every seeding service gets 3 lb per 1,000 sq ft x lawn size.
+    db.prepare("WITH ru0 AS (SELECT s.id sid, s.service_code code, CAST(json_extract(j.value,'$.id') AS INT) pid, CAST(json_extract(j.value,'$.amt') AS REAL) amt, CAST(json_extract(j.value,'$.area') AS REAL) area FROM mg_services s, json_each(s.products) j WHERE s.is_reversed=0), " +
+      "ru AS (SELECT sid, code, pid, amt, area FROM ru0 WHERE pid <> 58 UNION ALL SELECT id, service_code, 58, 3.0 * COALESCE(size,0), COALESCE(size,0) FROM mg_services WHERE is_reversed=0 AND service_code IN ('COF','CAO','OVS','PSF','PSS','SSF','SSS')), " +
+      "ref AS (SELECT code, pid, SUM(amt) / NULLIF(SUM(area),0) rt FROM ru0 WHERE amt > 0 AND pid <> 58 GROUP BY code, pid HAVING COUNT(DISTINCT sid) >= 5), " +
       "vu AS (SELECT s.id sid, ref.pid, COALESCE(s.size,0) * ref.rt amt, COALESCE(s.size,0) area FROM mg_services s JOIN ref ON ref.code = s.service_code WHERE s.is_reversed=0 AND s.products='[]' AND s.service_code NOT LIKE 'SC%' " +
       "UNION ALL SELECT s.id, 1071, COALESCE(s.size,0) * 1.2, COALESCE(s.size,0) FROM mg_services s WHERE s.is_reversed=0 AND s.products='[]' AND s.service_code LIKE 'SC%'), " +
       "au AS (SELECT sid, pid, amt, area, 0 est FROM ru UNION ALL SELECT sid, pid, amt, area, 1 est FROM vu), " +
@@ -162,14 +165,15 @@ async function recompute(env) {
     // (estimated crew minutes = 50 + 2.92 per 1,000 sq ft) get crew minutes x that day's cost per paid minute, capped at 90% of
     // the day when other stops exist. The rest of the day is split over the other stops: half per stop, half by lawn size.
     db.prepare("INSERT INTO mg_labor_alloc (service_id, labor_day, labor_pool) " +
-      "WITH st AS (SELECT done_date, customer_number, MAX(COALESCE(size,0)) sz, SUM(COALESCE(total_amount,0)) amt, COUNT(*) cnt FROM mg_services WHERE is_reversed=0 GROUP BY done_date, customer_number), " +
+      "WITH st AS (SELECT done_date, customer_number, MAX(COALESCE(size,0)) sz, SUM(COALESCE(total_amount,0)) amt, COUNT(*) cnt, SUM(CASE WHEN COALESCE(total_amount,0) <= 0 THEN 1 ELSE 0 END) z FROM mg_services WHERE is_reversed=0 GROUP BY done_date, customer_number), " +
       "st2 AS (SELECT st.*, COALESCE(o.crew_minutes, CASE WHEN st.sz >= 20 THEN 50 + 2.92 * st.sz END) cm FROM st LEFT JOIN mg_time_override o ON o.customer_number = st.customer_number), " +
       "dl AS (SELECT day, cost + COALESCE(wc,0) + COALESCE(owner,0) tot, COALESCE(minutes,0) + COALESCE(owner,0) / 27.86 * 60 mins FROM mg_labor_day), " +
       "dy AS (SELECT done_date, SUM(CASE WHEN cm IS NULL THEN 1 ELSE 0 END) ns, SUM(CASE WHEN cm IS NULL THEN sz ELSE 0 END) k, SUM(COALESCE(cm,0)) km FROM st2 GROUP BY done_date), " +
       "dz AS (SELECT dy.*, dl.tot, dl.mins, CASE WHEN dy.km = 0 OR dl.mins IS NULL OR dl.mins = 0 THEN 0 WHEN dy.ns = 0 THEN dl.mins / dy.km ELSE MIN(1.0, 0.9 * dl.mins / dy.km) END sc FROM dy LEFT JOIN dl ON dl.day = dy.done_date), " +
-      "sl AS (SELECT st2.done_date, st2.customer_number, st2.amt, st2.cnt, CASE WHEN dz.tot IS NULL THEN NULL WHEN st2.cm IS NOT NULL THEN st2.cm * dz.sc * dz.tot / NULLIF(dz.mins,0) " +
+      "sl AS (SELECT st2.done_date, st2.customer_number, st2.amt, st2.cnt, st2.z, CASE WHEN dz.tot IS NULL THEN NULL WHEN st2.cm IS NOT NULL THEN st2.cm * dz.sc * dz.tot / NULLIF(dz.mins,0) " +
       "ELSE (dz.tot - COALESCE(dz.km * dz.sc * dz.tot / NULLIF(dz.mins,0), 0)) * (0.5 / dz.ns + 0.5 * COALESCE(st2.sz / NULLIF(dz.k,0), 1.0 / dz.ns)) END lab FROM st2 JOIN dz ON dz.done_date = st2.done_date) " +
-      "SELECT s.id, sl.lab * (CASE WHEN sl.amt > 0 THEN COALESCE(s.total_amount,0) / sl.amt ELSE 1.0 / sl.cnt END), 0 " +
+      // Within a stop (Ty 2026-10-28): $0 services (free spot seed, a service call during a visit) get an even share; paid services split the rest by price.
+      "SELECT s.id, sl.lab * (CASE WHEN sl.amt <= 0 THEN 1.0 / sl.cnt WHEN COALESCE(s.total_amount,0) <= 0 THEN 1.0 / sl.cnt ELSE (1.0 - 1.0 * sl.z / sl.cnt) * s.total_amount / sl.amt END), 0 " +
       "FROM mg_services s JOIN sl ON sl.done_date=s.done_date AND sl.customer_number=s.customer_number WHERE s.is_reversed=0"),
     db.prepare("UPDATE mg_labor_alloc SET labor_pool = (SELECT COALESCE(SUM(cost + COALESCE(wc,0) + COALESCE(owner,0)),0) FROM mg_labor_day WHERE day NOT IN (SELECT DISTINCT done_date FROM mg_services WHERE is_reversed=0)) * (SELECT COALESCE(total_amount,0) FROM mg_services WHERE id=service_id) / (SELECT SUM(COALESCE(total_amount,0)) FROM mg_services WHERE is_reversed=0 AND done_date <= (SELECT MAX(day) FROM mg_labor_day)) WHERE service_id IN (SELECT id FROM mg_services WHERE done_date <= (SELECT MAX(day) FROM mg_labor_day))")
   ]);

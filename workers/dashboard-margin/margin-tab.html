@@ -54,6 +54,12 @@
     </div>
 
     <section class="bg-white rounded-lg shadow-sm p-5 mb-6">
+      <h2 class="text-lg font-semibold">Margin by service mix</h2>
+      <p class="text-xs text-slate-500 mb-3">Customers grouped by the combination of services they bought this season. Shows what adding a service does to a customer&rsquo;s value and margin. Free service calls are counted in cost but not used to group. Mixes with fewer than 3 customers are combined into &ldquo;Other mixes&rdquo;.</p>
+      <div id="mg-mix" class="overflow-x-auto text-sm text-slate-500">Loading&hellip;</div>
+    </section>
+
+    <section class="bg-white rounded-lg shadow-sm p-5 mb-6">
       <div class="flex items-center justify-between flex-wrap gap-3">
         <h2 class="text-lg font-semibold">Customers by margin</h2>
         <div class="flex items-center gap-2 text-sm">
@@ -63,17 +69,38 @@
             <option value="margin">Lowest margin $ first</option>
             <option value="rev">Highest revenue first</option>
           </select>
+          <label for="mg-filter" class="text-slate-600 ml-2">Show</label>
+          <select id="mg-filter" class="border rounded px-2 py-1 text-sm bg-white">
+            <option value="all">All customers</option>
+            <option value="lmonly">Lawn Maintainer only</option>
+            <option value="grub">With grub control</option>
+            <option value="aer">With aeration or seed</option>
+            <option value="pest">With perimeter pest</option>
+            <option value="hg">With Hydraguard</option>
+            <option value="weed">With off-lawn or bed weed</option>
+            <option value="onetime">One-time only</option>
+          </select>
           <label class="text-slate-600 ml-2"><input type="checkbox" id="mg-minrev" checked> Only customers over $200</label>
         </div>
       </div>
-      <p class="text-xs text-slate-500 mb-3 mt-1">All services for the season so far. Click a column heading to sort. Shows 60 rows; download the CSV for every customer.</p>
+      <p class="text-xs text-slate-500 mb-3 mt-1">All services for the season so far. Click a column heading to sort; click a customer to see each service. Shows 60 rows; download the CSV for every customer.</p>
       <div id="mg-cust" class="overflow-x-auto text-sm text-slate-500">Loading&hellip;</div>
       <div class="mt-3"><button id="mg-csv" class="border border-slate-400 text-slate-700 px-3 py-1 rounded text-sm hover:bg-slate-50">Download CSV</button> <span id="mg-stamp" class="text-xs text-slate-400 ml-2"></span></div>
     </section>
 
     <script>
     (function(){
-      var MG = null, mgBusy = false, SORT = {};
+      var MG = null, mgBusy = false, SORT = {}, OPEN = {};
+      var SHORT = { 'Grub control': 'Grub', 'Aeration and seed': 'Aeration', 'Perimeter pest': 'Pest', 'Hydraguard': 'Hydraguard', 'Off-lawn weed': 'Off-lawn weed', 'Bed weed': 'Bed weed', 'Tree and shrub': 'Tree', 'Mosquito': 'Mosquito', 'Sprinkler blowout': 'Blowout', 'Other': 'Other' };
+      var RECUR = ['Perimeter pest', 'Hydraguard', 'Off-lawn weed', 'Bed weed', 'Tree and shrub', 'Mosquito'];
+      function lmRounds(r){ return (r.svc || []).filter(function(x){ return /^Lawn Maintainer/.test(x.g); }).map(function(x){ return Number(String(x.g).replace(/\D/g, '')); }).sort(function(a, b){ return a - b; }); }
+      function hasG(r, g){ return (r.svc || []).some(function(x){ return x.g === g; }); }
+      function tags(r){ var out = [], rd = lmRounds(r); if (rd.length) out.push(rd.length === 6 ? 'LM 1-6' : 'LM ' + rd.join(',')); (r.svc || []).forEach(function(x){ if (/^Lawn Maintainer/.test(x.g)) return; if (/^Service calls/.test(x.g)) { out.push('Svc call' + (x.n > 1 ? ' x' + x.n : '')); return; } out.push(SHORT[x.g] || x.g); }); return out; }
+      function mixKey(r){ var parts = [], lm = lmRounds(r).length > 0; if (lm) parts.push('Lawn Maintainer'); var adds = (r.svc || []).map(function(x){ return x.g; }).filter(function(g){ return !/^Lawn Maintainer/.test(g) && !/^Service calls/.test(g); }).map(function(g){ return SHORT[g] || g; }).sort(); parts = parts.concat(adds); if (!parts.length) return 'Service calls only'; return parts.join(' + ') + (lm ? '' : (adds.some(function(a){ return ['Pest','Hydraguard','Off-lawn weed','Bed weed','Tree','Mosquito'].indexOf(a) >= 0; }) ? '' : ' (one-time)')); }
+      function passFilter(r, f){ var lm = lmRounds(r).length > 0, recur = (r.svc || []).some(function(x){ return RECUR.indexOf(x.g) >= 0; });
+        if (f === 'lmonly') return lm && (r.svc || []).every(function(x){ return /^Lawn Maintainer/.test(x.g) || /^Service calls/.test(x.g); });
+        if (f === 'grub') return hasG(r, 'Grub control'); if (f === 'aer') return hasG(r, 'Aeration and seed'); if (f === 'pest') return hasG(r, 'Perimeter pest'); if (f === 'hg') return hasG(r, 'Hydraguard');
+        if (f === 'weed') return hasG(r, 'Off-lawn weed') || hasG(r, 'Bed weed'); if (f === 'onetime') return !lm && !recur; return true; }
       function svcDefault(rows){ return rows.slice().sort(function(a, b){ var la = /^Lawn Maintainer/.test(a.g), lb = /^Lawn Maintainer/.test(b.g); if (la && lb) return String(a.g).localeCompare(String(b.g), undefined, { numeric: true }); if (la) return -1; if (lb) return 1; return (b.rev || 0) - (a.rev || 0); }); }
       function sortRows(key, rows){ var s = SORT[key]; if (!s) return rows; var r = rows.slice(); r.sort(function(a, b){ var x = a[s.col], y = b[s.col]; if (s.col === 'g' || s.col === 'name') return s.dir * String(x).localeCompare(String(y), undefined, { numeric: true }); x = (x === null || x === undefined) ? -1e15 : x; y = (y === null || y === undefined) ? -1e15 : y; return s.dir * (x - y); }); return r; }
       function th(key, col, text, left){ var s = SORT[key], arrow = s && s.col === col ? (s.dir > 0 ? ' &#9650;' : ' &#9660;') : ''; return '<th data-key="' + key + '" data-col="' + col + '" class="' + (left ? 'text-left' : 'text-right') + ' px-3 py-2 cursor-pointer select-none hover:text-slate-900" title="Click to sort">' + text + arrow + '</th>'; }
@@ -103,11 +130,45 @@
         if (!MG) return;
         var sort = document.getElementById('mg-sort').value;
         var min = document.getElementById('mg-minrev').checked;
-        var rows = MG.customers.filter(function(r){ return !min || r.rev >= 200; });
+        var f = document.getElementById('mg-filter').value;
+        var rows = MG.customers.filter(function(r){ return (!min || r.rev >= 200) && passFilter(r, f); });
         rows.sort(function(a, b){ if (sort === 'rev') return b.rev - a.rev; if (sort === 'margin') return a.margin - b.margin; return (a.pct === null ? 9 : a.pct) - (b.pct === null ? 9 : b.pct); });
         rows = sortRows('cust', rows);
         var shown = rows.slice(0, 60);
-        document.getElementById('mg-cust').innerHTML = table(shown, 'Customer', { key: 'cust', nameCol: 'name', name: function(r){ return esc(r.name) + ' <span class="text-slate-400">#' + r.c + (r.k ? ' &middot; ' + (Math.round(r.k * 10) / 10) + 'k sq ft' : '') + '</span>'; } }) + '<div class="text-xs text-slate-500 mt-2">' + rows.length + ' customers match. Showing ' + shown.length + '.</div>';
+        var cell = 'px-3 py-2 text-right text-slate-700';
+        var h = '<table class="w-full text-sm"><thead class="bg-slate-50 text-slate-600"><tr>' + th('cust', 'name', 'Customer', true) + '<th class="text-left px-3 py-2">Services</th>' + th('cust', 'n', 'Visits') + th('cust', 'rev', 'Revenue') + th('cust', 'mat', 'Materials') + th('cust', 'lab', 'Labor') + th('cust', 'fees', 'Royalty + fees') + th('cust', 'margin', 'Margin') + th('cust', 'pct', 'Margin %') + '</tr></thead><tbody>';
+        shown.forEach(function(r){
+          var open = !!OPEN[r.c];
+          h += '<tr class="border-t border-slate-100 cursor-pointer hover:bg-slate-50" data-cust="' + r.c + '"><td class="px-3 py-2 text-slate-800">' + (open ? '&#9662; ' : '&#9656; ') + esc(r.name) + ' <span class="text-slate-400">#' + r.c + (r.k ? ' &middot; ' + (Math.round(r.k * 10) / 10) + 'k sq ft' : '') + '</span>' + (r.unp > 0 ? ' <span class="text-amber-600" title="Some products not costed yet">*</span>' : '') + '</td>'
+            + '<td class="px-3 py-2">' + tags(r).map(function(t){ return '<span class="inline-block bg-slate-100 text-slate-700 rounded px-1.5 py-0.5 mr-1 mb-0.5 text-xs whitespace-nowrap">' + esc(t) + '</span>'; }).join('') + '</td>'
+            + '<td class="' + cell + '">' + r.n + '</td><td class="' + cell + '">' + money(r.rev) + '</td><td class="' + cell + '">' + money(r.mat) + '</td><td class="' + cell + '">' + money(r.lab) + '</td><td class="' + cell + '">' + money(r.fees) + '</td>'
+            + '<td class="px-3 py-2 text-right text-slate-800 font-medium">' + money(r.margin) + '</td><td class="px-3 py-2 text-right ' + pcls(r.pct) + '">' + pct(r.pct) + '</td></tr>';
+          if (open) {
+            svcDefault(r.svc || []).forEach(function(x){
+              h += '<tr class="bg-slate-50 text-xs"><td class="pl-10 pr-3 py-1 text-slate-600">' + esc(x.g) + (x.unp > 0 ? ' <span class="text-amber-600">*</span>' : '') + '</td><td></td>'
+                + '<td class="px-3 py-1 text-right text-slate-600">' + x.n + '</td><td class="px-3 py-1 text-right text-slate-600">' + money(x.rev) + '</td><td class="px-3 py-1 text-right text-slate-600">' + money(x.mat) + '</td><td class="px-3 py-1 text-right text-slate-600">' + money(x.lab) + '</td><td class="px-3 py-1 text-right text-slate-600">' + money(x.fees) + '</td>'
+                + '<td class="px-3 py-1 text-right text-slate-700">' + money(x.margin) + '</td><td class="px-3 py-1 text-right ' + pcls(x.pct) + '">' + pct(x.pct) + '</td></tr>';
+            });
+          }
+        });
+        h += '</tbody></table>';
+        document.getElementById('mg-cust').innerHTML = h + '<div class="text-xs text-slate-500 mt-2">' + rows.length + ' customers match. Showing ' + shown.length + '.</div>';
+      }
+      function renderMix(){
+        if (!MG) return;
+        var groups = {};
+        MG.customers.forEach(function(r){ var k = mixKey(r); var g = groups[k] = groups[k] || { g: k, n: 0, rev: 0, mat: 0, lab: 0, fees: 0, margin: 0, unp: 0 }; g.n++; g.rev += r.rev || 0; g.mat += r.mat || 0; g.lab += r.lab || 0; g.fees += r.fees || 0; g.margin += r.margin || 0; g.unp += r.unp || 0; });
+        var other = { g: 'Other mixes', n: 0, rev: 0, mat: 0, lab: 0, fees: 0, margin: 0, unp: 0 }, list = [];
+        Object.keys(groups).forEach(function(k){ var g = groups[k]; if (g.n < 3) { ['n','rev','mat','lab','fees','margin','unp'].forEach(function(f){ other[f] += g[f]; }); } else list.push(g); });
+        if (other.n) list.push(other);
+        list.forEach(function(g){ g.pct = g.rev > 0 ? g.margin / g.rev : null; g.rpc = g.n ? g.rev / g.n : 0; g.mpc = g.n ? g.margin / g.n : 0; });
+        list = sortRows('mix', list.sort(function(a, b){ return b.n - a.n; }));
+        var cell = 'px-3 py-2 text-right text-slate-700';
+        var h = '<table class="w-full text-sm"><thead class="bg-slate-50 text-slate-600"><tr>' + th('mix', 'g', 'Service mix', true) + th('mix', 'n', 'Customers') + th('mix', 'rpc', 'Revenue per customer') + th('mix', 'mpc', 'Margin per customer') + th('mix', 'rev', 'Revenue') + th('mix', 'margin', 'Margin') + th('mix', 'pct', 'Margin %') + '</tr></thead><tbody>';
+        list.forEach(function(g){
+          h += '<tr class="border-t border-slate-100"><td class="px-3 py-2 text-slate-800">' + esc(g.g) + (g.unp > 0 ? ' <span class="text-amber-600" title="Some products not costed yet">*</span>' : '') + '</td><td class="' + cell + '">' + g.n + '</td><td class="' + cell + '">' + money(g.rpc) + '</td><td class="px-3 py-2 text-right text-slate-800 font-medium">' + money(g.mpc) + '</td><td class="' + cell + '">' + money(g.rev) + '</td><td class="' + cell + '">' + money(g.margin) + '</td><td class="px-3 py-2 text-right ' + pcls(g.pct) + '">' + pct(g.pct) + '</td></tr>';
+        });
+        document.getElementById('mg-mix').innerHTML = h + '</tbody></table>';
       }
       function render(d){
         MG = d;
@@ -131,6 +192,7 @@
         ];
         document.getElementById('mg-notes').innerHTML = notes.map(function(x){ return '<li>' + x + '</li>'; }).join('');
         renderTables();
+        renderMix();
         renderCust();
         document.getElementById('mg-stamp').textContent = 'Updated ' + new Date().toLocaleTimeString();
       }
@@ -155,13 +217,20 @@
           if (!t) return;
           var k = t.getAttribute('data-key'), c = t.getAttribute('data-col'), s = SORT[k];
           SORT[k] = (s && s.col === c) ? { col: c, dir: -s.dir } : { col: c, dir: (c === 'g' || c === 'name') ? 1 : -1 };
-          if (k === 'cust') renderCust(); else renderTables();
+          if (k === 'cust') renderCust(); else if (k === 'mix') renderMix(); else renderTables();
         });
+        document.getElementById('mg-cust').addEventListener('click', function(e){
+          if (e.target && e.target.closest && e.target.closest('th')) return;
+          var tr = e.target && e.target.closest ? e.target.closest('tr[data-cust]') : null;
+          if (!tr) return;
+          var c = tr.getAttribute('data-cust'); OPEN[c] = !OPEN[c]; renderCust();
+        });
+        document.getElementById('mg-filter').addEventListener('change', renderCust);
         document.getElementById('mg-minrev').addEventListener('change', renderCust);
         document.getElementById('mg-csv').addEventListener('click', function(){
           if (!MG) return;
-          var lines = ['customer_number,name,lawn_size_k,visits,revenue,materials,labor,royalty_fees,margin,margin_pct'];
-          MG.customers.forEach(function(r){ lines.push([r.c, '"' + String(r.name).replace(/"/g, '""') + '"', r.k || '', r.n, (r.rev||0).toFixed(2), (r.mat||0).toFixed(2), (r.lab||0).toFixed(2), (r.fees||0).toFixed(2), (r.margin||0).toFixed(2), r.pct === null ? '' : (r.pct * 100).toFixed(1)].join(',')); });
+          var lines = ['customer_number,name,services,service_mix,lawn_size_k,visits,revenue,materials,labor,royalty_fees,margin,margin_pct'];
+          MG.customers.forEach(function(r){ lines.push([r.c, '"' + String(r.name).replace(/"/g, '""') + '"', '"' + tags(r).join(' / ') + '"', '"' + mixKey(r) + '"', r.k || '', r.n, (r.rev||0).toFixed(2), (r.mat||0).toFixed(2), (r.lab||0).toFixed(2), (r.fees||0).toFixed(2), (r.margin||0).toFixed(2), r.pct === null ? '' : (r.pct * 100).toFixed(1)].join(',')); });
           var a = document.createElement('a');
           a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
           a.download = 'customer-margin-' + MG.thru + '.csv';

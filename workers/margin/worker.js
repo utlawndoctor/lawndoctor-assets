@@ -149,7 +149,12 @@ async function recompute(env) {
     // Estimated uses join the same spend pools, so season material totals do not change; they only move to the right visits.
     // Grass seed (Ty 2026-10-28): RealGreen records a default 7 lb per 1,000 on some seed jobs and nothing on others, so recorded
     // seed (product 58) is ignored and every seeding service gets 3 lb per 1,000 sq ft x lawn size.
-    db.prepare("WITH ru0 AS (SELECT s.id sid, s.service_code code, CAST(json_extract(j.value,'$.id') AS INT) pid, CAST(json_extract(j.value,'$.amt') AS REAL) amt, CAST(json_extract(j.value,'$.area') AS REAL) area FROM mg_services s, json_each(s.products) j WHERE s.is_reversed=0), " +
+    // Treated-area guard (Ty 2026-10-28): on lawn services, a treated area over 1.5x the lawn size is an entry error
+    // (e.g. 152.9 on a 2.2 lawn), so the recorded amount is scaled down to the lawn size.
+    db.prepare("WITH rx AS (SELECT s.id sid, s.service_code code, CAST(json_extract(j.value,'$.id') AS INT) pid, CAST(json_extract(j.value,'$.amt') AS REAL) amt, CAST(json_extract(j.value,'$.area') AS REAL) area, COALESCE(s.size,0) sz, " +
+      "(COALESCE(s.size,0) > 0 AND CAST(json_extract(j.value,'$.area') AS REAL) > 1.5 * s.size AND (s.service_code LIKE 'M_' OR s.service_code LIKE 'GC%' OR s.service_code LIKE 'CA%' OR s.service_code LIKE 'SE%' OR s.service_code IN ('COF','OVS','FO','WC','FS','PSF','PSS','SSF','SSS'))) fix " +
+      "FROM mg_services s, json_each(s.products) j WHERE s.is_reversed=0), " +
+      "ru0 AS (SELECT sid, code, pid, CASE WHEN fix THEN amt * sz / area ELSE amt END amt, CASE WHEN fix THEN sz ELSE area END area FROM rx), " +
       "ru AS (SELECT sid, code, pid, amt, area FROM ru0 WHERE pid <> 58 UNION ALL SELECT id, service_code, 58, 3.0 * COALESCE(size,0), COALESCE(size,0) FROM mg_services WHERE is_reversed=0 AND service_code IN ('COF','CAO','OVS','PSF','PSS','SSF','SSS')), " +
       "ref AS (SELECT code, pid, SUM(amt) / NULLIF(SUM(area),0) rt FROM ru0 WHERE amt > 0 AND pid <> 58 GROUP BY code, pid HAVING COUNT(DISTINCT sid) >= 5), " +
       "vu AS (SELECT s.id sid, ref.pid, COALESCE(s.size,0) * ref.rt amt, COALESCE(s.size,0) area FROM mg_services s JOIN ref ON ref.code = s.service_code WHERE s.is_reversed=0 AND s.products='[]' AND s.service_code NOT LIKE 'SC%' " +

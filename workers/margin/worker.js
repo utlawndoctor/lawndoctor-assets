@@ -140,13 +140,22 @@ async function recompute(env) {
   await db.prepare("CREATE TABLE IF NOT EXISTS mg_labor_day (day TEXT PRIMARY KEY, cost REAL, minutes REAL, source TEXT, wc REAL)").run();
   await db.prepare("CREATE TABLE IF NOT EXISTS mg_product_cost (product_id INTEGER PRIMARY KEY, pool_id INTEGER, spend_2026 REAL, unit_cost REAL, note TEXT)").run();
   try { await db.prepare("ALTER TABLE mg_labor_day ADD COLUMN owner REAL").run(); } catch (e) {}
+  try { await db.prepare("ALTER TABLE mg_material_alloc ADD COLUMN material_est INTEGER").run(); } catch (e) {}
   await db.batch([
     db.prepare("DELETE FROM mg_material_alloc"),
-    db.prepare("WITH u AS (SELECT s.id sid, COALESCE(c.pool_id, -1) pool, CAST(json_extract(j.value,'$.amt') AS REAL) amt, CAST(json_extract(j.value,'$.area') AS REAL) area FROM mg_services s, json_each(s.products) j LEFT JOIN mg_product_cost c ON c.product_id = json_extract(j.value,'$.id') WHERE s.is_reversed=0), " +
+    // Visits with no product recorded get estimated uses (Ty 2026-10-27): the typical amount per 1,000 sq ft of each product
+    // on that same service code (products seen on 5+ visits), times the lawn size; service calls get T-Zone at 1.2 oz per 1,000.
+    // Estimated uses join the same spend pools, so season material totals do not change; they only move to the right visits.
+    db.prepare("WITH ru AS (SELECT s.id sid, s.service_code code, CAST(json_extract(j.value,'$.id') AS INT) pid, CAST(json_extract(j.value,'$.amt') AS REAL) amt, CAST(json_extract(j.value,'$.area') AS REAL) area FROM mg_services s, json_each(s.products) j WHERE s.is_reversed=0), " +
+      "ref AS (SELECT code, pid, SUM(amt) / NULLIF(SUM(area),0) rt FROM ru WHERE amt > 0 GROUP BY code, pid HAVING COUNT(DISTINCT sid) >= 5), " +
+      "vu AS (SELECT s.id sid, ref.pid, COALESCE(s.size,0) * ref.rt amt, COALESCE(s.size,0) area FROM mg_services s JOIN ref ON ref.code = s.service_code WHERE s.is_reversed=0 AND s.products='[]' AND s.service_code NOT LIKE 'SC%' " +
+      "UNION ALL SELECT s.id, 1071, COALESCE(s.size,0) * 1.2, COALESCE(s.size,0) FROM mg_services s WHERE s.is_reversed=0 AND s.products='[]' AND s.service_code LIKE 'SC%'), " +
+      "au AS (SELECT sid, pid, amt, area, 0 est FROM ru UNION ALL SELECT sid, pid, amt, area, 1 est FROM vu), " +
+      "u AS (SELECT au.sid, COALESCE(c.pool_id, -1) pool, au.amt, au.area, au.est FROM au LEFT JOIN mg_product_cost c ON c.product_id = au.pid), " +
       "r AS (SELECT pool, SUM(CASE WHEN amt>0 THEN amt ELSE 0 END) / NULLIF(SUM(CASE WHEN amt>0 THEN area ELSE 0 END),0) rate FROM u GROUP BY pool), " +
-      "w AS (SELECT u.sid, u.pool, CASE WHEN u.amt>0 THEN u.amt WHEN r.rate IS NOT NULL THEN COALESCE(u.area,0)*r.rate ELSE COALESCE(u.area,0) END wt FROM u JOIN r ON r.pool=u.pool), " +
+      "w AS (SELECT u.sid, u.pool, u.est, CASE WHEN u.amt>0 THEN u.amt WHEN r.rate IS NOT NULL THEN COALESCE(u.area,0)*r.rate ELSE COALESCE(u.area,0) END wt FROM u JOIN r ON r.pool=u.pool), " +
       "t AS (SELECT pool, SUM(wt) tw FROM w GROUP BY pool) " +
-      "INSERT INTO mg_material_alloc (service_id, material, material_unpriced_uses) SELECT s.id, COALESCE((SELECT SUM(w.wt * MIN(pc.spend_2026 / NULLIF(t.tw,0), COALESCE(pc.unit_cost, 1e9))) FROM w JOIN t ON t.pool=w.pool JOIN mg_product_cost pc ON pc.product_id=w.pool WHERE w.sid=s.id AND w.pool<>-1),0), (SELECT COUNT(*) FROM w WHERE w.sid=s.id AND w.pool=-1) FROM mg_services s WHERE s.is_reversed=0"),
+      "INSERT INTO mg_material_alloc (service_id, material, material_unpriced_uses, material_est) SELECT s.id, COALESCE((SELECT SUM(w.wt * MIN(pc.spend_2026 / NULLIF(t.tw,0), COALESCE(pc.unit_cost, 1e9))) FROM w JOIN t ON t.pool=w.pool JOIN mg_product_cost pc ON pc.product_id=w.pool WHERE w.sid=s.id AND w.pool<>-1),0), (SELECT COUNT(*) FROM w WHERE w.sid=s.id AND w.pool=-1), COALESCE((SELECT MAX(w.est) FROM w WHERE w.sid=s.id),0) FROM mg_services s WHERE s.is_reversed=0"),
     db.prepare("DELETE FROM mg_labor_alloc"),
     db.prepare("INSERT INTO mg_labor_alloc (service_id, labor_day, labor_pool) " +
       "WITH st AS (SELECT done_date, customer_number, MAX(COALESCE(size,0)) sz, SUM(COALESCE(total_amount,0)) amt, COUNT(*) cnt FROM mg_services WHERE is_reversed=0 GROUP BY done_date, customer_number), " +

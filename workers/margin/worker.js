@@ -10,6 +10,8 @@
 //   material: each product's season invoice spend (mg_product_cost) spread over that product's recorded uses;
 //   labor: each day's Gusto cost incl. workers comp (mg_labor_day, loaded by Claude after each payroll) split
 //   by stop (customer+day) half evenly, half by lawn size, within a stop by price; non-visit days pooled by revenue.
+//   Material per unit is capped at the invoice unit cost; leftover spend is stock (settings.mg_stock).
+//   mg_labor_day.owner = owner labor at replacement cost (Terra 10/14 to 10/25 in Hunter's place, Kasin's hours x $27.86).
 
 const BASE = "https://saapi.realgreen.com";
 const TZ = "America/Denver";
@@ -137,20 +139,25 @@ async function recompute(env) {
   await db.prepare("CREATE TABLE IF NOT EXISTS mg_material_alloc (service_id INTEGER PRIMARY KEY, material REAL, material_unpriced_uses INTEGER)").run();
   await db.prepare("CREATE TABLE IF NOT EXISTS mg_labor_day (day TEXT PRIMARY KEY, cost REAL, minutes REAL, source TEXT, wc REAL)").run();
   await db.prepare("CREATE TABLE IF NOT EXISTS mg_product_cost (product_id INTEGER PRIMARY KEY, pool_id INTEGER, spend_2026 REAL, unit_cost REAL, note TEXT)").run();
+  try { await db.prepare("ALTER TABLE mg_labor_day ADD COLUMN owner REAL").run(); } catch (e) {}
   await db.batch([
     db.prepare("DELETE FROM mg_material_alloc"),
     db.prepare("WITH u AS (SELECT s.id sid, COALESCE(c.pool_id, -1) pool, CAST(json_extract(j.value,'$.amt') AS REAL) amt, CAST(json_extract(j.value,'$.area') AS REAL) area FROM mg_services s, json_each(s.products) j LEFT JOIN mg_product_cost c ON c.product_id = json_extract(j.value,'$.id') WHERE s.is_reversed=0), " +
       "r AS (SELECT pool, SUM(CASE WHEN amt>0 THEN amt ELSE 0 END) / NULLIF(SUM(CASE WHEN amt>0 THEN area ELSE 0 END),0) rate FROM u GROUP BY pool), " +
       "w AS (SELECT u.sid, u.pool, CASE WHEN u.amt>0 THEN u.amt WHEN r.rate IS NOT NULL THEN COALESCE(u.area,0)*r.rate ELSE COALESCE(u.area,0) END wt FROM u JOIN r ON r.pool=u.pool), " +
       "t AS (SELECT pool, SUM(wt) tw FROM w GROUP BY pool) " +
-      "INSERT INTO mg_material_alloc (service_id, material, material_unpriced_uses) SELECT s.id, COALESCE((SELECT SUM(w.wt / NULLIF(t.tw,0) * pc.spend_2026) FROM w JOIN t ON t.pool=w.pool JOIN mg_product_cost pc ON pc.product_id=w.pool WHERE w.sid=s.id AND w.pool<>-1),0), (SELECT COUNT(*) FROM w WHERE w.sid=s.id AND w.pool=-1) FROM mg_services s WHERE s.is_reversed=0"),
+      "INSERT INTO mg_material_alloc (service_id, material, material_unpriced_uses) SELECT s.id, COALESCE((SELECT SUM(w.wt * MIN(pc.spend_2026 / NULLIF(t.tw,0), COALESCE(pc.unit_cost, 1e9))) FROM w JOIN t ON t.pool=w.pool JOIN mg_product_cost pc ON pc.product_id=w.pool WHERE w.sid=s.id AND w.pool<>-1),0), (SELECT COUNT(*) FROM w WHERE w.sid=s.id AND w.pool=-1) FROM mg_services s WHERE s.is_reversed=0"),
     db.prepare("DELETE FROM mg_labor_alloc"),
     db.prepare("INSERT INTO mg_labor_alloc (service_id, labor_day, labor_pool) " +
       "WITH st AS (SELECT done_date, customer_number, MAX(COALESCE(size,0)) sz, SUM(COALESCE(total_amount,0)) amt, COUNT(*) cnt FROM mg_services WHERE is_reversed=0 GROUP BY done_date, customer_number), " +
       "dy AS (SELECT done_date, COUNT(*) ns, SUM(sz) k FROM st GROUP BY done_date) " +
-      "SELECT s.id, (l.cost + COALESCE(l.wc,0)) * (0.5 / dy.ns + 0.5 * st.sz / NULLIF(dy.k,0)) * (CASE WHEN st.amt > 0 THEN COALESCE(s.total_amount,0) / st.amt ELSE 1.0 / st.cnt END), 0 " +
+      "SELECT s.id, (l.cost + COALESCE(l.wc,0) + COALESCE(l.owner,0)) * (0.5 / dy.ns + 0.5 * st.sz / NULLIF(dy.k,0)) * (CASE WHEN st.amt > 0 THEN COALESCE(s.total_amount,0) / st.amt ELSE 1.0 / st.cnt END), 0 " +
       "FROM mg_services s JOIN st ON st.done_date=s.done_date AND st.customer_number=s.customer_number JOIN dy ON dy.done_date=s.done_date LEFT JOIN mg_labor_day l ON l.day=s.done_date WHERE s.is_reversed=0"),
-    db.prepare("UPDATE mg_labor_alloc SET labor_pool = (SELECT COALESCE(SUM(cost + COALESCE(wc,0)),0) FROM mg_labor_day WHERE day NOT IN (SELECT DISTINCT done_date FROM mg_services WHERE is_reversed=0)) * (SELECT COALESCE(total_amount,0) FROM mg_services WHERE id=service_id) / (SELECT SUM(COALESCE(total_amount,0)) FROM mg_services WHERE is_reversed=0 AND done_date <= (SELECT MAX(day) FROM mg_labor_day)) WHERE service_id IN (SELECT id FROM mg_services WHERE done_date <= (SELECT MAX(day) FROM mg_labor_day))")
+    db.prepare("UPDATE mg_labor_alloc SET labor_pool = (SELECT COALESCE(SUM(cost + COALESCE(wc,0) + COALESCE(owner,0)),0) FROM mg_labor_day WHERE day NOT IN (SELECT DISTINCT done_date FROM mg_services WHERE is_reversed=0)) * (SELECT COALESCE(total_amount,0) FROM mg_services WHERE id=service_id) / (SELECT SUM(COALESCE(total_amount,0)) FROM mg_services WHERE is_reversed=0 AND done_date <= (SELECT MAX(day) FROM mg_labor_day)) WHERE service_id IN (SELECT id FROM mg_services WHERE done_date <= (SELECT MAX(day) FROM mg_labor_day))")
   ]);
+  // Spend not used up at invoice unit cost is product still in stock (Ty 2026-10-27: never charge more per unit than the invoice price).
+  const sp = await db.prepare("SELECT COALESCE(SUM(spend_2026),0) s FROM mg_product_cost").first();
+  const al = await db.prepare("SELECT COALESCE(SUM(material),0) m FROM mg_material_alloc").first();
+  await sSet(env, "mg_stock", JSON.stringify({ spend: Math.round(sp.s * 100) / 100, used: Math.round(al.m * 100) / 100, stock: Math.round((sp.s - al.m) * 100) / 100, at: new Date().toISOString() }));
   await sSet(env, "mg_recomputed_at", new Date().toISOString());
 }

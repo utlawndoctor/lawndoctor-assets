@@ -141,6 +141,7 @@ async function recompute(env) {
   await db.prepare("CREATE TABLE IF NOT EXISTS mg_product_cost (product_id INTEGER PRIMARY KEY, pool_id INTEGER, spend_2026 REAL, unit_cost REAL, note TEXT)").run();
   try { await db.prepare("ALTER TABLE mg_labor_day ADD COLUMN owner REAL").run(); } catch (e) {}
   try { await db.prepare("ALTER TABLE mg_material_alloc ADD COLUMN material_est INTEGER").run(); } catch (e) {}
+  await db.prepare("CREATE TABLE IF NOT EXISTS mg_time_override (customer_number INTEGER PRIMARY KEY, crew_minutes REAL, note TEXT)").run();
   await db.batch([
     db.prepare("DELETE FROM mg_material_alloc"),
     // Visits with no product recorded get estimated uses (Ty 2026-10-27): the typical amount per 1,000 sq ft of each product
@@ -157,11 +158,19 @@ async function recompute(env) {
       "t AS (SELECT pool, SUM(wt) tw FROM w GROUP BY pool) " +
       "INSERT INTO mg_material_alloc (service_id, material, material_unpriced_uses, material_est) SELECT s.id, COALESCE((SELECT SUM(w.wt * MIN(pc.spend_2026 / NULLIF(t.tw,0), COALESCE(pc.unit_cost, 1e9))) FROM w JOIN t ON t.pool=w.pool JOIN mg_product_cost pc ON pc.product_id=w.pool WHERE w.sid=s.id AND w.pool<>-1),0), (SELECT COUNT(*) FROM w WHERE w.sid=s.id AND w.pool=-1), COALESCE((SELECT MAX(w.est) FROM w WHERE w.sid=s.id),0) FROM mg_services s WHERE s.is_reversed=0"),
     db.prepare("DELETE FROM mg_labor_alloc"),
+    // Large properties (Ty approved 2026-10-28): stops with a known crew time (mg_time_override, from Hunter) or 20,000+ sq ft
+    // (estimated crew minutes = 50 + 2.92 per 1,000 sq ft) get crew minutes x that day's cost per paid minute, capped at 90% of
+    // the day when other stops exist. The rest of the day is split over the other stops: half per stop, half by lawn size.
     db.prepare("INSERT INTO mg_labor_alloc (service_id, labor_day, labor_pool) " +
       "WITH st AS (SELECT done_date, customer_number, MAX(COALESCE(size,0)) sz, SUM(COALESCE(total_amount,0)) amt, COUNT(*) cnt FROM mg_services WHERE is_reversed=0 GROUP BY done_date, customer_number), " +
-      "dy AS (SELECT done_date, COUNT(*) ns, SUM(sz) k FROM st GROUP BY done_date) " +
-      "SELECT s.id, (l.cost + COALESCE(l.wc,0) + COALESCE(l.owner,0)) * (0.5 / dy.ns + 0.5 * st.sz / NULLIF(dy.k,0)) * (CASE WHEN st.amt > 0 THEN COALESCE(s.total_amount,0) / st.amt ELSE 1.0 / st.cnt END), 0 " +
-      "FROM mg_services s JOIN st ON st.done_date=s.done_date AND st.customer_number=s.customer_number JOIN dy ON dy.done_date=s.done_date LEFT JOIN mg_labor_day l ON l.day=s.done_date WHERE s.is_reversed=0"),
+      "st2 AS (SELECT st.*, COALESCE(o.crew_minutes, CASE WHEN st.sz >= 20 THEN 50 + 2.92 * st.sz END) cm FROM st LEFT JOIN mg_time_override o ON o.customer_number = st.customer_number), " +
+      "dl AS (SELECT day, cost + COALESCE(wc,0) + COALESCE(owner,0) tot, COALESCE(minutes,0) + COALESCE(owner,0) / 27.86 * 60 mins FROM mg_labor_day), " +
+      "dy AS (SELECT done_date, SUM(CASE WHEN cm IS NULL THEN 1 ELSE 0 END) ns, SUM(CASE WHEN cm IS NULL THEN sz ELSE 0 END) k, SUM(COALESCE(cm,0)) km FROM st2 GROUP BY done_date), " +
+      "dz AS (SELECT dy.*, dl.tot, dl.mins, CASE WHEN dy.km = 0 OR dl.mins IS NULL OR dl.mins = 0 THEN 0 WHEN dy.ns = 0 THEN dl.mins / dy.km ELSE MIN(1.0, 0.9 * dl.mins / dy.km) END sc FROM dy LEFT JOIN dl ON dl.day = dy.done_date), " +
+      "sl AS (SELECT st2.done_date, st2.customer_number, st2.amt, st2.cnt, CASE WHEN dz.tot IS NULL THEN NULL WHEN st2.cm IS NOT NULL THEN st2.cm * dz.sc * dz.tot / NULLIF(dz.mins,0) " +
+      "ELSE (dz.tot - COALESCE(dz.km * dz.sc * dz.tot / NULLIF(dz.mins,0), 0)) * (0.5 / dz.ns + 0.5 * COALESCE(st2.sz / NULLIF(dz.k,0), 1.0 / dz.ns)) END lab FROM st2 JOIN dz ON dz.done_date = st2.done_date) " +
+      "SELECT s.id, sl.lab * (CASE WHEN sl.amt > 0 THEN COALESCE(s.total_amount,0) / sl.amt ELSE 1.0 / sl.cnt END), 0 " +
+      "FROM mg_services s JOIN sl ON sl.done_date=s.done_date AND sl.customer_number=s.customer_number WHERE s.is_reversed=0"),
     db.prepare("UPDATE mg_labor_alloc SET labor_pool = (SELECT COALESCE(SUM(cost + COALESCE(wc,0) + COALESCE(owner,0)),0) FROM mg_labor_day WHERE day NOT IN (SELECT DISTINCT done_date FROM mg_services WHERE is_reversed=0)) * (SELECT COALESCE(total_amount,0) FROM mg_services WHERE id=service_id) / (SELECT SUM(COALESCE(total_amount,0)) FROM mg_services WHERE is_reversed=0 AND done_date <= (SELECT MAX(day) FROM mg_labor_day)) WHERE service_id IN (SELECT id FROM mg_services WHERE done_date <= (SELECT MAX(day) FROM mg_labor_day))")
   ]);
   // Spend not used up at invoice unit cost is product still in stock (Ty 2026-10-27: never charge more per unit than the invoice price).

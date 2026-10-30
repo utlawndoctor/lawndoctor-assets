@@ -55,7 +55,7 @@ async function sSet(env, k, v) { await env.DB.prepare("INSERT INTO settings (k,v
 
 async function api(env, path) {
   const key = await env.SAAPI_KEY.get();
-  const r = await fetch(BASE + path, { headers: { apiKey: key, Accept: "application/json" }, signal: AbortSignal.timeout(20000) });
+  const r = await fetch(BASE + path, { headers: { apiKey: key, Accept: "application/json" }, signal: AbortSignal.timeout(40000) });
   if (!r.ok) throw new Error("SAAPI " + r.status + " " + path.split("?")[0]);
   return r.json();
 }
@@ -100,6 +100,7 @@ async function content(env) {
     }
   };
   return {
+    prepayOn: await estPrepayOn(env),
     tpl: await get("est_tpl", RAW + "data/estimate_template.html", false),
     copy: await get("est_copy", RAW + "data/estimate_copy.json", true),
     names: await get("w_names", RAW + "welcome/service_code_map.json", true)
@@ -220,6 +221,15 @@ function step(num, html) {
     '</tr></table>';
 }
 
+// Prepay offer window (Ty 2026-10-30): offered November through June (renewals for next season are done in November),
+// hidden July through October. settings.prepay_months (comma list of month numbers) overrides the default.
+async function estPrepayOn(env) {
+  const r = await env.DB.prepare("SELECT v FROM settings WHERE k='prepay_months'").first();
+  const v = r && r.v ? r.v : "11,12,1,2,3,4,5,6";
+  const m = parseInt(new Date().toLocaleDateString("en-CA", { timeZone: "America/Denver" }).slice(5, 7), 10);
+  return String(v).split(",").map(function (x) { return parseInt(x, 10); }).indexOf(m) >= 0;
+}
+
 function render(ct, variant, f, q, expiresAt) {
   const cp = ct.copy[variant];
   if (!cp) throw new Error("no copy for " + variant);
@@ -266,7 +276,7 @@ function render(ct, variant, f, q, expiresAt) {
     CTA_BLOCK: ctaBlock,
     BranchPhone: esc(BRANCH_PHONE)
   };
-  let h = ct.tpl.replace(/\{\{(\w+)\}\}/g, function (m, k) { return Object.prototype.hasOwnProperty.call(map, k) ? map[k] : m; });
+  let h = (ct.prepayOn === false ? ct.tpl.replace(/<!-- PREPAY_START -->[\s\S]*?<!-- PREPAY_END -->/, "") : ct.tpl).replace(/\{\{(\w+)\}\}/g, function (m, k) { return Object.prototype.hasOwnProperty.call(map, k) ? map[k] : m; });
   const left = h.match(/\{\{[^}]*\}\}/g);
   if (left) throw new Error("unreplaced placeholders " + left.join(","));
 
@@ -275,7 +285,7 @@ function render(ct, variant, f, q, expiresAt) {
   }).join("\n");
   const text = "Hi " + f.first + ",\n\n" + fill(cp.intro).replace(/<[^>]+>/g, "") + "\n\n" + lines +
     "\n\nSeason total: " + money(q.netCents) +
-    "\nPrepay the season and save 5%: " + money(prepay) + " (you save " + money(saves) + ")" +
+    (ct.prepayOn === false ? "" : "\nPrepay the season and save 5%: " + money(prepay) + " (you save " + money(saves) + ")") +
     "\n\n" + fill(ct.copy.expiry_line) +
     "\n\nReply to this email with a yes, or call or text " + BRANCH_PHONE + ", and we will set up your account and payment. Paying from your bank account is the option we recommend. For your security, we never ask for card or bank account numbers by email or text." +
     "\n\nLawn Doctor of Provo-Spanish Fork-Orem\n118 W 500 S, Spanish Fork, UT 84660\n" + BRANCH_PHONE;

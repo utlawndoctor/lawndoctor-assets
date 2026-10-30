@@ -39,7 +39,7 @@ async function sSet(env, k, v) { await env.DB.prepare("INSERT INTO settings (k,v
 
 async function api(env, path) {
   const key = await env.SAAPI_KEY.get();
-  const r = await fetch(BASE + path, { headers: { apiKey: key, Accept: "application/json" }, signal: AbortSignal.timeout(20000) });
+  const r = await fetch(BASE + path, { headers: { apiKey: key, Accept: "application/json" }, signal: AbortSignal.timeout(40000) });
   if (!r.ok) throw new Error("SAAPI " + r.status + " " + path.split("?")[0]);
   return r.json();
 }
@@ -213,15 +213,17 @@ async function sendPass(env, mode) {
       const cl = await env.DB.prepare("UPDATE bs_visits SET state='sending' WHERE customer_number=? AND visit_date=? AND state='new'").bind(v.customer_number, v.visit_date).run();
       if (!(cl.meta && cl.meta.changes === 1)) continue;
     }
+    let sentAny = false;
     try {
       const f = await customerFacts(env, v.customer_number);
       const nok = await env.DB.prepare("SELECT 1 x FROM name_ok WHERE customer_number=?").bind(v.customer_number).first();
       if (!nok && (!f.first || /[\s&\d\/,+]/.test(f.first) || /\band\b/i.test(f.first))) { await set("held", ["name needs review"]); continue; }
-      let prefs = {}; try { prefs = await api(env, "/Customer/" + v.customer_number + "/ContactPreferences"); } catch (e) {}
+      // A failed preferences lookup must not send past a dontEmail/dontText; only a 404 (no record) means no preferences.
+      let prefs = {}; try { prefs = await api(env, "/Customer/" + v.customer_number + "/ContactPreferences"); } catch (e) { if (!/SAAPI 404/.test(String(e))) throw e; }
       const out = render(ct, { first: f.first, address: f.address, date: v.visit_date, codes: JSON.parse(v.codes || "[]") });
       const parts = [];
       if (f.email && !prefs.dontEmail) {
-        if (mode === "live") { const pid = await mail(env, f.email, out.subject, out.html, out.text, "before-service"); await archive(env, "live", "email", v.customer_number, v.visit_date, f.email, out.subject, out.html, pid); parts.push("email sent"); }
+        if (mode === "live") { const pid = await mail(env, f.email, out.subject, out.html, out.text, "before-service"); sentAny = true; await archive(env, "live", "email", v.customer_number, v.visit_date, f.email, out.subject, out.html, pid); parts.push("email sent"); }
         else parts.push("email would send");
       } else parts.push(f.email ? "email skipped: dontEmail" : "email skipped: no address");
       const nt = f.phone ? await env.DB.prepare("SELECT 1 x FROM no_text WHERE phone=?").bind(f.phone).first() : null;
@@ -240,7 +242,10 @@ async function sendPass(env, mode) {
       await set(mode === "live" ? "sent" : "dry", null, parts.join(", "));
       n++;
     } catch (e) {
-      await set(mode === "live" ? "error" : "dry", ["error: " + String(e).slice(0, 150)]);
+      // Retry (Ty 2026-10-29): if nothing was sent yet, put the visit back in line for the next pass, up to 3 times, before alerting.
+      let prev = 0; try { const fl = JSON.parse(v.flags || "[]"); const r0 = fl.find(function (x) { return /^retry \d+/.test(x); }); if (r0) prev = Number(r0.split(" ")[1]) || 0; } catch (x) {}
+      if (mode === "live" && !sentAny && prev < 3) await set("new", ["retry " + (prev + 1) + ": " + String(e).slice(0, 140)]);
+      else await set(mode === "live" ? "error" : "dry", ["error: " + String(e).slice(0, 150)]);
     }
   }
   return n;

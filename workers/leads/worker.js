@@ -48,7 +48,7 @@ async function sSet(env, k, v) { await env.DB.prepare("INSERT INTO settings (k,v
 
 async function api(env, path) {
   const key = await env.SAAPI_KEY.get();
-  const r = await fetch(BASE + path, { headers: { apiKey: key, Accept: "application/json" }, signal: AbortSignal.timeout(20000) });
+  const r = await fetch(BASE + path, { headers: { apiKey: key, Accept: "application/json" }, signal: AbortSignal.timeout(40000) });
   if (!r.ok) throw new Error("SAAPI " + r.status + " " + path.split("?")[0]);
   return r.json();
 }

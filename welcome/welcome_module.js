@@ -73,7 +73,7 @@ function wDiscChip(p) {
 // Prepay offer: 5% off the season total, calculated here because RealGreen does not store it.
 // Hidden when the customer has already prepaid, and when no program has priced service rows.
 function wPrepayBlock(progs, opts) {
-  if (opts && opts.prepaid) return "";
+  if (opts && (opts.prepaid || opts.noPrepay)) return "";
   var net = 0, have = false;
   for (var i = 0; i < progs.length; i++) { if (progs[i].net != null) { net += Number(progs[i].net); have = true; } }
   if (!have || !(net > 0)) return "";
@@ -144,6 +144,15 @@ function wDescHtml(t) {
   return items.map(function (it, i) { return (i === 0 ? "" : (items[i - 1].t === "b" && it.t === "b" ? "<br>" : "<br><br>")) + it.h; }).join("");
 }
 
+// Prepay offer window (Ty 2026-10-30): offered November through June (renewals for next season are done in November),
+// hidden July through October. settings.prepay_months (comma list of month numbers) overrides the default.
+async function wPrepayOn(env) {
+  const r = await env.DB.prepare("SELECT v FROM settings WHERE k='prepay_months'").first();
+  const v = r && r.v ? r.v : "11,12,1,2,3,4,5,6";
+  const m = parseInt(new Date().toLocaleDateString("en-CA", { timeZone: "America/Denver" }).slice(5, 7), 10);
+  return String(v).split(",").map(function (x) { return parseInt(x, 10); }).indexOf(m) >= 0;
+}
+
 async function wContent(env) {
   const tpls = {
     welcome: await getText(env, "w_tpl_welcome", W_RAW + "welcome_template.html", false),
@@ -152,7 +161,7 @@ async function wContent(env) {
   const names = await getText(env, "w_names", W_RAW + "service_code_map.json", true);
   const blurbs = await getText(env, "w_desc", W_RAW + "service_descriptions.md", false);
   if (!tpls.welcome || !tpls.addon || !names || !blurbs) throw new Error("welcome content unavailable");
-  return { tpls: tpls, names: names, blurbs: blurbs };
+  return { tpls: tpls, names: names, blurbs: blurbs, prepayOn: await wPrepayOn(env) };
 }
 
 function wImages(html) {
@@ -257,7 +266,7 @@ async function wEvaluate(env, ct, cutoff, custNum) {
   let html = null, subject = null;
   if (!flags.length || flags.every(function (f) { return /^name needs review|^service address/.test(f); })) {
     try {
-      html = wRender(kind, ct.tpls[kind], fn, address, rows, { prepaid: prepaid });
+      html = wRender(kind, ct.tpls[kind], fn, address, rows, { prepaid: prepaid, noPrepay: ct.prepayOn === false });
       const left = html.match(/\{\{[^}]*\}\}/g);
       if (left) { flags.push("unreplaced placeholders: " + left.join(",")); html = null; }
     } catch (e) { flags.push("compose failed: " + String(e).slice(0, 100)); }

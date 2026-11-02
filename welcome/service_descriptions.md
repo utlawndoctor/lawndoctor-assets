@@ -71,6 +71,9 @@ This service runs 6 rounds per year. Round 1 includes a pre-emergent (to stop ne
 before they sprout) plus a non-selective herbicide (to kill existing weeds). Rounds 2
 through 6 apply the non-selective herbicide to knock down any new growth.
 
+**Off Lawn Weed Control (One-Time)** (OLO)
+Off Lawn Weed Control treats the non-grass areas of your property, including driveways, sidewalks, curbs, gravel and rock beds, fence lines, and landscaping beds. This is a one-time application, not an ongoing program. We apply a non-selective herbicide to knock down the weeds that are growing there now.
+
 **Grub Control** (GCC -- free curative redo for customers who already paid for preventive treatment)
 This visit treats grubs that are still active despite your earlier preventive Grub Control
 application. We apply a targeted insecticide to kill the grubs feeding on your lawn's roots.

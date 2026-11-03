@@ -359,6 +359,42 @@
    "heading": "Sprinkler Blowout",
    "text": "Sprinkler Blowout",
    "email": "Today's visit was your Sprinkler Blowout. We shut down and drained the main water supply, cleared each zone individually with a professional-grade air compressor, closest to farthest, ran each zone in short cycles to fully purge the water, and drained the backflow preventer. We calibrated air pressure to your system's pipe material and zone layout to clear the lines without stressing pipes or heads."
+  },
+  "OW1": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #1",
+   "text": "Off Lawn Weed Control (treatment #1 of 5)",
+   "email": "Today's visit was treatment #1 of your Off Lawn Weed Control Program for this year."
+  },
+  "OW2": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #2",
+   "text": "Off Lawn Weed Control (treatment #2 of 5)",
+   "email": "Today's visit was treatment #2 of your Off Lawn Weed Control Program for this year."
+  },
+  "OW3": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #3",
+   "text": "Off Lawn Weed Control (treatment #3 of 5)",
+   "email": "Today's visit was treatment #3 of your Off Lawn Weed Control Program for this year."
+  },
+  "OW4": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control #4",
+   "text": "Off Lawn Weed Control (treatment #4 of 5)",
+   "email": "Today's visit was treatment #4 of your Off Lawn Weed Control Program for this year."
+  },
+  "PSF": {
+   "emoji": "🌱",
+   "heading": "Power Seeding (Fall)",
+   "text": "Power Seeding (Fall)",
+   "email": "Today's visit was your Fall Power Seeding, using our Turf Tamer machine to get seed into direct contact with the soil for stronger germination."
+  },
+  "OLO": {
+   "emoji": "🌿",
+   "heading": "Off Lawn Weed Control",
+   "text": "Off Lawn Weed Control (one-time treatment)",
+   "email": "Today's visit included a one-time Off Lawn Weed Control treatment."
   }
  },
  "condition_codes": {

@@ -30,10 +30,22 @@ async function tick(env) {
     try { await checkWaiting(env); } catch (e) { err += "waiting: " + String(e).slice(0, 200) + " | "; }
     try { await buildBacklog(env); } catch (e) { err += "backlog: " + String(e).slice(0, 200) + " | "; }
     try { await checkBacklog(env); } catch (e) { err += "check: " + String(e).slice(0, 200) + " | "; }
+    try { await recheckHeld(env); } catch (e) { err += "recheck: " + String(e).slice(0, 200) + " | "; }
     try { await sendDue(env, mode); } catch (e) { err += "send: " + String(e).slice(0, 200) + " | "; }
     try { await alerts(env); } catch (e) { err += "alerts: " + String(e).slice(0, 200) + " | "; }
   } catch (e) { err += String(e).slice(0, 300); }
   await sSet(env, "caw_last_tick", new Date().toISOString() + (err ? " ERR " + err : " ok"));
+}
+
+// Daily recheck (Ty 2026-11-05): invites held for no email or name review go back in line once a day
+// (from 4 pm Denver, before the 5 pm send window), so a fix in RealGreen goes out without a manual release.
+// Stopped invites (excluded by Ty) are never touched.
+async function recheckHeld(env) {
+  const day = denverDate(Date.now());
+  if (denverHourMin() < 16 * 60 || (await sGet(env, "caw_recheck_day", "")) === day) return;
+  await sSet(env, "caw_recheck_day", day);
+  const now = new Date().toISOString();
+  await env.DB.prepare("UPDATE caw_invites SET state='due', flags=NULL, next_due=?, updated_at=? WHERE state='held' AND (flags LIKE '%name needs review%' OR flags LIKE '%no email address on file%') AND flags NOT LIKE '%error:%'").bind(now, now).run();
 }
 
 async function schema(env) {

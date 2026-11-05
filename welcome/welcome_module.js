@@ -320,6 +320,27 @@ async function wSend(env) {
   return n;
 }
 
+// Daily recheck (Ty 2026-11-05): emails held only for fixable account data (no email, name needs review,
+// blank address) are re-evaluated once a day from 7 am Denver, so a fix in RealGreen goes out on its own.
+async function wRecheck(env) {
+  const p = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Denver", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hour12: false }).formatToParts(new Date());
+  const g = function (t) { return p.find(function (x) { return x.type === t; }).value; };
+  const day = g("year") + "-" + g("month") + "-" + g("day"), hr = parseInt(g("hour"), 10) % 24;
+  if (hr < 7 || (await wGet(env, "w_recheck_day", "")) === day) return "recheck skipped";
+  await wSet(env, "w_recheck_day", day);
+  const since = new Date(Date.now() - 30 * 86400000).toISOString();
+  const rows = (await env.DB.prepare("SELECT id, flags FROM wevents WHERE state='held' AND created_at >= ?").bind(since).all()).results;
+  let n = 0;
+  for (const r of rows) {
+    let fl = []; try { fl = JSON.parse(r.flags || "[]"); } catch (e) {}
+    if (!fl.length || !fl.every(function (f) { return /^(no email address on file|name needs review|service address is blank)/.test(f); })) continue;
+    await env.DB.prepare("UPDATE wevents SET state='superseded', flags=? WHERE id=? AND state='held'").bind(JSON.stringify(["daily recheck " + day + ": " + fl.join("; ")]), r.id).run();
+    await env.DB.prepare("UPDATE wprog SET event_id=NULL WHERE event_id=?").bind(r.id).run();
+    n++;
+  }
+  return "rechecked " + n;
+}
+
 async function welcomePass(env) {
   const cutoff = await wGet(env, "w_cutoff", "");
   if (!cutoff) return;
@@ -328,6 +349,7 @@ async function welcomePass(env) {
   try { await wTest(env); } catch (e) { info.push("test: " + String(e).slice(0, 150)); await wSet(env, "w_test_last", new Date().toISOString() + " ERR " + String(e).slice(0, 200)); }
   if ((await wGet(env, "w_seed", "")) !== "done") { info.push(await wSeed(env, cutoff)); await wSet(env, "w_last", new Date().toISOString() + " " + info.join("; ")); return; }
   info.push("added " + (await wPoll(env, cutoff)));
+  info.push(await wRecheck(env));
   const ct = await wContent(env);
   const cutoffT = new Date(Date.now() - W_SETTLE_MIN * 60000).toISOString();
   const due = (await env.DB.prepare("SELECT customer_number, MAX(first_seen_at) m FROM wprog WHERE event_id IS NULL GROUP BY customer_number HAVING m <= ? LIMIT ?").bind(cutoffT, W_MAX_EVAL).all()).results;

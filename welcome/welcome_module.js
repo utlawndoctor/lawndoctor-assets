@@ -237,7 +237,12 @@ async function wEvaluate(env, ct, cutoff, custNum) {
   }
   if (gone.length) await done(gone, -1);
   if (renewals.length) await done(renewals.map(function (p) { return p.id; }), -2);
-  if (!keep.length) return "nothing to send";
+  // Guarantee service calls (Ty 2026-11-07): free re-treatments (codes starting SC, e.g. SCW respray weeds) are not
+  // sales, so they never get a welcome or add-on email. The visit heads-up and after-visit emails still cover them.
+  const svcCalls = [];
+  for (const p of keep.slice()) { const cd = await wCode(env, p.programCodeId); if (cd && /^SC/.test(cd)) { svcCalls.push(p.id); keep.splice(keep.indexOf(p), 1); } }
+  if (svcCalls.length) await done(svcCalls, -3);
+  if (!keep.length) return svcCalls.length ? "service call only, no email" : "nothing to send";
   const svR = await api(env, "/Service/Search?CustomerNumber=" + custNum + "&Records=300");
   const svAll = (svR.ok && Array.isArray(svR.json)) ? svR.json : [];
   const prepaid = Number(c.prepayBalance) > 0 || svAll.some(function (s) { return Number(s.prepayAmount) > 0 || s.prepayId; });

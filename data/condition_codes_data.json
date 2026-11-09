@@ -318,6 +318,12 @@
    "text": "Weed Control Only",
    "email": "Today's visit was a Weed Control Only application."
   },
+  "WCB": {
+   "emoji": "🌿",
+   "heading": "Bed Weed Control",
+   "text": "Bed Weed Control",
+   "email": "Today's visit was a Bed Weed Control application for your flower beds."
+  },
   "OL5": {
    "emoji": "🌿",
    "heading": "Off Lawn Weed Control #5",

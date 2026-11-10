@@ -111,7 +111,7 @@ Granular, timed-release fertilizer application without weed control.
 **Service Call** (SCP/SCS -- typically a $0 follow-up visit, not a paid program)
 We stopped by to check on your lawn and take care of anything needed, at no additional charge.
 
-**Spot Seed** (SSF)
+**Spot Seed** (SSF/SSN)
 We overseeded specific bare or thin spots in your lawn with our Kentucky Bluegrass/Rye blend
 to help them fill back in.
 

@@ -13,6 +13,7 @@
   "sms": "Hi {{FirstName}}, Lawn Doctor here. Your services at {{FullAddress}} are scheduled for {{DayPhrase}}.\n\nHere's what we'll be doing:\n{{ServiceList}}\n\nPlease make sure that {{PrepList}}.\nQuestions? Just reply to this message!\nLawn Doctor\nLicense #4000-18448",
   "sms_prep": "gates are unlocked, sprinklers are off, and all pets are put away",
   "sms_prep_blowout": "gates are unlocked and all pets are put away",
+  "sms_prep_blowout_aeration": "gates are unlocked, all pets are put away, and any sprinkler heads in the middle of the lawn are marked or flagged so we can avoid them",
   "sms_prep_aeration": "gates are unlocked, sprinklers are off, all pets are put away, and any sprinkler heads in the middle of the lawn are marked or flagged so we can avoid them",
   "text_names": {
     "Lawn Maintainer": "Fertilizer & Weed Control"

@@ -104,7 +104,7 @@ function render(ct, v) {
   const dayPhrase = (v.date === today ? "today, " : v.date === tomorrow ? "tomorrow, " : "") + dayLong(v.date);
   const names = [];
   v.codes.forEach(function (c) { const b = baseName(ct.lib, c); const n = (cp.text_names || {})[b] || b; if (names.indexOf(n) < 0) names.push(n); });
-  const t = { FirstName: v.first, VisitDay: dayLong(v.date), VisitShort: dayShort(v.date), DayPhrase: dayPhrase, FullAddress: v.address, ServiceList: names.join(" | "), PrepList: blowout ? cp.sms_prep_blowout : (aer && cp.sms_prep_aeration ? cp.sms_prep_aeration : cp.sms_prep), HomeLine: blowout ? "" : (cp.home_line || "") };
+  const t = { FirstName: v.first, VisitDay: dayLong(v.date), VisitShort: dayShort(v.date), DayPhrase: dayPhrase, FullAddress: v.address, ServiceList: names.join(" | "), PrepList: blowout ? (aer && cp.sms_prep_blowout_aeration ? cp.sms_prep_blowout_aeration : cp.sms_prep_blowout) : (aer && cp.sms_prep_aeration ? cp.sms_prep_aeration : cp.sms_prep), HomeLine: blowout ? "" : (cp.home_line || "") };
   const svcRows = v.codes.map(function (c) { const s = ct.lib[c] || {}; const desc = /^M\d$/.test(c) && s.text ? '<div style="color:#555555;font-size:13px;font-weight:normal;margin-top:2px;">' + esc(s.text) + "</div>" : ""; return '<tr><td width="30" valign="top" style="font-size:18px;line-height:1.4;padding-bottom:12px;">' + (s.emoji || "&#9989;") + '</td><td style="color:#231f20;font-size:14px;line-height:1.4;padding-bottom:12px;"><b>' + esc(s.heading || c) + "</b>" + desc + "</td></tr>"; }).join("");
   const cats = ["general"];
   v.codes.forEach(function (c) { const k = category(c); if (k && cats.indexOf(k) < 0) cats.push(k); });

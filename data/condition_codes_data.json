@@ -44,8 +44,14 @@
   },
   "CAO": {
    "emoji": "🌱",
-   "heading": "Aeration & Overseed (Spring)",
-   "text": "Aeration & Overseed (Spring)",
+   "heading": "Aeration & Overseed",
+   "text": "Aeration & Overseed",
+   "email": "Today's visit combined core aeration with overseeding, relieving compaction while introducing new seed to help thicken your lawn."
+  },
+  "COS": {
+   "emoji": "🌱",
+   "heading": "Aeration & Overseed",
+   "text": "Aeration & Overseed",
    "email": "Today's visit combined core aeration with overseeding, relieving compaction while introducing new seed to help thicken your lawn."
   },
   "CAS": {
